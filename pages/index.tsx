@@ -1,8 +1,14 @@
 import HomeCard from "../components/HomeCard";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 export default function Home() {
   return (
     <main>
+      <header className="flex justify-between px-6 py-4">
+        <div>Jam.dev</div>
+        <ThemeToggle />
+      </header>
+
       <div className="container text-center">
         <div className="flex justify-center items-center mb-4">
           <img
