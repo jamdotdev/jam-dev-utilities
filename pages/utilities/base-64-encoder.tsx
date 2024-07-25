@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import { Textarea } from "../../components/ds/TextareaComponent";
 import PageHeader from "../../components/PageHeader";
-import { ThemeToggle } from "../../components/ThemeToggle";
 import { Tabs, TabsList, TabsTrigger } from "../../components/ds/TabsComponent";
 import { Card } from "../../components/ds/CardComponent";
 import { Button } from "../../components/ds/ButtonComponent";
