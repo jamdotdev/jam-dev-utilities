@@ -1,14 +1,10 @@
-import Link from "next/link";
 import HomeCard from "../components/HomeCard";
-import { ThemeToggle } from "../components/ThemeToggle";
+import Header from "../components/Header";
 
 export default function Home() {
   return (
     <main>
-      <header className="flex justify-between px-6 py-4">
-        <div>Jam.dev</div>
-        <ThemeToggle />
-      </header>
+      <Header />
 
       <div className="container text-center">
         <div className="flex justify-center items-center mb-4">
@@ -20,7 +16,9 @@ export default function Home() {
             alt="Logo"
           />
         </div>
+
         <h1 className="text-3xl font-bold mb-5">Dev Utilities</h1>
+
         <p className="text-lg text-muted-foreground mb-7 leading-6 font-light">
           Jam exists to make developers lives easier.
           <br />
