@@ -5,25 +5,32 @@ import { Card } from "../../components/ds/CardComponent";
 import { Button } from "../../components/ds/ButtonComponent";
 import { Label } from "../../components/ds/LabelComponent";
 import Header from "../../components/Header";
+import { Checkbox } from "../../components/ds/CheckboxComponent";
 
-export default function Base64Encoder() {
+export default function CSVtoJSON() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [buttonText, setButtonText] = useState("Copy");
+  const [lowercase, setLowercase] = useState(false);
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const { value } = event.currentTarget;
+      const value = event.currentTarget.value.trim();
       setInput(value);
 
+      if (value === "") {
+        setOutput("");
+        return;
+      }
+
       try {
-        const json = convertCSVtoJSON(value);
+        const json = convertCSVtoJSON(value, lowercase);
         setOutput(json);
       } catch (error) {
         setOutput("Invalid CSV input");
       }
     },
-    []
+    [lowercase]
   );
 
   const handleCopy = useCallback(() => {
@@ -32,6 +39,26 @@ export default function Base64Encoder() {
       setTimeout(() => setButtonText("Copy"), 1200);
     });
   }, [output]);
+
+  const toggleLowercase = useCallback(() => {
+    setLowercase((prevValue) => {
+      const nextValue = !prevValue;
+
+      if (input === "") {
+        setOutput("");
+        return nextValue;
+      }
+
+      try {
+        const json = convertCSVtoJSON(input, nextValue);
+        setOutput(json);
+      } catch (error) {
+        setOutput("Invalid CSV input");
+      }
+
+      return nextValue;
+    });
+  }, [input]);
 
   return (
     <main>
@@ -56,7 +83,24 @@ export default function Base64Encoder() {
               className="mb-6"
               value={input}
             />
-            <Label>JSON</Label>
+
+            <div className="flex justify-between items-center mb-2">
+              <Label className="mb-0">JSON</Label>
+              <div className="flex items-center">
+                <Checkbox
+                  id="lowercase"
+                  onCheckedChange={toggleLowercase}
+                  className="mr-1"
+                />
+                <label
+                  htmlFor="lowercase"
+                  className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  lowercase keys
+                </label>
+              </div>
+            </div>
+
             <Textarea value={output} rows={6} readOnly className="mb-4" />
             <Button variant="outline" onClick={handleCopy}>
               {buttonText}
@@ -68,11 +112,13 @@ export default function Base64Encoder() {
   );
 }
 
-const convertCSVtoJSON = (csv: string): string => {
+const convertCSVtoJSON = (csv: string, lowercase: boolean): string => {
   try {
     const lines = csv.split("\n");
     const result: { [key: string]: string }[] = [];
-    const headers = lines[0].split(",");
+    const headers = lines[0].split(",").map((header) => {
+      return lowercase ? header.trim().toLowerCase() : header.trim();
+    });
 
     for (let i = 1; i < lines.length; i++) {
       const object: { [key: string]: string } = {};
@@ -83,7 +129,7 @@ const convertCSVtoJSON = (csv: string): string => {
       }
 
       for (let j = 0; j < headers.length; j++) {
-        object[headers[j]] = currentline[j];
+        object[headers[j]] = currentline[j].trim();
       }
 
       result.push(object);
