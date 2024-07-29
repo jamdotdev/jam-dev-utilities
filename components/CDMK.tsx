@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/router";
+import { useRouter, usePathname } from "next/navigation";
 import {
   CommandDialog,
   CommandEmpty,
@@ -7,10 +7,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
 } from "./ds/CommandMenu";
 import { tools } from "./tools-list";
 import { Input } from "./ds/InputComponent";
 import { useEffect, useState } from "react";
+import { GitFork, Home, RocketIcon, UserPlus } from "lucide-react";
 
 interface CDMKProps {
   showSearch?: boolean;
@@ -19,6 +21,7 @@ interface CDMKProps {
 export function CMDK(props: CDMKProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const showSearch = props.showSearch ?? false;
 
   useEffect(() => {
@@ -50,15 +53,48 @@ export function CMDK(props: CDMKProps) {
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
+
           <CommandGroup heading="Tools">
             {tools.map((tool) => (
               <CommandItem
                 key={tool.title}
-                onSelect={() => router.push(tool.link)}
+                onSelect={() => {
+                  if (pathname.includes("/utilities/")) {
+                    const lastPart = tool.link.split("/").pop() ?? "";
+                    router.push(lastPart);
+                  } else {
+                    router.push(tool.link);
+                  }
+                }}
               >
                 <span>{tool.title}</span>
               </CommandItem>
             ))}
+          </CommandGroup>
+
+          <CommandSeparator />
+
+          <CommandGroup heading="Links">
+            <CommandItem>
+              <RocketIcon className="mr-2 h-4 w-4" />
+              <span>Get Jam Chrome extension</span>
+            </CommandItem>
+            <CommandItem>
+              <GitFork className="mr-2 h-4 w-4" />
+              <span>Contribute on GitHub</span>
+            </CommandItem>
+            <CommandItem>
+              <UserPlus className="mr-2 h-4 w-4" />
+              <span>Follow us on Twitter</span>
+            </CommandItem>
+            <CommandItem
+              onSelect={() => {
+                router.push("/");
+              }}
+            >
+              <Home className="mr-2 h-4 w-4" />
+              <span>Home</span>
+            </CommandItem>
           </CommandGroup>
         </CommandList>
       </CommandDialog>
