@@ -32,11 +32,11 @@ export function CMDK() {
     <section className="flex justify-center">
       <div className="relative max-w-[320px] w-full">
         <Input placeholder="Search" onFocus={() => setOpen(true)} />
-        <p className="absolute top-[50%] right-[12px] text-sm text-muted-foreground translate-y-[-50%]">
-          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-sm font-medium text-muted-foreground opacity-100">
-            <span>⌘</span>K
-          </kbd>
-        </p>
+        <div className="flex absolute top-[50%] right-[12px] text-sm text-muted-foreground translate-y-[-50%]">
+          <div className="pointer-events-none inline-flex h-5 select-none items-center gap-1 border bg-background text-foreground px-1.5 py-1 text-xs rounded-md">
+            CMD + K
+          </div>
+        </div>
       </div>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
