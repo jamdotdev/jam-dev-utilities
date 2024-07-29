@@ -12,9 +12,14 @@ import { tools } from "./tools-list";
 import { Input } from "./ds/InputComponent";
 import { useEffect, useState } from "react";
 
-export function CMDK() {
+interface CDMKProps {
+  showSearch?: boolean;
+}
+
+export function CMDK(props: CDMKProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const showSearch = props.showSearch ?? false;
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -30,14 +35,16 @@ export function CMDK() {
 
   return (
     <section className="flex justify-center">
-      <div className="relative max-w-[320px] w-full">
-        <Input placeholder="Search" onFocus={() => setOpen(true)} />
-        <div className="flex absolute top-[50%] right-[12px] text-sm text-muted-foreground translate-y-[-50%]">
-          <div className="pointer-events-none inline-flex h-5 select-none items-center gap-1 border bg-background text-foreground px-1.5 py-1 text-xs rounded-md">
-            CMD + K
+      {showSearch && (
+        <div className="relative max-w-[320px] w-full">
+          <Input placeholder="Search" onFocus={() => setOpen(true)} />
+          <div className="flex absolute top-[50%] right-[12px] text-sm text-muted-foreground translate-y-[-50%]">
+            <div className="pointer-events-none inline-flex h-5 select-none items-center gap-1 border bg-background text-foreground px-1.5 py-1 text-xs rounded-md">
+              CMD + K
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a command or search..." />

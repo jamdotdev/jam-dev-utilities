@@ -7,6 +7,7 @@ import { Label } from "../../components/ds/LabelComponent";
 import Header from "../../components/Header";
 import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
 import yaml from "js-yaml";
+import { CMDK } from "../../components/CDMK";
 
 export default function YAMLtoJSON() {
   const [input, setInput] = useState("");
@@ -32,6 +33,7 @@ export default function YAMLtoJSON() {
   return (
     <main>
       <Header />
+      <CMDK />
 
       <section className="container max-w-2xl mb-12">
         <PageHeader

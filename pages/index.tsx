@@ -26,7 +26,7 @@ export default function Home() {
           <br />
           Here are fast, free, open source, ad-free tools.
         </p>
-        <CMDK />
+        <CMDK showSearch />
       </div>
 
       <div className="container grid grid-cols-3 gap-6">
