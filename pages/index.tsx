@@ -75,7 +75,7 @@ const cardData = [
     title: "YAML to JSON",
     description:
       "Effortlessly convert YAML data to JSON format, enabling smooth transitions between different data serialization formats in your projects.",
-    link: "",
+    link: "utilities/yaml-to-json",
   },
   {
     title: "Query params to JSON",
