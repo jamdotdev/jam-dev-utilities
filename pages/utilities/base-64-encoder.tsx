@@ -6,6 +6,7 @@ import { Card } from "../../components/ds/CardComponent";
 import { Button } from "../../components/ds/ButtonComponent";
 import { Label } from "../../components/ds/LabelComponent";
 import Header from "../../components/Header";
+import { CMDK } from "../../components/CDMK";
 
 export default function Base64Encoder() {
   const [type, setType] = useState<"encoder" | "decoder">("encoder");
@@ -43,6 +44,7 @@ export default function Base64Encoder() {
   return (
     <main>
       <Header />
+      <CMDK />
 
       <section className="container max-w-2xl mb-12">
         <PageHeader

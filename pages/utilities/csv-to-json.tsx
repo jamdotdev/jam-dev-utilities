@@ -6,6 +6,7 @@ import { Button } from "../../components/ds/ButtonComponent";
 import { Label } from "../../components/ds/LabelComponent";
 import Header from "../../components/Header";
 import { Checkbox } from "../../components/ds/CheckboxComponent";
+import { CMDK } from "../../components/CDMK";
 
 export default function CSVtoJSON() {
   const [input, setInput] = useState("");
@@ -63,6 +64,7 @@ export default function CSVtoJSON() {
   return (
     <main>
       <Header />
+      <CMDK />
 
       <section className="container max-w-2xl mb-12">
         <PageHeader
