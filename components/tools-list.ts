@@ -22,7 +22,7 @@ export const tools = [
     description:
       "Effortlessly convert YAML data to JSON format, enabling smooth transitions between different data serialization formats in your projects.",
     link: "utilities/yaml-to-json",
-  }
+  },
   {
     title: "URL encoder/decoder",
     description:
