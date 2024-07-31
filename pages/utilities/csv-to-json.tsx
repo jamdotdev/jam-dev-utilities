@@ -6,12 +6,13 @@ import { Button } from "../../components/ds/ButtonComponent";
 import { Label } from "../../components/ds/LabelComponent";
 import Header from "../../components/Header";
 import { Checkbox } from "../../components/ds/CheckboxComponent";
-import { CMDK } from "../../components/CDMK";
+import { CMDK } from "../../components/CMDK";
+import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
 
 export default function CSVtoJSON() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
-  const [buttonText, setButtonText] = useState("Copy");
+  const { buttonText, handleCopy } = useCopyToClipboard();
   const [lowercase, setLowercase] = useState(false);
 
   const handleChange = useCallback(
@@ -33,13 +34,6 @@ export default function CSVtoJSON() {
     },
     [lowercase]
   );
-
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(output).then(() => {
-      setButtonText("Copied!");
-      setTimeout(() => setButtonText("Copy"), 1200);
-    });
-  }, [output]);
 
   const toggleLowercase = useCallback(() => {
     setLowercase((prevValue) => {
@@ -104,7 +98,7 @@ export default function CSVtoJSON() {
             </div>
 
             <Textarea value={output} rows={6} readOnly className="mb-4" />
-            <Button variant="outline" onClick={handleCopy}>
+            <Button variant="outline" onClick={() => handleCopy(output)}>
               {buttonText}
             </Button>
           </div>
