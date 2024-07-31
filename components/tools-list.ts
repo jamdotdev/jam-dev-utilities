@@ -35,4 +35,10 @@ export const tools = [
       "Easily convert epoch time (also known as Unix time or Unix timestamp) to a human-readable month/day/year and time format.",
     link: "utilities/timestamp-to-date",
   },
+  {
+    title: "Query params to JSON",
+    description:
+      "Convert URL query parameters into a structured JSON object, simplifying the process of parsing and manipulating URL data in web applications.",
+    link: "utilities/query-params-to-json",
+  },
 ];
