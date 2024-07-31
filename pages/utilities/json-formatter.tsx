@@ -6,7 +6,7 @@ import { Button } from "../../components/ds/ButtonComponent";
 import { Label } from "../../components/ds/LabelComponent";
 import Header from "../../components/Header";
 import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
-import { CMDK } from "../../components/CDMK";
+import { CMDK } from "../../components/CMDK";
 
 export default function JSONFormatter() {
   const [input, setInput] = useState("");

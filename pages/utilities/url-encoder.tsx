@@ -6,7 +6,7 @@ import { Card } from "../../components/ds/CardComponent";
 import { Button } from "../../components/ds/ButtonComponent";
 import { Label } from "../../components/ds/LabelComponent";
 import Header from "../../components/Header";
-import { CMDK } from "../../components/CDMK";
+import { CMDK } from "../../components/CMDK";
 import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
 
 export default function URLEncoder() {

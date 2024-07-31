@@ -1,6 +1,6 @@
 import HomeCard from "../components/HomeCard";
 import Header from "../components/Header";
-import { CMDK } from "../components/CDMK";
+import { CMDK } from "../components/CMDK";
 import { tools } from "../components/tools-list";
 
 export default function Home() {
