@@ -29,4 +29,10 @@ export const tools = [
       "Encode and decode URLs to ensure proper handling of special characters, spaces, and non-ASCII symbols in web addresses and query strings.",
     link: "utilities/url-encoder",
   },
+  {
+    title: "Timestamp to Date",
+    description:
+      "Easily convert epoch time (also known as Unix time or Unix timestamp) to a human-readable month/day/year and time format.",
+    link: "utilities/timestamp-to-date",
+  },
 ];
