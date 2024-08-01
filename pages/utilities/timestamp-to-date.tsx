@@ -45,7 +45,7 @@ export default function TimestampToDate() {
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="Timestamp to Date Converter"
-          description="Fast, free, open source, ad-free tools."
+          description="Free, Open Source & Ad-free"
           logoSrc="/logo.png"
         />
       </section>

@@ -1,3 +1,5 @@
+import CodeExample from "../CodeExample";
+
 export default function TimestampSEO() {
   return (
     <div className="content-wrapper">
@@ -103,9 +105,14 @@ export default function TimestampSEO() {
         <h2>How to Convert Timestamps to Date:</h2>
         <p>
           If you need to convert epoch to time directly in your own
-          applications, here are the code snippets you can use for JavaScript,
-          Python, PHP, and Java.
+          applications, here is the code snippet from our app that you can use
+          for JavaScript/TypeScript. This snippet automatically handles both
+          milliseconds and seconds:
         </p>
+      </section>
+
+      <section>
+        <CodeExample>{jsCodeExample}</CodeExample>
       </section>
 
       <section>
@@ -142,3 +149,24 @@ export default function TimestampSEO() {
     </div>
   );
 }
+
+const jsCodeExample = `function convertTimestampToDate(timestamp: string) {
+  let date: Date;
+
+  if (/^\\d{11,13}$/.test(timestamp)) {
+    // Milliseconds
+    date = new Date(parseInt(timestamp, 10));
+  } else if (/^\\d{1,10}$/.test(timestamp)) {
+    // Seconds
+    date = new Date(parseInt(timestamp, 10) * 1000);
+  } else {
+    throw new Error("Invalid timestamp format");
+  }
+
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date");
+  }
+
+  return date.toUTCString(); // Returns the date in UTC string format
+}
+`;

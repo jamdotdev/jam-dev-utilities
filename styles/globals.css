@@ -94,4 +94,7 @@
   .content-wrapper b {
     @apply font-semibold text-card-foreground;
   }
+  .content-wrapper pre {
+    @apply rounded-xl text-sm font-mono p-4 !important;
+  }
 }
