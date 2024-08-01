@@ -8,6 +8,8 @@ import Header from "../../components/Header";
 import { Checkbox } from "../../components/ds/CheckboxComponent";
 import { CMDK } from "../../components/CMDK";
 import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
+import CallToActionGrid from "../../components/CallToActionGrid";
+import CsvToJsonSEO from "../../components/seo/CsvToJsonSEO";
 
 export default function CSVtoJSON() {
   const [input, setInput] = useState("");
@@ -28,7 +30,7 @@ export default function CSVtoJSON() {
       try {
         const json = convertCSVtoJSON(value, lowercase);
         setOutput(json);
-      } catch (error) {
+      } catch {
         setOutput("Invalid CSV input");
       }
     },
@@ -47,7 +49,7 @@ export default function CSVtoJSON() {
       try {
         const json = convertCSVtoJSON(input, nextValue);
         setOutput(json);
-      } catch (error) {
+      } catch {
         setOutput("Invalid CSV input");
       }
 
@@ -62,13 +64,13 @@ export default function CSVtoJSON() {
 
       <section className="container max-w-2xl mb-12">
         <PageHeader
-          title="CSV to JSON"
+          title="CSV to JSON Converter"
           description="Fast, free, open source, ad-free tools."
           logoSrc="/logo.png"
         />
       </section>
 
-      <section className="container max-w-2xl">
+      <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
             <Label>CSV</Label>
@@ -103,6 +105,12 @@ export default function CSVtoJSON() {
             </Button>
           </div>
         </Card>
+      </section>
+
+      <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <CsvToJsonSEO />
       </section>
     </main>
   );
