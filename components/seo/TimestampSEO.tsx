@@ -24,15 +24,16 @@ export default function TimestampSEO() {
         <h2>Features:</h2>
         <ul>
           <li>
-            <b>Instant Conversion:</b> No need to click any buttons—just enter
-            the timestamp and get the result.
+            <b>Instant Conversion:</b> <br /> No need to click any buttons—just
+            enter the timestamp and get the result.
           </li>
           <li>
-            <b>Accurate Results:</b> Provides precise conversion for both your
-            local time zone and UTC time.
+            <b>Accurate Results:</b> <br /> Provides precise conversion for both
+            your local time zone and UTC time.
           </li>
           <li>
-            <b>Open Source:</b> Made with 💜 by the developers building Jam.
+            <b>Open Source:</b> <br /> Made with 💜 by the developers building
+            Jam.
           </li>
         </ul>
       </section>
@@ -45,11 +46,11 @@ export default function TimestampSEO() {
         </p>
         <ul>
           <li>
-            <b>Step 1:</b> Input the timestamp.
+            <b>Step 1:</b> <br /> Input the timestamp.
           </li>
 
           <li>
-            <b>Step 2:</b> Just kidding, there&apos;s no step 2.
+            <b>Step 2:</b> <br /> Just kidding, there&apos;s no step 2.
           </li>
         </ul>
         <p>
@@ -88,15 +89,15 @@ export default function TimestampSEO() {
         </p>
         <ul>
           <li>
-            <b>Understand Logs:</b> Easily read and analyze event logs.
+            <b>Understand Logs:</b> <br /> Easily read and analyze event logs.
           </li>
           <li>
-            <b>Debugging:</b> Quickly identify when specific events occurred in
-            your applications.
+            <b>Debugging:</b> <br /> Quickly identify when specific events
+            occurred in your applications.
           </li>
           <li>
-            <b>Study Data:</b> Change Unix timestamp to date in your data to
-            better understand time-related trends and patterns.
+            <b>Study Data:</b> <br /> Change Unix timestamp to date in your data
+            to better understand time-related trends and patterns.
           </li>
         </ul>
       </section>
@@ -119,27 +120,27 @@ export default function TimestampSEO() {
         <h2>FAQs:</h2>
         <ul>
           <li>
-            <b>How accurate is Jam&apos;s Unix time converter?</b> Our converter
-            gives you the correct date and time by taking into account both
-            local and UTC time formats.
+            <b>How accurate is Jam&apos;s Unix time converter?</b> <br /> Our
+            converter gives you the correct date and time by taking into account
+            both local and UTC time formats.
           </li>
           <li>
             <b>
               Is the Timestamp to Date converter suitable for all time-related
               data?
             </b>{" "}
-            Yes, we&apos;ve designed our tool to handle any type of time-related
-            data, making it perfect for developers, data analysts, and anyone
-            working with time data.
+            <br /> Yes, we&apos;ve designed our tool to handle any type of
+            time-related data, making it perfect for developers, data analysts,
+            and anyone working with time data.
           </li>
           <li>
-            <b>How easy is it to use the Timestamp to Date converter?</b> Our
-            converter is user-friendly and intuitive, allowing anyone to use it
-            without technical knowledge. Simply enter your Unix timestamp, and
-            the tool will do the rest.
+            <b>How easy is it to use the Timestamp to Date converter?</b> <br />{" "}
+            Our converter is user-friendly and intuitive, allowing anyone to use
+            it without technical knowledge. Simply enter your Unix timestamp,
+            and the tool will do the rest.
           </li>
           <li>
-            <b>What happens in 2038?</b> Unix timestamps stored as 32-bit
+            <b>What happens in 2038?</b> <br /> Unix timestamps stored as 32-bit
             integers will overflow, causing systems to misinterpret the date as
             December 13, 1901. Upgrading to 64-bit integers extends the
             timestamp range and solves the issue.
