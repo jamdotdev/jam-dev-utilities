@@ -41,4 +41,10 @@ export const tools = [
       "Convert URL query parameters into a structured JSON object, simplifying the process of parsing and manipulating URL data in web applications.",
     link: "utilities/query-params-to-json",
   },
+  {
+    title: "HEX to RGB",
+    description:
+      "Quickly convert hexadecimal color codes to their corresponding RGB values for easy use in various programming contexts.",
+    link: "utilities/hex-to-rgb",
+  },
 ];
