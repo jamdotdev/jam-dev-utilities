@@ -8,6 +8,8 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
+import UrlEncoderSEO from "../components/seo/UrlEncoderSEO";
+import CallToActionGrid from "../components/CallToActionGrid";
 
 export default function URLEncoder() {
   const [type, setType] = useState<"encoder" | "decoder">("encoder");
@@ -44,12 +46,12 @@ export default function URLEncoder() {
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="URL encoder/decoder"
-          description="Fast, free, open source, ad-free tools."
+          description="Free, Open Source & Ad-free"
           logoSrc="/logo.png"
         />
       </section>
 
-      <section className="container max-w-2xl">
+      <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <Tabs defaultValue="encoder" className="mb-6">
             <TabsList className="flex">
@@ -88,6 +90,12 @@ export default function URLEncoder() {
             </Button>
           </div>
         </Card>
+      </section>
+
+      <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <UrlEncoderSEO />
       </section>
     </main>
   );
