@@ -1,5 +1,4 @@
 import CodeExample from "../CodeExample";
-import { Button } from "../ds/ButtonComponent";
 import GetJamForFree from "./GetJamForFree";
 
 export default function Base64SEO() {

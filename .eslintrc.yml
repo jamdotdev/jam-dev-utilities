@@ -25,6 +25,7 @@ rules:
   react/react-in-jsx-scope: "off"
   react/prop-types: "off" # Disable prop-types rule, as we are using TypeScript for type checking, always complains about className prop
   import/no-named-as-default-member: "off" # Disable React named import, specific warning for shadcn components
+  react/no-unescaped-entities: "off" # Disable rule for unescaped entities like ', ", <, >, etc.
 settings:
   react:
     version: "detect"
