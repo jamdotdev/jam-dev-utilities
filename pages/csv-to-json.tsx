@@ -1,15 +1,15 @@
 import { useCallback, useState } from "react";
-import { Textarea } from "../../components/ds/TextareaComponent";
-import PageHeader from "../../components/PageHeader";
-import { Card } from "../../components/ds/CardComponent";
-import { Button } from "../../components/ds/ButtonComponent";
-import { Label } from "../../components/ds/LabelComponent";
-import Header from "../../components/Header";
-import { Checkbox } from "../../components/ds/CheckboxComponent";
-import { CMDK } from "../../components/CMDK";
-import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
-import CallToActionGrid from "../../components/CallToActionGrid";
-import CsvToJsonSEO from "../../components/seo/CsvToJsonSEO";
+import { Textarea } from "@/components/ds/TextareaComponent";
+import PageHeader from "@/components/PageHeader";
+import { Card } from "@/components/ds/CardComponent";
+import { Button } from "@/components/ds/ButtonComponent";
+import { Label } from "@/components/ds/LabelComponent";
+import Header from "@/components/Header";
+import { Checkbox } from "@/components/ds/CheckboxComponent";
+import { CMDK } from "@/components/CMDK";
+import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
+import CallToActionGrid from "@/components/CallToActionGrid";
+import CsvToJsonSEO from "@/components/seo/CsvToJsonSEO";
 
 export default function CSVtoJSON() {
   const [input, setInput] = useState("");

@@ -1,12 +1,12 @@
 import { useCallback, useState } from "react";
-import { Textarea } from "../../components/ds/TextareaComponent";
-import PageHeader from "../../components/PageHeader";
-import { Card } from "../../components/ds/CardComponent";
-import { Button } from "../../components/ds/ButtonComponent";
-import { Label } from "../../components/ds/LabelComponent";
-import Header from "../../components/Header";
-import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
-import { CMDK } from "../../components/CMDK";
+import { Textarea } from "@/components/ds/TextareaComponent";
+import PageHeader from "@/components/PageHeader";
+import { Card } from "@/components/ds/CardComponent";
+import { Button } from "@/components/ds/ButtonComponent";
+import { Label } from "@/components/ds/LabelComponent";
+import Header from "@/components/Header";
+import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
+import { CMDK } from "@/components/CMDK";
 
 export default function JSONFormatter() {
   const [input, setInput] = useState("");

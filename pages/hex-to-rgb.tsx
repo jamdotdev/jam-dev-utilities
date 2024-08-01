@@ -1,9 +1,9 @@
 import { useState } from "react";
-import PageHeader from "../../components/PageHeader";
-import { Card } from "../../components/ds/CardComponent";
-import { Label } from "../../components/ds/LabelComponent";
-import Header from "../../components/Header";
-import { CMDK } from "../../components/CMDK";
+import PageHeader from "@/components/PageHeader";
+import { Card } from "@/components/ds/CardComponent";
+import { Label } from "@/components/ds/LabelComponent";
+import Header from "@/components/Header";
+import { CMDK } from "@/components/CMDK";
 import {
   convertToHex,
   convertToRGB,
@@ -13,9 +13,9 @@ import {
   toAndroidColor,
   toCss,
   toIOS,
-} from "../../components/hex-to-rgb-utils";
-import { Input } from "../../components/ds/InputComponent";
-import CodeSnippetRow from "../../components/CodeSnippetRow";
+} from "@/components/hex-to-rgb-utils";
+import { Input } from "@/components/ds/InputComponent";
+import CodeSnippetRow from "@/components/CodeSnippetRow";
 
 const DEFAULT_RGB: RGBValues = { r: "0", g: "0", b: "0" };
 
