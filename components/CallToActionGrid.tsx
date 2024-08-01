@@ -7,13 +7,13 @@ export default function CallToActionGrid() {
         logo="github"
         description="Our tools are free and open source. Feel free to contribute."
         buttonText="Contribute"
-        href="https://google.com"
+        href="https://github.com/Strawberry-Jam-Manufacturers/jam-dev-utilities"
       />
       <SquareCard
         logo="jam"
         description="Auto-capture all the info engineers need to debug!"
         buttonText="Try Jam"
-        href="https://google.com"
+        href="https://jam.dev"
       />
     </section>
   );
