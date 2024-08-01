@@ -7,6 +7,8 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
+import QueryParamsToJsonSEO from "@/components/seo/QueryParamsToJsonSEO";
+import CallToActionGrid from "@/components/CallToActionGrid";
 
 export default function QueryParamsToJSON() {
   const [input, setInput] = useState("");
@@ -41,12 +43,12 @@ export default function QueryParamsToJSON() {
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="Query Params to JSON"
-          description="Fast, free, open source, ad-free tools."
+          description="Free, Open Source & Ad-free"
           logoSrc="/logo.png"
         />
       </section>
 
-      <section className="container max-w-2xl">
+      <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
             <Label>Query Parameters</Label>
@@ -64,6 +66,12 @@ export default function QueryParamsToJSON() {
             </Button>
           </div>
         </Card>
+      </section>
+
+      <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <QueryParamsToJsonSEO />
       </section>
     </main>
   );

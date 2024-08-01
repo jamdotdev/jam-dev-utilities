@@ -21,9 +21,8 @@ export default function CsvToJsonSEO() {
         <h2>How to Use Jam&apos;s CSV to JSON Converter Tool</h2>
         <p>
           Easily convert your CSV files to JSON format with our online tool.
-          Whether you&apos;re working on web development projects, data
-          analysis, or integrating with npm packages, our converter simplifies
-          the process.
+          Whether you're working on web development projects, data analysis, or
+          integrating with APIs, our converter simplifies the process.
         </p>
         <ul>
           <li>
