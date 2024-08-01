@@ -7,6 +7,8 @@ import { Label } from "../../components/ds/LabelComponent";
 import Header from "../../components/Header";
 import { CMDK } from "../../components/CMDK";
 import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
+import TimestampSEO from "../../components/seo/TimestampSEO";
+import CallToActionGrid from "../../components/CallToActionGrid";
 
 export default function TimestampToDate() {
   const [input, setInput] = useState("");
@@ -26,8 +28,10 @@ export default function TimestampToDate() {
       try {
         const output = formatOutput(value.trim());
         setOutput(output);
-      } catch (error) {
-        setOutput("Invalid input, please provide a valid timestamp");
+      } catch {
+        setOutput(
+          "Invalid timestamp format.\nPlease use milliseconds (11-13 digits) or seconds (1-10 digits)."
+        );
       }
     },
     []
@@ -41,15 +45,15 @@ export default function TimestampToDate() {
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="Timestamp to Date Converter"
-          description="Fast, free, open source, ad-free tools."
+          description="Free, Open Source & Ad-free"
           logoSrc="/logo.png"
         />
       </section>
 
-      <section className="container max-w-2xl">
+      <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
-            <Label>Timestamp</Label>
+            <Label>Timestamp (milliseconds or seconds)</Label>
             <Textarea
               rows={6}
               placeholder="Paste here"
@@ -70,17 +74,41 @@ export default function TimestampToDate() {
           </div>
         </Card>
       </section>
+
+      <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <TimestampSEO />
+      </section>
     </main>
   );
 }
 
 function formatOutput(timestamp: string) {
-  const date = new Date(parseInt(timestamp, 10));
+  let date: Date;
+  let formatDetected: string;
+
+  if (/^\d{11,13}$/.test(timestamp)) {
+    date = new Date(parseInt(timestamp, 10));
+    formatDetected = "milliseconds";
+  } else if (/^\d{1,10}$/.test(timestamp)) {
+    date = new Date(parseInt(timestamp, 10) * 1000);
+    formatDetected = "seconds";
+  } else {
+    throw new Error("Invalid timestamp format");
+  }
+
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date");
+  }
+
   const gmtDate = formatDate(date, "UTC");
   const localDate = formatDate(date);
   const labelWidth = 22;
 
   return (
+    `Format detected: ${formatDetected}\n` +
+    "---\n" +
     "Greenwich Mean Time:".padEnd(labelWidth) +
     `${gmtDate}\n` +
     "Your time zone:".padEnd(labelWidth) +

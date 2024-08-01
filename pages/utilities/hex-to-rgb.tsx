@@ -48,7 +48,7 @@ export default function HEXtoRGB() {
     key: keyof RGBValues,
     event: React.FormEvent<HTMLInputElement>
   ): void => {
-    let value = event.currentTarget.value;
+    const value = event.currentTarget.value;
 
     if (value === "" || isRGBValueValid(parseInt(value))) {
       setRgb((rgb: RGBValues) => {
