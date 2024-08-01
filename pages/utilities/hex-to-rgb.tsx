@@ -10,8 +10,12 @@ import {
   isRGBValueValid,
   isValidHex,
   RGBValues,
+  toAndroidColor,
+  toCss,
+  toIOS,
 } from "../../components/hex-to-rgb-utils";
 import { Input } from "../../components/ds/InputComponent";
+import CodeSnippetRow from "../../components/CodeSnippetRow";
 
 const DEFAULT_RGB: RGBValues = { r: "0", g: "0", b: "0" };
 
@@ -103,7 +107,7 @@ export default function HEXtoRGB() {
                 };
 
                 return (
-                  <div className="mb-4" key={colorKey}>
+                  <div key={colorKey}>
                     <Label className="min-w-12 block mr-1">
                       {colorNameMap[colorKey]}
                     </Label>
@@ -123,6 +127,27 @@ export default function HEXtoRGB() {
             </div>
 
             <Divider />
+
+            <CodeSnippetRow
+              label="CSS"
+              rgb={rgb}
+              convertFunction={(rgb) => toCss(rgb)}
+            />
+            <CodeSnippetRow
+              label="Obj C"
+              rgb={rgb}
+              convertFunction={(rgb) => toIOS(rgb, "c")}
+            />
+            <CodeSnippetRow
+              label="Swift"
+              rgb={rgb}
+              convertFunction={(rgb) => toIOS(rgb, "swift")}
+            />
+            <CodeSnippetRow
+              label="Android"
+              rgb={rgb}
+              convertFunction={(rgb) => toAndroidColor(rgb)}
+            />
           </div>
         </Card>
       </section>
