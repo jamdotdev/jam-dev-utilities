@@ -1,5 +1,5 @@
 "use client";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   CommandDialog,
   CommandEmpty,
@@ -21,7 +21,6 @@ interface CDMKProps {
 export function CMDK(props: CDMKProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
   const showSearch = props.showSearch ?? false;
 
   useEffect(() => {
@@ -59,12 +58,7 @@ export function CMDK(props: CDMKProps) {
               <CommandItem
                 key={tool.title}
                 onSelect={() => {
-                  if (pathname.includes("/utilities/")) {
-                    const lastPart = tool.link.split("/").pop() ?? "";
-                    router.push(lastPart);
-                  } else {
-                    router.push(tool.link);
-                  }
+                  router.push(tool.link);
                 }}
               >
                 <span>{tool.title}</span>

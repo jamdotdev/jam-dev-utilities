@@ -1,15 +1,15 @@
 import { useCallback, useState } from "react";
-import { Textarea } from "../../components/ds/TextareaComponent";
-import PageHeader from "../../components/PageHeader";
-import { Card } from "../../components/ds/CardComponent";
-import { Button } from "../../components/ds/ButtonComponent";
-import { Label } from "../../components/ds/LabelComponent";
-import Header from "../../components/Header";
-import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
+import { Textarea } from "@/components/ds/TextareaComponent";
+import PageHeader from "@/components/PageHeader";
+import { Card } from "@/components/ds/CardComponent";
+import { Button } from "@/components/ds/ButtonComponent";
+import { Label } from "@/components/ds/LabelComponent";
+import Header from "@/components/Header";
+import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import yaml from "js-yaml";
-import { CMDK } from "../../components/CMDK";
-import CallToActionGrid from "../../components/CallToActionGrid";
-import YamlToJsonSEO from "../../components/seo/YamlToJsonSEO";
+import { CMDK } from "@/components/CMDK";
+import CallToActionGrid from "@/components/CallToActionGrid";
+import YamlToJsonSEO from "@/components/seo/YamlToJsonSEO";
 
 export default function YAMLtoJSON() {
   const [input, setInput] = useState("");

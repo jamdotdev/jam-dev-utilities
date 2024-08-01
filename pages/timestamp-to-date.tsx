@@ -1,14 +1,14 @@
 import { useCallback, useState } from "react";
-import { Textarea } from "../../components/ds/TextareaComponent";
-import PageHeader from "../../components/PageHeader";
-import { Card } from "../../components/ds/CardComponent";
-import { Button } from "../../components/ds/ButtonComponent";
-import { Label } from "../../components/ds/LabelComponent";
-import Header from "../../components/Header";
-import { CMDK } from "../../components/CMDK";
-import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
-import TimestampSEO from "../../components/seo/TimestampSEO";
-import CallToActionGrid from "../../components/CallToActionGrid";
+import { Textarea } from "@/components/ds/TextareaComponent";
+import PageHeader from "@/components/PageHeader";
+import { Card } from "@/components/ds/CardComponent";
+import { Button } from "@/components/ds/ButtonComponent";
+import { Label } from "@/components/ds/LabelComponent";
+import Header from "@/components/Header";
+import { CMDK } from "@/components/CMDK";
+import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
+import TimestampSEO from "@/components/seo/TimestampSEO";
+import CallToActionGrid from "@/components/CallToActionGrid";
 
 export default function TimestampToDate() {
   const [input, setInput] = useState("");

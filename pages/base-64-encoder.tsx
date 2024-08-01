@@ -1,15 +1,15 @@
 import { useCallback, useState } from "react";
-import { Textarea } from "../../components/ds/TextareaComponent";
-import PageHeader from "../../components/PageHeader";
-import { Tabs, TabsList, TabsTrigger } from "../../components/ds/TabsComponent";
-import { Card } from "../../components/ds/CardComponent";
-import { Button } from "../../components/ds/ButtonComponent";
-import { Label } from "../../components/ds/LabelComponent";
-import Header from "../../components/Header";
-import { CMDK } from "../../components/CMDK";
-import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
-import Base64SEO from "../../components/seo/Base64SEO";
-import CallToActionGrid from "../../components/CallToActionGrid";
+import { Textarea } from "@/components/ds/TextareaComponent";
+import PageHeader from "@/components/PageHeader";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ds/TabsComponent";
+import { Card } from "@/components/ds/CardComponent";
+import { Button } from "@/components/ds/ButtonComponent";
+import { Label } from "@/components/ds/LabelComponent";
+import Header from "@/components/Header";
+import { CMDK } from "@/components/CMDK";
+import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
+import Base64SEO from "@/components/seo/Base64SEO";
+import CallToActionGrid from "@/components/CallToActionGrid";
 
 export default function Base64Encoder() {
   const [type, setType] = useState<"encoder" | "decoder">("encoder");
