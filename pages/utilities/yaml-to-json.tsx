@@ -8,6 +8,8 @@ import Header from "../../components/Header";
 import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
 import yaml from "js-yaml";
 import { CMDK } from "../../components/CMDK";
+import CallToActionGrid from "../../components/CallToActionGrid";
+import YamlToJsonSEO from "../../components/seo/YamlToJsonSEO";
 
 export default function YAMLtoJSON() {
   const [input, setInput] = useState("");
@@ -38,12 +40,12 @@ export default function YAMLtoJSON() {
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="YAML to JSON"
-          description="Fast, free, open source, ad-free tools."
+          description="Free, Open Source & Ad-free"
           logoSrc="/logo.png"
         />
       </section>
 
-      <section className="container max-w-2xl">
+      <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
             <Label>YAML</Label>
@@ -61,6 +63,12 @@ export default function YAMLtoJSON() {
             </Button>
           </div>
         </Card>
+      </section>
+
+      <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <YamlToJsonSEO />
       </section>
     </main>
   );
