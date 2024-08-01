@@ -16,6 +16,8 @@ import {
 } from "@/components/hex-to-rgb-utils";
 import { Input } from "@/components/ds/InputComponent";
 import CodeSnippetRow from "@/components/CodeSnippetRow";
+import HexToRgbSEO from "@/components/seo/HexToRgbSEO";
+import CallToActionGrid from "@/components/CallToActionGrid";
 
 const DEFAULT_RGB: RGBValues = { r: "0", g: "0", b: "0" };
 
@@ -71,13 +73,13 @@ export default function HEXtoRGB() {
 
       <section className="container max-w-2xl mb-12">
         <PageHeader
-          title="HEX to RGB Converter"
-          description="Convert HEX to RGB and vice versa."
+          title="HEX / RGB Converter"
+          description="Free, Open Source & Ad-free"
           logoSrc="/logo.png"
         />
       </section>
 
-      <section className="container max-w-2xl">
+      <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
             <Label>HEX Value</Label>
@@ -150,6 +152,12 @@ export default function HEXtoRGB() {
             />
           </div>
         </Card>
+      </section>
+
+      <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <HexToRgbSEO />
       </section>
     </main>
   );
