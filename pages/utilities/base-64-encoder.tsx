@@ -8,6 +8,8 @@ import { Label } from "../../components/ds/LabelComponent";
 import Header from "../../components/Header";
 import { CMDK } from "../../components/CMDK";
 import { useCopyToClipboard } from "../../components/hooks/useCopyToClipboard";
+import Base64SEO from "../../components/seo/Base64SEO";
+import CallToActionGrid from "../../components/CallToActionGrid";
 
 export default function Base64Encoder() {
   const [type, setType] = useState<"encoder" | "decoder">("encoder");
@@ -22,7 +24,7 @@ export default function Base64Encoder() {
 
       try {
         setOutput(type === "encoder" ? toBase64(value) : fromBase64(value));
-      } catch (error) {
+      } catch {
         setOutput("Invalid input, please provide valid Base64 string");
       }
     },
@@ -43,12 +45,12 @@ export default function Base64Encoder() {
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="Base64 encoder/decoder"
-          description="Fast, free, open source, ad-free tools."
+          description="Free, Open Source & Ad-free"
           logoSrc="/logo.png"
         />
       </section>
 
-      <section className="container max-w-2xl">
+      <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <Tabs defaultValue="encoder" className="mb-6">
             <TabsList className="flex">
@@ -86,6 +88,12 @@ export default function Base64Encoder() {
           </div>
         </Card>
       </section>
+
+      <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <Base64SEO />
+      </section>
     </main>
   );
 }
@@ -93,7 +101,7 @@ export default function Base64Encoder() {
 function toBase64(value: string) {
   try {
     return Buffer.from(value).toString("base64");
-  } catch (error) {
+  } catch {
     throw new Error("Failed to encode to Base64");
   }
 }
@@ -105,7 +113,7 @@ function fromBase64(value: string): string {
       throw new Error("Decoded string contains non-printable characters");
     }
     return decoded;
-  } catch (error) {
+  } catch {
     throw new Error("Invalid Base64 input");
   }
 }

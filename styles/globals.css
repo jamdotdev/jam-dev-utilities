@@ -97,4 +97,7 @@
   .content-wrapper pre {
     @apply rounded-xl text-sm font-mono p-4 !important;
   }
+  .content-wrapper kbd {
+    @apply text-sm bg-muted px-1 py-1 rounded-lg;
+  }
 }
