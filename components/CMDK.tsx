@@ -52,7 +52,6 @@ export function CMDK(props: CDMKProps) {
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-
           <CommandGroup heading="Tools">
             {tools.map((tool) => (
               <CommandItem
@@ -65,21 +64,37 @@ export function CMDK(props: CDMKProps) {
               </CommandItem>
             ))}
           </CommandGroup>
-
           <CommandSeparator />
-
           <CommandGroup heading="Links">
-            <CommandItem>
+            <CommandItem
+              onSelect={() => {
+                window.open(
+                  "https://chromewebstore.google.com/detail/jam/iohjgamcilhbgmhbnllfolmkmmekfmci?hl=en",
+                  "_blank"
+                );
+              }}
+            >
               <RocketIcon className="mr-2 h-4 w-4" />
               <span>Get Jam Chrome extension</span>
             </CommandItem>
-            <CommandItem>
+            <CommandItem
+              onSelect={() => {
+                window.open(
+                  "https://github.com/Strawberry-Jam-Manufacturers/jam-dev-utilities",
+                  "_blank"
+                );
+              }}
+            >
               <GitFork className="mr-2 h-4 w-4" />
               <span>Contribute on GitHub</span>
             </CommandItem>
-            <CommandItem>
+            <CommandItem
+              onSelect={() => {
+                window.open("https://x.com/jamdotdev", "_blank");
+              }}
+            >
               <UserPlus className="mr-2 h-4 w-4" />
-              <span>Follow us on Twitter</span>
+              <span>Follow us @jamdotdev</span>
             </CommandItem>
             <CommandItem
               onSelect={() => {
@@ -89,7 +104,7 @@ export function CMDK(props: CDMKProps) {
               <Home className="mr-2 h-4 w-4" />
               <span>Home</span>
             </CommandItem>
-          </CommandGroup>
+          </CommandGroup>{" "}
         </CommandList>
       </CommandDialog>
     </section>
