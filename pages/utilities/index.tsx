@@ -1,7 +1,8 @@
-import HomeCard from "../components/HomeCard";
-import Header from "../components/Header";
-import { CMDK } from "../components/CMDK";
-import { tools } from "../components/tools-list";
+import HomeCard from "@/components/HomeCard";
+import Header from "@/components/Header";
+import { CMDK } from "@/components/CMDK";
+import { tools } from "@/components/tools-list";
+import { JamLogo64x64 } from "@/components/JamLogo64x64";
 
 export default function Home() {
   return (
@@ -10,13 +11,7 @@ export default function Home() {
 
       <div className="container text-center mb-14">
         <div className="flex justify-center items-center mb-4">
-          <img
-            className="rounded-2xl"
-            src="https://jam.dev/page-icon.png"
-            width="64"
-            height="64"
-            alt="Logo"
-          />
+          <JamLogo64x64 />
         </div>
 
         <h1 className="text-3xl font-bold mb-5">Dev Utilities</h1>

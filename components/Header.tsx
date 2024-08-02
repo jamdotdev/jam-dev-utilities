@@ -1,30 +1,20 @@
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ds/ButtonComponent";
-import { useRouter } from "next/router";
 
 export default function Header() {
-  const router = useRouter();
-
   return (
     <header className="flex justify-between px-6 py-4 items-center">
       <div className="flex items-center gap-4">
-        <Link href="/">
+        <Link href="/utilities">
           <Logo />
         </Link>
-        <Button
-          className="min-h-10"
-          variant="outline"
-          onClick={() => router.push("/utilities")}
-        >
-          Dev Utilities
-        </Button>
       </div>
 
       <div className="flex gap-3">
         <ThemeToggle />
         <Button
-          className="min-h-10 hidden sm:flex"
+          className="min-h-10 flex"
           variant="outline"
           onClick={() => window.open("https://jam.dev", "_blank")}
         >

@@ -98,13 +98,13 @@ export function CMDK(props: CDMKProps) {
             </CommandItem>
             <CommandItem
               onSelect={() => {
-                router.push("/");
+                router.push("/utilities");
               }}
             >
               <Home className="mr-2 h-4 w-4" />
               <span>Home</span>
             </CommandItem>
-          </CommandGroup>{" "}
+          </CommandGroup>
         </CommandList>
       </CommandDialog>
     </section>

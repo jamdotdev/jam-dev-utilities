@@ -66,7 +66,6 @@ export default function CSVtoJSON() {
         <PageHeader
           title="CSV to JSON Converter"
           description="Fast, free, open source, ad-free tools."
-          logoSrc="https://jam.dev/page-icon.png"
         />
       </section>
 
