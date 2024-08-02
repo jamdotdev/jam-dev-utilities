@@ -8,24 +8,25 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import Base64SEO from "@/components/seo/Base64SEO";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import UrlEncoderSEO from "../../components/seo/UrlEncoderSEO";
+import CallToActionGrid from "../../components/CallToActionGrid";
 
-export default function Base64Encoder() {
+export default function URLEncoder() {
   const [type, setType] = useState<"encoder" | "decoder">("encoder");
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const { buttonText, handleCopy } = useCopyToClipboard();
 
-  const handleChange = useCallback(
+  const handleInput = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const { value } = event.currentTarget;
+      const { value } = event.target;
       setInput(value);
 
       try {
-        setOutput(type === "encoder" ? toBase64(value) : fromBase64(value));
-      } catch {
-        setOutput("Invalid input, please provide valid Base64 string");
+        const output = type === "encoder" ? encode(value) : decode(value);
+        setOutput(output);
+      } catch (error) {
+        setOutput("Invalid input");
       }
     },
     [type]
@@ -44,9 +45,8 @@ export default function Base64Encoder() {
 
       <section className="container max-w-2xl mb-12">
         <PageHeader
-          title="Base64 encoder/decoder"
+          title="URL encoder/decoder"
           description="Free, Open Source & Ad-free"
-          logoSrc="https://jam.dev/page-icon.png"
         />
       </section>
 
@@ -72,15 +72,17 @@ export default function Base64Encoder() {
           </Tabs>
 
           <div>
-            <Label>{type === "encoder" ? "Text to encode" : "Base64"}</Label>
+            <Label>
+              {type === "encoder" ? "Text to encode" : "Encoded URL"}
+            </Label>
             <Textarea
               rows={6}
               placeholder="Paste here"
-              onChange={handleChange}
+              onChange={handleInput}
               className="mb-6"
               value={input}
             />
-            <Label>{type === "encoder" ? "Base64" : "Text"}</Label>
+            <Label>{type === "encoder" ? "Encoded URL" : "Decoded URL"}</Label>
             <Textarea value={output} rows={6} readOnly className="mb-4" />
             <Button variant="outline" onClick={() => handleCopy(output)}>
               {buttonText}
@@ -92,36 +94,32 @@ export default function Base64Encoder() {
       <CallToActionGrid />
 
       <section className="container max-w-2xl">
-        <Base64SEO />
+        <UrlEncoderSEO />
       </section>
     </main>
   );
 }
 
-function toBase64(value: string) {
+function encode(input: string): string {
   try {
-    return Buffer.from(value).toString("base64");
+    const url = new URL(input);
+    return encodeURI(url.toString());
   } catch {
-    throw new Error("Failed to encode to Base64");
+    return encodeURIComponent(input);
   }
 }
 
-function fromBase64(value: string): string {
+function decode(input: string): string {
   try {
-    const decoded = Buffer.from(value, "base64").toString("utf-8");
-    if (!isPrintableASCII(decoded)) {
-      throw new Error("Decoded string contains non-printable characters");
+    const hasProtocol = /^https?:\/\//i.test(input);
+
+    if (hasProtocol) {
+      const url = new URL(input);
+      return decodeURI(url.toString());
+    } else {
+      return decodeURIComponent(input);
     }
-    return decoded;
-  } catch {
-    throw new Error("Invalid Base64 input");
+  } catch (error) {
+    return "Invalid URL format";
   }
-}
-
-/**
- * Checks if the given string consists entirely of printable ASCII characters.
- * Printable ASCII characters are those in the range from space (0x20) to tilde (0x7E).
- */
-function isPrintableASCII(str: string): boolean {
-  return /^[\x20-\x7E]*$/.test(str);
 }

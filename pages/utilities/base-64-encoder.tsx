@@ -8,25 +8,24 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import UrlEncoderSEO from "../components/seo/UrlEncoderSEO";
-import CallToActionGrid from "../components/CallToActionGrid";
+import Base64SEO from "@/components/seo/Base64SEO";
+import CallToActionGrid from "@/components/CallToActionGrid";
 
-export default function URLEncoder() {
+export default function Base64Encoder() {
   const [type, setType] = useState<"encoder" | "decoder">("encoder");
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const { buttonText, handleCopy } = useCopyToClipboard();
 
-  const handleInput = useCallback(
+  const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const { value } = event.target;
+      const { value } = event.currentTarget;
       setInput(value);
 
       try {
-        const output = type === "encoder" ? encode(value) : decode(value);
-        setOutput(output);
-      } catch (error) {
-        setOutput("Invalid input");
+        setOutput(type === "encoder" ? toBase64(value) : fromBase64(value));
+      } catch {
+        setOutput("Invalid input, please provide valid Base64 string");
       }
     },
     [type]
@@ -45,9 +44,8 @@ export default function URLEncoder() {
 
       <section className="container max-w-2xl mb-12">
         <PageHeader
-          title="URL encoder/decoder"
+          title="Base64 encoder/decoder"
           description="Free, Open Source & Ad-free"
-          logoSrc="https://jam.dev/page-icon.png"
         />
       </section>
 
@@ -73,17 +71,15 @@ export default function URLEncoder() {
           </Tabs>
 
           <div>
-            <Label>
-              {type === "encoder" ? "Text to encode" : "Encoded URL"}
-            </Label>
+            <Label>{type === "encoder" ? "Text to encode" : "Base64"}</Label>
             <Textarea
               rows={6}
               placeholder="Paste here"
-              onChange={handleInput}
+              onChange={handleChange}
               className="mb-6"
               value={input}
             />
-            <Label>{type === "encoder" ? "Encoded URL" : "Decoded URL"}</Label>
+            <Label>{type === "encoder" ? "Base64" : "Text"}</Label>
             <Textarea value={output} rows={6} readOnly className="mb-4" />
             <Button variant="outline" onClick={() => handleCopy(output)}>
               {buttonText}
@@ -95,32 +91,36 @@ export default function URLEncoder() {
       <CallToActionGrid />
 
       <section className="container max-w-2xl">
-        <UrlEncoderSEO />
+        <Base64SEO />
       </section>
     </main>
   );
 }
 
-function encode(input: string): string {
+function toBase64(value: string) {
   try {
-    const url = new URL(input);
-    return encodeURI(url.toString());
+    return Buffer.from(value).toString("base64");
   } catch {
-    return encodeURIComponent(input);
+    throw new Error("Failed to encode to Base64");
   }
 }
 
-function decode(input: string): string {
+function fromBase64(value: string): string {
   try {
-    const hasProtocol = /^https?:\/\//i.test(input);
-
-    if (hasProtocol) {
-      const url = new URL(input);
-      return decodeURI(url.toString());
-    } else {
-      return decodeURIComponent(input);
+    const decoded = Buffer.from(value, "base64").toString("utf-8");
+    if (!isPrintableASCII(decoded)) {
+      throw new Error("Decoded string contains non-printable characters");
     }
-  } catch (error) {
-    return "Invalid URL format";
+    return decoded;
+  } catch {
+    throw new Error("Invalid Base64 input");
   }
+}
+
+/**
+ * Checks if the given string consists entirely of printable ASCII characters.
+ * Printable ASCII characters are those in the range from space (0x20) to tilde (0x7E).
+ */
+function isPrintableASCII(str: string): boolean {
+  return /^[\x20-\x7E]*$/.test(str);
 }

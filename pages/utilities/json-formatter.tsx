@@ -6,12 +6,11 @@ import { Button } from "@/components/ds/ButtonComponent";
 import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import yaml from "js-yaml";
 import { CMDK } from "@/components/CMDK";
-import CallToActionGrid from "@/components/CallToActionGrid";
-import YamlToJsonSEO from "@/components/seo/YamlToJsonSEO";
+import JsonFormatterSEO from "../../components/seo/JsonFormatterSEO";
+import CallToActionGrid from "../../components/CallToActionGrid";
 
-export default function YAMLtoJSON() {
+export default function JSONFormatter() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const { buttonText, handleCopy } = useCopyToClipboard();
@@ -22,11 +21,13 @@ export default function YAMLtoJSON() {
       setInput(value);
 
       try {
-        const jsonObject = yaml.loadAll(value.trim());
-        const output = JSON.stringify(jsonObject, null, 2);
-        setOutput(output);
-      } catch {
-        setOutput("Invalid input");
+        const parsedJSON = JSON.parse(value.trim());
+        const formattedJSON = JSON.stringify(parsedJSON, null, 2);
+
+        setOutput(formattedJSON);
+      } catch (e) {
+        console.error("Invalid JSON: ", e);
+        setOutput("Invalid JSON input");
       }
     },
     []
@@ -39,24 +40,23 @@ export default function YAMLtoJSON() {
 
       <section className="container max-w-2xl mb-12">
         <PageHeader
-          title="YAML to JSON"
-          description="Free, Open Source & Ad-free"
-          logoSrc="https://jam.dev/page-icon.png"
+          title="JSON formatter"
+          description="Fast, free, open source, ad-free tools."
         />
       </section>
 
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
-            <Label>YAML</Label>
+            <Label>JSON</Label>
             <Textarea
               rows={6}
-              placeholder="Paste YAML here"
+              placeholder="Paste JSON here"
               onChange={handleChange}
               className="mb-6"
               value={input}
             />
-            <Label>JSON</Label>
+            <Label>Formatted JSON</Label>
             <Textarea value={output} rows={6} readOnly className="mb-4" />
             <Button variant="outline" onClick={() => handleCopy(output)}>
               {buttonText}
@@ -68,7 +68,7 @@ export default function YAMLtoJSON() {
       <CallToActionGrid />
 
       <section className="container max-w-2xl">
-        <YamlToJsonSEO />
+        <JsonFormatterSEO />
       </section>
     </main>
   );

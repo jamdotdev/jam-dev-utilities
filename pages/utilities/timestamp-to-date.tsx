@@ -7,10 +7,10 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import QueryParamsToJsonSEO from "@/components/seo/QueryParamsToJsonSEO";
+import TimestampSEO from "@/components/seo/TimestampSEO";
 import CallToActionGrid from "@/components/CallToActionGrid";
 
-export default function QueryParamsToJSON() {
+export default function TimestampToDate() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const { buttonText, handleCopy } = useCopyToClipboard();
@@ -26,10 +26,12 @@ export default function QueryParamsToJSON() {
       }
 
       try {
-        const output = convertQueryParamsToJSON(value.trim());
+        const output = formatOutput(value.trim());
         setOutput(output);
-      } catch (error) {
-        setOutput("Invalid input, please provide valid query parameters");
+      } catch {
+        setOutput(
+          "Invalid timestamp format.\nPlease use milliseconds (11-13 digits) or seconds (1-10 digits)."
+        );
       }
     },
     []
@@ -42,16 +44,15 @@ export default function QueryParamsToJSON() {
 
       <section className="container max-w-2xl mb-12">
         <PageHeader
-          title="Query Params to JSON"
+          title="Timestamp to Date Converter"
           description="Free, Open Source & Ad-free"
-          logoSrc="https://jam.dev/page-icon.png"
         />
       </section>
 
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
-            <Label>Query Parameters</Label>
+            <Label>Timestamp (milliseconds or seconds)</Label>
             <Textarea
               rows={6}
               placeholder="Paste here"
@@ -59,8 +60,13 @@ export default function QueryParamsToJSON() {
               className="mb-6"
               value={input}
             />
-            <Label>JSON Output</Label>
-            <Textarea value={output} rows={6} readOnly className="mb-4" />
+            <Label>Date</Label>
+            <Textarea
+              value={output}
+              rows={6}
+              readOnly
+              className="mb-4 font-mono"
+            />
             <Button variant="outline" onClick={() => handleCopy(output)}>
               {buttonText}
             </Button>
@@ -71,42 +77,57 @@ export default function QueryParamsToJSON() {
       <CallToActionGrid />
 
       <section className="container max-w-2xl">
-        <QueryParamsToJsonSEO />
+        <TimestampSEO />
       </section>
     </main>
   );
 }
 
-const convertQueryParamsToJSON = (input: string): string => {
-  let inputString = input;
+function formatOutput(timestamp: string) {
+  let date: Date;
+  let formatDetected: string;
 
-  if (!input.includes("://")) {
-    inputString = input.startsWith("?")
-      ? `https://example.com${input}`
-      : `https://example.com?${input}`;
+  if (/^\d{11,13}$/.test(timestamp)) {
+    date = new Date(parseInt(timestamp, 10));
+    formatDetected = "milliseconds";
+  } else if (/^\d{1,10}$/.test(timestamp)) {
+    date = new Date(parseInt(timestamp, 10) * 1000);
+    formatDetected = "seconds";
+  } else {
+    throw new Error("Invalid timestamp format");
   }
 
-  const url = new URL(inputString);
-  const intermediateResult: { [key: string]: string | string[] } = {};
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date");
+  }
 
-  url.searchParams.forEach((value, key) => {
-    if (intermediateResult[key]) {
-      if (Array.isArray(intermediateResult[key])) {
-        intermediateResult[key].push(value);
-      } else {
-        intermediateResult[key] = [intermediateResult[key], value];
-      }
-    } else {
-      intermediateResult[key] = value;
-    }
-  });
+  const gmtDate = formatDate(date, "UTC");
+  const localDate = formatDate(date);
+  const labelWidth = 22;
 
-  const sortedKeys = Object.keys(intermediateResult).sort();
-  const result: { [key: string]: string | string[] } = {};
+  return (
+    `Format detected: ${formatDetected}\n` +
+    "---\n" +
+    "Greenwich Mean Time:".padEnd(labelWidth) +
+    `${gmtDate}\n` +
+    "Your time zone:".padEnd(labelWidth) +
+    `${localDate}`
+  );
+}
 
-  sortedKeys.forEach((key) => {
-    result[key] = intermediateResult[key];
-  });
+function formatDate(date: Date, timeZone: string = "local") {
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZone: timeZone === "local" ? undefined : timeZone,
+    timeZoneName: "short",
+  };
 
-  return JSON.stringify(result, null, 2);
-};
+  return date.toLocaleString("en-US", options);
+}
