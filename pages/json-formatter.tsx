@@ -7,6 +7,8 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import { CMDK } from "@/components/CMDK";
+import JsonFormatterSEO from "../components/seo/JsonFormatterSEO";
+import CallToActionGrid from "../components/CallToActionGrid";
 
 export default function JSONFormatter() {
   const [input, setInput] = useState("");
@@ -44,7 +46,7 @@ export default function JSONFormatter() {
         />
       </section>
 
-      <section className="container max-w-2xl">
+      <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
             <Label>JSON</Label>
@@ -62,6 +64,12 @@ export default function JSONFormatter() {
             </Button>
           </div>
         </Card>
+      </section>
+
+      <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <JsonFormatterSEO />
       </section>
     </main>
   );
