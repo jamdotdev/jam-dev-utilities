@@ -5,14 +5,14 @@ import { tools } from "../components/tools-list";
 
 export default function Home() {
   return (
-    <main>
+    <main className="pb-8">
       <Header />
 
       <div className="container text-center mb-14">
         <div className="flex justify-center items-center mb-4">
           <img
             className="rounded-2xl"
-            src="logo.png"
+            src="https://jam.dev/page-icon.png"
             width="64"
             height="64"
             alt="Logo"

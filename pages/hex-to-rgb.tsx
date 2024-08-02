@@ -75,7 +75,7 @@ export default function HEXtoRGB() {
         <PageHeader
           title="HEX / RGB Converter"
           description="Free, Open Source & Ad-free"
-          logoSrc="/logo.png"
+          logoSrc="https://jam.dev/page-icon.png"
         />
       </section>
 

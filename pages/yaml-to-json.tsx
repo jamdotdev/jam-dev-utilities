@@ -41,7 +41,7 @@ export default function YAMLtoJSON() {
         <PageHeader
           title="YAML to JSON"
           description="Free, Open Source & Ad-free"
-          logoSrc="/logo.png"
+          logoSrc="https://jam.dev/page-icon.png"
         />
       </section>
 

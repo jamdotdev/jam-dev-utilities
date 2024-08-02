@@ -46,7 +46,7 @@ export default function TimestampToDate() {
         <PageHeader
           title="Timestamp to Date Converter"
           description="Free, Open Source & Ad-free"
-          logoSrc="/logo.png"
+          logoSrc="https://jam.dev/page-icon.png"
         />
       </section>
 

@@ -46,7 +46,7 @@ export default function Base64Encoder() {
         <PageHeader
           title="Base64 encoder/decoder"
           description="Free, Open Source & Ad-free"
-          logoSrc="/logo.png"
+          logoSrc="https://jam.dev/page-icon.png"
         />
       </section>
 

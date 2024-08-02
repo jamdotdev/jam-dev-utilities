@@ -47,7 +47,7 @@ export default function URLEncoder() {
         <PageHeader
           title="URL encoder/decoder"
           description="Free, Open Source & Ad-free"
-          logoSrc="/logo.png"
+          logoSrc="https://jam.dev/page-icon.png"
         />
       </section>
 

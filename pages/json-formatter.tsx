@@ -42,7 +42,7 @@ export default function JSONFormatter() {
         <PageHeader
           title="JSON formatter"
           description="Fast, free, open source, ad-free tools."
-          logoSrc="/logo.png"
+          logoSrc="https://jam.dev/page-icon.png"
         />
       </section>
 
