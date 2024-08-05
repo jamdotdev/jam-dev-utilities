@@ -18,6 +18,7 @@ import { Input } from "@/components/ds/InputComponent";
 import CodeSnippetRow from "@/components/CodeSnippetRow";
 import HexToRgbSEO from "@/components/seo/HexToRgbSEO";
 import CallToActionGrid from "@/components/CallToActionGrid";
+import Meta from "@/components/Meta";
 
 const DEFAULT_RGB: RGBValues = { r: "0", g: "0", b: "0" };
 
@@ -68,6 +69,10 @@ export default function HEXtoRGB() {
 
   return (
     <main>
+      <Meta
+        title="HEX to RGB converter by Jam.dev | CSS Color Converter | Free & Open Source"
+        description="Easily convert HEX to RGB and RGB to HEX with Jam's free color converter tool. Perfect for quick color code conversions—just paste the value and copy the resulting code."
+      />
       <Header />
       <CMDK />
 
