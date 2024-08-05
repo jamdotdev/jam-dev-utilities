@@ -3,10 +3,15 @@ import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { tools } from "@/components/tools-list";
 import { JamLogo64x64 } from "@/components/JamLogo64x64";
+import Meta from "@/components/Meta";
 
 export default function Home() {
   return (
     <main className="pb-8">
+      <Meta
+        title="Open Source Developer Tools | Free Utilities by Jam.dev"
+        description="Jam exists to make developers lives easier. Here are fast, free, open source, ad-free tools. Simplify your coding tasks with utilities like Base64 encode/decode, URL encode/decode, HEX to RGB converter, Timestamp to Date converter, and more."
+      />
       <Header />
 
       <div className="container text-center mb-14">
