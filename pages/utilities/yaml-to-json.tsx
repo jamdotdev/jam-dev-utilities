@@ -10,6 +10,7 @@ import yaml from "js-yaml";
 import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import YamlToJsonSEO from "@/components/seo/YamlToJsonSEO";
+import Meta from "../../components/Meta";
 
 export default function YAMLtoJSON() {
   const [input, setInput] = useState("");
@@ -34,6 +35,10 @@ export default function YAMLtoJSON() {
 
   return (
     <main>
+      <Meta
+        title="YAML to JSON by Jam.dev | Free, Open Source & Ad-free"
+        description="Convert YAML to JSON format quickly and easily with Jam's free online YAML to JSON converter. Just paste your YAML data and get the JSON result. That's it."
+      />
       <Header />
       <CMDK />
 

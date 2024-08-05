@@ -10,6 +10,7 @@ import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import CsvToJsonSEO from "@/components/seo/CsvToJsonSEO";
+import Meta from "@/components/Meta";
 
 export default function CSVtoJSON() {
   const [input, setInput] = useState("");
@@ -59,6 +60,10 @@ export default function CSVtoJSON() {
 
   return (
     <main>
+      <Meta
+        title="CSV to JSON Converter by Jam.dev | Free, Open Source & Ad-free"
+        description="Convert CSV files to JSON format quickly and easily with Jam's free online CSV to JSON converter. Just paste your CSV file and get the JSON result. That's it."
+      />
       <Header />
       <CMDK />
 

@@ -10,6 +10,7 @@ import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import Base64SEO from "@/components/seo/Base64SEO";
 import CallToActionGrid from "@/components/CallToActionGrid";
+import Meta from "@/components/Meta";
 
 export default function Base64Encoder() {
   const [type, setType] = useState<"encoder" | "decoder">("encoder");
@@ -39,6 +40,10 @@ export default function Base64Encoder() {
 
   return (
     <main>
+      <Meta
+        title="Base64 Encoder/Decoder by Jam.dev | Free, Open Source & Ad-free"
+        description="Effortlessly encode and decode text to and from Base64 format with Jam's free online tool. Ensure safe data transmission and storage with web-friendly text formats."
+      />
       <Header />
       <CMDK />
 
