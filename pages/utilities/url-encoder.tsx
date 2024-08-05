@@ -8,8 +8,9 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import UrlEncoderSEO from "../../components/seo/UrlEncoderSEO";
-import CallToActionGrid from "../../components/CallToActionGrid";
+import UrlEncoderSEO from "@/components/seo/UrlEncoderSEO";
+import CallToActionGrid from "@/components/CallToActionGrid";
+import Meta from "@/components/Meta";
 
 export default function URLEncoder() {
   const [type, setType] = useState<"encoder" | "decoder">("encoder");
@@ -40,6 +41,10 @@ export default function URLEncoder() {
 
   return (
     <main>
+      <Meta
+        title="URL encoder/decoder by Jam.dev | Free, Open Source & Ad-free"
+        description="Easily encode and decode URLs online with Jam's free tool. Handle special characters, spaces, and non-ASCII symbols in web addresses and query strings efficiently."
+      />
       <Header />
       <CMDK />
 
