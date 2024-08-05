@@ -9,6 +9,7 @@ import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import TimestampSEO from "@/components/seo/TimestampSEO";
 import CallToActionGrid from "@/components/CallToActionGrid";
+import Meta from "@/components/Meta";
 
 export default function TimestampToDate() {
   const [input, setInput] = useState("");
@@ -39,6 +40,10 @@ export default function TimestampToDate() {
 
   return (
     <main>
+      <Meta
+        title="Timestamp to Date Converter by Jam.dev | Free, Open Source & Ad-free"
+        description="Convert Unix timestamps to human-readable dates quickly and easily with Jam's free online Timestamp to Date converter. Perfect for developers, data analysts, and anyone working with time data."
+      />
       <Header />
       <CMDK />
 
