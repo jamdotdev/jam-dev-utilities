@@ -9,6 +9,7 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import { CMDK } from "@/components/CMDK";
 import JsonFormatterSEO from "../../components/seo/JsonFormatterSEO";
 import CallToActionGrid from "../../components/CallToActionGrid";
+import Meta from "@/components/Meta";
 
 export default function JSONFormatter() {
   const [input, setInput] = useState("");
@@ -25,8 +26,7 @@ export default function JSONFormatter() {
         const formattedJSON = JSON.stringify(parsedJSON, null, 2);
 
         setOutput(formattedJSON);
-      } catch (e) {
-        console.error("Invalid JSON: ", e);
+      } catch {
         setOutput("Invalid JSON input");
       }
     },
@@ -35,6 +35,10 @@ export default function JSONFormatter() {
 
   return (
     <main>
+      <Meta
+        title="JSON formatter by Jam.dev | Free, Open Source & Ad-free"
+        description="Beautify and structure raw JSON data with proper indentation and formatting, making it easier to read, edit, and validate JSON content."
+      />
       <Header />
       <CMDK />
 
