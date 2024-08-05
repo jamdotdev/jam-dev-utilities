@@ -2,49 +2,49 @@ export const tools = [
   {
     title: "CSV to JSON",
     description:
-      "Seamlessly transform CSV data into JSON format, enabling easy data interchange and parsing across different systems and applications.",
+      "Easily convert CSV data to JSON format with our free tool. Quickest way to turn tabular data into a JSON format for APIs and data processing.",
     link: "/utilities/csv-to-json",
   },
   {
-    title: "Base64 encoder/decoder",
+    title: "Base64 Encode/Decode",
     description:
-      "Effortlessly encode and decode text or files to and from Base64 format, facilitating data transmission and storage in a web-safe text format.",
+      "Easily encode and decode Base64 data with our online utility, so you can transmit your data safely or decode Base64-encoded strings.",
     link: "/utilities/base-64-encoder",
   },
   {
-    title: "JSON formatter",
+    title: "JSON Formatter",
     description:
-      "Beautify and structure raw JSON data with proper indentation and formatting, making it easier to read, edit, and validate JSON content.",
+      "Format and beautify your JSON data for better readability and debugging. Quickly visualize and organize your JSON data with ease.",
     link: "/utilities/json-formatter",
   },
   {
     title: "YAML to JSON",
     description:
-      "Effortlessly convert YAML data to JSON format, enabling smooth transitions between different data serialization formats in your projects.",
+      "Easily convert YAML to JSON with our converter. Useful when you're working with configuration files and need to switch between them.",
     link: "/utilities/yaml-to-json",
   },
   {
-    title: "URL encoder/decoder",
+    title: "URL Encode/Decode",
     description:
-      "Encode and decode URLs to ensure proper handling of special characters, spaces, and non-ASCII symbols in web addresses and query strings.",
+      "Convert URLs to a safe format with URL encoding or decode URL-encoded strings back to their original format.",
     link: "/utilities/url-encoder",
   },
   {
-    title: "Timestamp to Date",
+    title: "Timestamp to Date Converter",
     description:
-      "Easily convert epoch time (also known as Unix time or Unix timestamp) to a human-readable month/day/year and time format.",
+      "Paste Unix timestamps and get a human readable dates. Perfect for developers working with time-based data.",
     link: "/utilities/timestamp-to-date",
   },
   {
-    title: "Query params to JSON",
+    title: "Query Parameters to JSON",
     description:
       "Convert URL query parameters into a structured JSON object, simplifying the process of parsing and manipulating URL data in web applications.",
     link: "/utilities/query-params-to-json",
   },
   {
-    title: "HEX to RGB",
+    title: "HEX to RGB Converter",
     description:
-      "Quickly convert hexadecimal color codes to their corresponding RGB values for easy use in various programming contexts.",
+      "Convert HEX to RGB and generate CSS snippets for web, Swift, and Android with our easy-to-use color converter.",
     link: "/utilities/hex-to-rgb",
   },
 ];
