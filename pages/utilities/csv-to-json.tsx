@@ -20,16 +20,16 @@ export default function CSVtoJSON() {
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const value = event.currentTarget.value.trim();
+      const value = event.currentTarget.value;
       setInput(value);
 
-      if (value === "") {
+      if (value.trim() === "") {
         setOutput("");
         return;
       }
 
       try {
-        const json = convertCSVtoJSON(value, lowercase);
+        const json = convertCSVtoJSON(value.trim(), lowercase);
         setOutput(json);
       } catch {
         setOutput("Invalid CSV input");
