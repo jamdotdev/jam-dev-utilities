@@ -4,11 +4,17 @@ export default function YamlToJsonSEO() {
       <section>
         <h2>Free, Open Source & Ad-free</h2>
         <p>
-          This free tool is a quick and easy way to convert from YAML format
-          into JSON. If you work with configuration files, data, or web apps,
-          you can use Jam's converter to change YAML data to JSON. Just paste
-          your YAML data and get the JSON result. Made with 💜 by the developers
-          building Jam.
+          This free tool quickly converts YAML to JSON. Ideal for configuration
+          files, data, or web apps. Just paste your YAML data and get the JSON
+          result. Built with 💜 by the Jam developers, using the open-source{" "}
+          <a
+            href="https://github.com/nodeca/js-yaml"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            js-yaml
+          </a>{" "}
+          package.
         </p>
       </section>
 
