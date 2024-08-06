@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Button } from "./ds/ButtonComponent";
+import { useTheme } from "next-themes";
+import { cn } from "../lib/utils";
 
 interface SquareCardProps {
   logo: "github" | "jam";
@@ -18,7 +20,7 @@ export default function SquareCard(props: SquareCardProps) {
   return (
     <div className="bg-muted p-6 rounded-xl">
       <div className="mb-3">{logoMap[logo]}</div>
-      <p className="mb-7">{description}</p>
+      <p className="mb-6">{description}</p>
       <Button variant="outline" onClick={() => window.open(href, "_blank")}>
         {buttonText}
       </Button>
@@ -27,8 +29,19 @@ export default function SquareCard(props: SquareCardProps) {
 }
 
 const GitHubLogo = () => {
+  const { theme } = useTheme();
+  const mounted = useRef(false);
+  // This ensures that the `invert` class is only assigned after the page is rendered, preventing mismatches between
+  // server-rendered and client-rendered HTML, which can cause hydration errors.
+  useEffect(() => {
+    mounted.current = true;
+  }, []);
+
   return (
     <svg
+      className={cn({
+        invert: mounted.current && theme === "dark",
+      })}
       width="24"
       height="24"
       viewBox="0 0 24 24"
