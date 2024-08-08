@@ -13,7 +13,7 @@ import {
   toAndroidColor,
   toCss,
   toIOS,
-} from "@/components/hex-to-rgb-utils";
+} from "@/components/utils/hex-to-rgb.utils";
 import { Input } from "@/components/ds/InputComponent";
 import CodeSnippetRow from "@/components/CodeSnippetRow";
 import HexToRgbSEO from "@/components/seo/HexToRgbSEO";

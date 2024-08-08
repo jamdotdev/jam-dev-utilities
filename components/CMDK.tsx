@@ -9,7 +9,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "./ds/CommandMenu";
-import { tools } from "./tools-list";
+import { tools } from "./utils/tools-list";
 import { Input } from "./ds/InputComponent";
 import { useEffect, useState } from "react";
 import { GitFork, Home, RocketIcon, UserPlus } from "lucide-react";
