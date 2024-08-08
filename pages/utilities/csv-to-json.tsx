@@ -11,6 +11,7 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import CsvToJsonSEO from "@/components/seo/CsvToJsonSEO";
 import Meta from "@/components/Meta";
+import { convertCSVtoJSON } from "@/components/utils/csv-to-json.utils";
 
 export default function CSVtoJSON() {
   const [input, setInput] = useState("");
@@ -31,8 +32,8 @@ export default function CSVtoJSON() {
       try {
         const json = convertCSVtoJSON(value.trim(), lowercase);
         setOutput(json);
-      } catch {
-        setOutput("Invalid CSV input");
+      } catch (errorMessage: unknown) {
+        setOutput(errorMessage as string);
       }
     },
     [lowercase]
@@ -119,33 +120,3 @@ export default function CSVtoJSON() {
     </main>
   );
 }
-
-const convertCSVtoJSON = (csv: string, lowercase: boolean): string => {
-  try {
-    const lines = csv.split("\n");
-    const result: { [key: string]: string }[] = [];
-    const headers = lines[0].split(",").map((header) => {
-      return lowercase ? header.trim().toLowerCase() : header.trim();
-    });
-
-    for (let i = 1; i < lines.length; i++) {
-      const object: { [key: string]: string } = {};
-      const currentline = lines[i].split(",");
-
-      if (currentline.length !== headers.length) {
-        throw new Error("Invalid CSV format");
-      }
-
-      for (let j = 0; j < headers.length; j++) {
-        object[headers[j]] = currentline[j].trim();
-      }
-
-      result.push(object);
-    }
-
-    return JSON.stringify(result, null, 2);
-  } catch (error) {
-    console.error("Error converting CSV to JSON:", error);
-    throw error;
-  }
-};
