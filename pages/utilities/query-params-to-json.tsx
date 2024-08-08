@@ -10,6 +10,7 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import QueryParamsToJsonSEO from "@/components/seo/QueryParamsToJsonSEO";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "../../components/Meta";
+import { convertQueryParamsToJSON } from "../../components/utils/query-params-to-json.utils";
 
 export default function QueryParamsToJSON() {
   const [input, setInput] = useState("");
@@ -80,37 +81,3 @@ export default function QueryParamsToJSON() {
     </main>
   );
 }
-
-const convertQueryParamsToJSON = (input: string): string => {
-  let inputString = input;
-
-  if (!input.includes("://")) {
-    inputString = input.startsWith("?")
-      ? `https://example.com${input}`
-      : `https://example.com?${input}`;
-  }
-
-  const url = new URL(inputString);
-  const intermediateResult: { [key: string]: string | string[] } = {};
-
-  url.searchParams.forEach((value, key) => {
-    if (intermediateResult[key]) {
-      if (Array.isArray(intermediateResult[key])) {
-        intermediateResult[key].push(value);
-      } else {
-        intermediateResult[key] = [intermediateResult[key], value];
-      }
-    } else {
-      intermediateResult[key] = value;
-    }
-  });
-
-  const sortedKeys = Object.keys(intermediateResult).sort();
-  const result: { [key: string]: string | string[] } = {};
-
-  sortedKeys.forEach((key) => {
-    result[key] = intermediateResult[key];
-  });
-
-  return JSON.stringify(result, null, 2);
-};
