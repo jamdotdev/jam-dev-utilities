@@ -11,6 +11,7 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import UrlEncoderSEO from "@/components/seo/UrlEncoderSEO";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
+import { decode, encode } from "@/components/utils/url-encoder.utils";
 
 export default function URLEncoder() {
   const [type, setType] = useState<"encoder" | "decoder">("encoder");
@@ -103,28 +104,4 @@ export default function URLEncoder() {
       </section>
     </main>
   );
-}
-
-function encode(input: string): string {
-  try {
-    const url = new URL(input);
-    return encodeURI(url.toString());
-  } catch {
-    return encodeURIComponent(input);
-  }
-}
-
-function decode(input: string): string {
-  try {
-    const hasProtocol = /^https?:\/\//i.test(input);
-
-    if (hasProtocol) {
-      const url = new URL(input);
-      return decodeURI(url.toString());
-    } else {
-      return decodeURIComponent(input);
-    }
-  } catch (error) {
-    return "Invalid URL format";
-  }
 }
