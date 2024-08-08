@@ -1,7 +1,7 @@
 import HomeCard from "@/components/HomeCard";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
-import { tools } from "@/components/tools-list";
+import { tools } from "@/components/utils/tools-list";
 import { JamLogo64x64 } from "@/components/JamLogo64x64";
 import Meta from "@/components/Meta";
 
