@@ -1,23 +1,25 @@
+import Link from "next/link";
+
 export default function JsonFormatterSEO() {
   return (
     <div className="content-wrapper">
       <section>
         <h2>Free, Open Source & Ad-free</h2>
         <p>
-          This free tool is a quick and easy way to format minified JSON into a
-          nicely structured format. If you work with JSON data, you can use
-          Jam's formatter to beautify your JSON. Just paste your minified JSON
-          and get the formatted result. Made with 💜 by the developers building
-          Jam.
+          This free JSON online formatter is a quick and easy way to format
+          minified JSON into a nicely structured format. If you work with JSON
+          data, you can use Jam's formatter to beautify your JSON. Just paste
+          your minified JSON and get the formatted result. Made with 💜 by the
+          developers building Jam.
         </p>
       </section>
 
       <section>
-        <h2>How to Use</h2>
+        <h2>How to Use JSON Online Formatter</h2>
         <p>
-          Formatting JSON with our online tool is straightforward. You can
-          easily format JSON files for various uses, such as debugging, data
-          analysis, and more. No signup required. Here's how:
+          Formatting JSON with our online tool is straightforward. With this
+          JSON editor you can easily format JSON files for various uses, such as
+          debugging, data analysis, and more. No signup required. Here's how:
         </p>
         <ul>
           <li>
@@ -55,7 +57,7 @@ export default function JsonFormatterSEO() {
       </section>
 
       <section>
-        <h2>Validating JSON Outputs</h2>
+        <h2>Validate & Format JSON Outputs</h2>
         <p>
           When formatting JSON, it's crucial to ensure the accuracy and
           integrity of the data. Our tool's built-in JSON Validator ensures the
@@ -65,43 +67,69 @@ export default function JsonFormatterSEO() {
       </section>
 
       <section>
+        <h2>More Tools for JSON: Easy Conversion</h2>
+        <p>
+          Convert CSV, query parameters, or YAML to JSON with Jam's free
+          developer utilities. They're all available in dark mode too.
+        </p>
+        <ul>
+          <li>
+            <Link href="/utilities/csv-to-json">CSV to JSON</Link>: Easily
+            convert CSV data to JSON format—the quickest way to turn tabular
+            data into JSON for APIs and data processing.
+          </li>
+          <li>
+            <Link href="/utilities/yaml-to-json">YAML to JSON</Link>: Easily
+            convert human-readable YAML to JSON. Useful where you're working
+            with configuration files and need to switch between them.
+          </li>
+          <li>
+            <Link href="/utilities/query-params-to-json">
+              Query Parameters to JSON
+            </Link>
+            : Simplify data handling and integration in your web applications by
+            converting query strings to JSON.
+          </li>
+        </ul>
+      </section>
+
+      <section>
         <h2>FAQs</h2>
         <ul>
           <li>
-            <b>How accurate is the formatter?</b> <br />
-            Our tool guarantees precise data integrity during the JSON
-            formatting process, ensuring your data remains unchanged.
+            <b>How accurate is the formatter?</b> <br /> Our tool guarantees
+            precise data integrity during the JSON formatting process, ensuring
+            your data remains unchanged.
           </li>
           <li>
-            <b>How to format JSON using an code editor?</b> <br />
-            Utilize a code editor like Visual Studio Code with appropriate
-            extensions, or leverage our online formatter for swift and
-            effortless formatting.
+            <b>How to format JSON using a code editor?</b> <br /> Utilize a code
+            editor like Visual Studio Code with appropriate extensions, or
+            leverage our online tool for quick and free JSON formatting.
           </li>
           <li>
-            <b>What is the structure of formatted JSON?</b> <br />
-            Our tool transforms minified JSON into a well-structured format,
-            enhancing readability and ease of use.
+            <b>What is the structure of formatted JSON?</b> <br /> Our tool
+            transforms minified JSON into a well-structured format, enhancing
+            readability and ease of use.
           </li>
           <li>
-            <b>Is the JSON formatter suitable for complex structures?</b>
-            <br />
-            Absolutely. Our tool adeptly handles various JSON data types,
+            <b>Is the JSON object formatter suitable for complex structures?</b>{" "}
+            <br /> Absolutely. Our tool adeptly handles various JSON data types,
             including complex nested structures, making it invaluable for
             developers and data professionals.
           </li>
           <li>
-            <b>How easy is it to use the JSON formatter?</b> <br />
-            Our formatter is designed for user-friendliness and intuitiveness,
+            <b>How easy is it to use the online JSON formatter?</b> <br /> Our
+            formatter is designed for user-friendliness and intuitiveness,
             enabling anyone to format JSON effortlessly. Simply paste your data,
             and let the tool handle the rest.
           </li>
           <li>
-            <b>Are there any limitations to the formatter?</b> <br />
-            The tool is highly effective for all standard use cases, capable of
-            processing typical files as well as extremely large datasets.
+            <b>Are there any limitations to the formatter?</b> <br /> This is
+            the best JSON formatter. The tool is highly effective for all
+            standard use cases, capable of processing typical files as well as
+            extremely large datasets completely free.
           </li>
-        </ul>{" "}
+        </ul>
       </section>
     </div>
   );

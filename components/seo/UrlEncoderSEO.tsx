@@ -58,19 +58,31 @@ export default function UrlEncoderSEO() {
       <section>
         <h2>Discover Jam: The Ultimate Tool for Web Developers</h2>
         <p>
-          While this URL tool helps you manage URLs efficiently, <b>Jam</b>{" "}
+          While this URL tool helps you manage URLs efficiently,{" "}
+          <a href="https://jam.dev" target="_blank" rel="noreferrer">
+            Jam
+          </a>{" "}
           takes your debugging process to the next level.
         </p>
         <p>
-          Meet <b>Jam</b>, the browser extension helping over 130,000 users
-          debug faster. Jam captures console logs, network requests, and more
-          with just one click. Now anyone can log comprehensive bug reports and
-          you can debug so much faster.
+          Meet{" "}
+          <a
+            href="https://chromewebstore.google.com/detail/jam/iohjgamcilhbgmhbnllfolmkmmekfmci"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Jam, the browser extension
+          </a>{" "}
+          helping over 130,000 users debug faster. Jam captures console logs,
+          network requests, and more with just one click. Now anyone can log
+          comprehensive bug reports and you can debug so much faster.
         </p>
         <p>
-          Say goodbye to tedious manual debugging. Try Jam today and get back to
+          Say goodbye to tedious manual debugging. Try Jam and get back to
           writing code instead of fixing old features.
         </p>
+      </section>
+      <section>
         <GetJamForFree />
       </section>
 
