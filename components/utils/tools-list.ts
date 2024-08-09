@@ -47,4 +47,10 @@ export const tools = [
       "Convert HEX to RGB and generate CSS snippets for web, Swift, and Android with our easy-to-use color converter.",
     link: "/utilities/hex-to-rgb",
   },
+  {
+    title: "Convert .env to netlify.toml",
+    description:
+      "This free tool allows you to quickly and easily convert your .env file variables into the format needed for your netlify.toml file.",
+    link: "/utilities/env-to-netlify-toml",
+  },
 ];
