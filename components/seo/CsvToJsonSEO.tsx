@@ -3,7 +3,7 @@ export default function CsvToJsonSEO() {
     <div className="content-wrapper">
       <section>
         <p>
-          This free tool is a quick and easy way to convert CSV file into JSON.
+          This free tool is a quick and easy way to convert CSV files into JSON.
           If you work with APIs, data, or web apps, you can use Jam's CSV to
           JSON converter to turn tabular data into JSON format.
         </p>
@@ -12,25 +12,33 @@ export default function CsvToJsonSEO() {
       <section>
         <h2>Free, Open Source & Ad-free</h2>
         <p>
-          Just paste your CSV file and get the JSON result. Made with 💜 by the
-          developers building Jam.
+          Just paste your CSV file and get the JSON result. Built with 💜 by the
+          Jam developers, using the open-source{" "}
+          <a
+            href="https://github.com/mholt/PapaParse"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            PapaParse
+          </a>{" "}
+          package.
         </p>
       </section>
 
       <section>
         <h2>How to Use Jam's CSV to JSON Converter Tool</h2>
         <p>
-          Easily convert your CSV files to JSON format with our online tool.
-          Whether you're working on web development projects, data analysis, or
+          Easily convert your CSV files to JSON online with our tool. Whether
+          you're working on web development projects, data analysis, or
           integrating with APIs, our converter simplifies the process.
         </p>
         <ul>
           <li>
-            <b>Paste CSV file:</b> <br /> Paste the CSV file you want to
+            <b>Import CSV file:</b> <br /> Paste the CSV file you want to
             convert.
           </li>
           <li>
-            <b>Get the JSON result:</b> <br /> Copy the JSON output to your
+            <b>Get the JSON result:</b> <br /> Get the JSON output and copy to
             clipboard.
           </li>
           <li>

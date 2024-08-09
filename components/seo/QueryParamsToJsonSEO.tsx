@@ -74,7 +74,7 @@ export default function QueryParamsToJsonSEO() {
             converting data in different programming languages.
           </li>
           <li>
-            <b>Data Sharing:</b> <br /> JSON’s structured format makes it easier
+            <b>Data Sharing:</b> <br /> JSON's structured format makes it easier
             to share and exchange data between different systems and platforms.
           </li>
         </ul>
@@ -84,13 +84,23 @@ export default function QueryParamsToJsonSEO() {
         <h2>Discover Jam: The Ultimate Debugging Tool</h2>
         <p>
           Are you tired of manually extracting and converting URL query data?
-          Imagine having a tool that captures all the essential information,
-          including console logs, network requests, etc in 1 click.
+          Jam captures all the essential information, including console logs,
+          network requests, etc in 1 click.
         </p>
         <p>
-          Meet <b>Jam</b>, the browser extension helping over 130,000 users
-          debug faster.
+          Get{" "}
+          <a
+            href="https://chromewebstore.google.com/detail/jam/iohjgamcilhbgmhbnllfolmkmmekfmci"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Jam, the browser extension
+          </a>{" "}
+          helping over 130,000 users debug faster.
         </p>
+      </section>
+
+      <section>
         <GetJamForFree />
       </section>
 

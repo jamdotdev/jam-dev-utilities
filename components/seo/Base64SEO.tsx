@@ -74,14 +74,24 @@ export default function Base64SEO() {
       <section>
         <h2>Discover Jam: The Ultimate Tool for Web Developers</h2>
         <p>
-          While this tool helps you manage encoding and decoding efficiently,
-          Jam takes your debugging process to the next level.
+          While this tool helps you manage encoding and decoding efficiently,{" "}
+          <a href="https://jam.dev" target="_blank" rel="noreferrer">
+            Jam
+          </a>{" "}
+          takes your debugging process to the next level.
         </p>
         <p>
-          Meet Jam, the browser extension helping over 130,000 users debug
-          faster. Jam captures console logs, network requests, and more with
-          just one click. Now anyone can log comprehensive bug reports and you
-          can debug so much faster.
+          Meet{" "}
+          <a
+            href="https://chromewebstore.google.com/detail/jam/iohjgamcilhbgmhbnllfolmkmmekfmci"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Jam, the browser extension
+          </a>{" "}
+          helping over 130,000 users debug faster. Jam captures console logs,
+          network requests, and more with just one click. Now anyone can log
+          comprehensive bug reports and you can debug so much faster.
         </p>
         <p>
           No more guesswork—just clear, actionable data that helps you identify
@@ -89,7 +99,9 @@ export default function Base64SEO() {
           with Base64-encoded data, debugging JavaScript functions, or ensuring
           data integrity in your web applications, Jam is here to help.
         </p>
+      </section>
 
+      <section>
         <GetJamForFree />
       </section>
 
