@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Textarea } from "@/components/ds/TextareaComponent";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
@@ -14,6 +14,17 @@ export default function CurlToJavascript() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const { buttonText, handleCopy } = useCopyToClipboard();
+  // This is a minor optimization because the `curlconverter` package
+  // includes necessary .wasm files that are loaded asynchronously.
+  const toJavaScript = useMemo(() => {
+    let converter: (input: string) => string;
+
+    import("curlconverter").then((module) => {
+      converter = module.toJavaScript;
+    });
+
+    return (input: string) => converter?.(input);
+  }, []);
 
   const handleChange = useCallback(
     async (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -21,8 +32,6 @@ export default function CurlToJavascript() {
       setInput(value);
 
       try {
-        // Dynamically import the toJavaScript function to avoid preloading unnecessary .wasm files
-        const { toJavaScript } = await import("curlconverter");
         const fetchCode = toJavaScript(value.trim());
         setOutput(fetchCode);
       } catch {
