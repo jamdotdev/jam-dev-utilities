@@ -53,4 +53,10 @@ export const tools = [
       "This free tool allows you to quickly and easily convert your .env file variables into the format needed for your netlify.toml file.",
     link: "/utilities/env-to-netlify-toml",
   },
+  {
+    title: "Image to Base64 Converter",
+    description:
+      "Instantly convert images to Base64 strings. Embed images directly in your code. Fast, free, and developer-friendly.",
+    link: "/utilities/image-to-base64",
+  },
 ];
