@@ -9,7 +9,6 @@ import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import { toJavaScript } from "curlconverter";
 
 export default function CurlToJavascript() {
   const [input, setInput] = useState("");
@@ -17,11 +16,13 @@ export default function CurlToJavascript() {
   const { buttonText, handleCopy } = useCopyToClipboard();
 
   const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    async (event: React.ChangeEvent<HTMLTextAreaElement>) => {
       const { value } = event.currentTarget;
       setInput(value);
 
       try {
+        // Dynamically import the toJavaScript function to avoid preloading unnecessary .wasm files
+        const { toJavaScript } = await import("curlconverter");
         const fetchCode = toJavaScript(value.trim());
         setOutput(fetchCode);
       } catch {
