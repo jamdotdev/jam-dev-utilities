@@ -59,4 +59,10 @@ export const tools = [
       "Instantly convert images to Base64 strings. Embed images directly in your code. Fast, free, and developer-friendly.",
     link: "/utilities/image-to-base64",
   },
+  {
+    title: "cURL to JavaScript Fetch",
+    description:
+      "Convert cURL commands to JavaScript fetch code quickly and easily with Jam's free online converter. Just paste your cURL command and get the fetch code. That's it.",
+    link: "/utilities/curl-to-javascript-fetch",
+  },
 ];
