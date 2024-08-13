@@ -65,4 +65,10 @@ export const tools = [
       "Convert cURL commands to JavaScript fetch code quickly and easily with Jam's free online converter. Just paste your cURL command and get the fetch code. That's it.",
     link: "/utilities/curl-to-javascript-fetch",
   },
+  {
+    title: "JSON to CSV",
+    description:
+      "Transform your JSON data into sleek CSV format with Jam's free online converter. Simply paste your JSON and watch the magic happen!",
+    link: "/utilities/json-to-csv",
+  },
 ];
