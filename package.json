@@ -12,6 +12,7 @@
     "format:check": "prettier --check '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.6.0",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-slot": "^1.1.0",
