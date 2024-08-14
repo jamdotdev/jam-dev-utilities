@@ -71,4 +71,10 @@ export const tools = [
       "Transform your JSON data into sleek CSV format with Jam's free online converter. Simply paste your JSON and watch the magic happen!",
     link: "/utilities/json-to-csv",
   },
+  {
+    title: "HAR file viewer",
+    description:
+      "Easily view and analyze HAR files online for free. Debug web traffic and network performance. Open source & ad-free.",
+    link: "/utilities/har-file-viewer",
+  },
 ];
