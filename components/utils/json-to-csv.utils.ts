@@ -14,8 +14,16 @@ export function convertJSONtoCSV(input: string | object): string {
       throw new Error("Input must be a JSON string or an object.");
     }
 
-    const csv = Papa.unparse(data, { header: true });
+    const config = {
+      header: true, // Include headers in the CSV
+      delimiter: ",", // Use comma as delimiter
+      newline: "\r\n", // Use carriage return and newline for new lines
+      quoteChar: '"', // Use double quotes for quoting fields
+      escapeChar: '"', // Use double quotes for escaping quoted fields
+      skipEmptyLines: true, // Skip empty lines in the output
+    };
 
+    const csv = Papa.unparse(data, config);
     return csv;
   } catch (error) {
     if (error instanceof Error) {

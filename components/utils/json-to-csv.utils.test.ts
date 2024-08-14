@@ -34,6 +34,25 @@ describe("json-to-csv.utils", () => {
     );
   });
 
+  it("should handle empty input", () => {
+    expect(normalizeCSV(convertJSONtoCSV([]))).toBe("");
+    expect(normalizeCSV(convertJSONtoCSV({}))).toBe("");
+    expect(normalizeCSV(convertJSONtoCSV("[]"))).toBe("");
+    expect(normalizeCSV(convertJSONtoCSV("{}"))).toBe("");
+  });
+
+  it("should handle arrays within objects", () => {
+    const jsonArray = [
+      { name: "John", hobbies: ["reading", "swimming"] },
+      { name: "Jane", hobbies: ["painting"] },
+    ];
+    const expectedCSV = 'name,hobbies\nJohn,"reading,swimming"\nJane,painting';
+
+    expect(normalizeCSV(convertJSONtoCSV(jsonArray))).toBe(
+      normalizeCSV(expectedCSV)
+    );
+  });
+
   it("should throw an error for invalid input", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(() => convertJSONtoCSV(123 as any)).toThrow(
