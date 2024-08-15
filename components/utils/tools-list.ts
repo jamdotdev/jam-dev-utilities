@@ -71,4 +71,10 @@ export const tools = [
       "Easily view and analyze HAR files online for free. Debug web traffic and network performance. Open source & ad-free.",
     link: "/utilities/har-file-viewer",
   },
+  {
+    title: "JSON to YAML",
+    description:
+      "Easily convert JSON to YAML with our converter. Perfect for when you're juggling configuration files and need a switch between formats.",
+    link: "/utilities/json-to-yaml",
+  },
 ];
