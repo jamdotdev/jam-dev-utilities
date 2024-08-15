@@ -83,4 +83,4 @@ We appreciate your feedback and will do our best to address the issues promptly!
 
 We welcome and appreciate any contributions! 
 
-Check out the [contribution guide](https://github.com/Strawberry-Jam-Manufacturers/jam-dev-utilities/blob/main/CONTRIBUTING.md).
+Check out the [contribution guide](https://github.com/jamdotdev/jam-dev-utilities/blob/main/CONTRIBUTING.md).
