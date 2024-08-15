@@ -10,15 +10,17 @@ interface MetaProps {
 }
 
 const Meta = (props: MetaProps) => {
+  const ogImage = props.ogImage ?? "/images/utils-og-image.png";
+
   return (
     <Head>
       <title>{props.title}</title>
       <meta name="description" content={props.description} />
       <meta property="og:title" content={props.title} />
       <meta property="og:description" content={props.description} />
+      <meta property="og:image" content={ogImage} />
       {props.keywords && <meta name="keywords" content={props.keywords} />}
       {props.author && <meta name="author" content={props.author} />}
-      {props.ogImage && <meta property="og:image" content={props.ogImage} />}
       {props.ogUrl && <meta property="og:url" content={props.ogUrl} />}
     </Head>
   );
