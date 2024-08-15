@@ -20,9 +20,7 @@
 
 ### Jam.dev Utilities
 
-Lightweight utils set - fast and open-source. It's got cmd+k search & everything's client-side.
-
-No ads, your data stays local.
+Open-source data conversion utils for devs who don't like ads. Simple, lightweight and client-side so your data stays on-device. Plus, cmd+k search.
 
 ### Built With
 
@@ -77,14 +75,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Reporting Issues
 
-If you encounter any issues, please report them using our [issue tracker](https://github.com/Strawberry-Jam-Manufacturers/jam-dev-utilities/issues). When reporting an issue, please include:
+If you encounter any issues, you can 1-click log them with [Jam](https://jam.dev) to this repo's [issue tracker](https://github.com/jamdotdev/jam-dev-utilities/issues). 
 
-- A clear and descriptive title.
-- A detailed description of the issue.
-- Provide a screenshot, video or instant replay made with [Jam](https://jam.dev/)
-
-We appreciate your feedback and will do our best to address the issues promptly.
+We appreciate your feedback and will do our best to address the issues promptly!
 
 ## Contributing
 
-Please make sure to follow our [contribution guide](https://github.com/Strawberry-Jam-Manufacturers/jam-dev-utilities/blob/main/CONTRIBUTING.md) for detailed instructions.
+We welcome and appreciate any contributions! 
+
+Check out the [contribution guide](https://github.com/Strawberry-Jam-Manufacturers/jam-dev-utilities/blob/main/CONTRIBUTING.md).
