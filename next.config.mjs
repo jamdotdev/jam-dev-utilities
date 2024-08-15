@@ -19,10 +19,11 @@ const nextConfig = {
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      // Enable top-level await
+      // Enable top-level await and async WebAssembly
       config.experiments = {
         ...config.experiments,
         topLevelAwait: true,
+        asyncWebAssembly: true,
       };
 
       // Ignore 'fs' module

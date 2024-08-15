@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { Textarea } from "@/components/ds/TextareaComponent";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
@@ -9,29 +9,14 @@ import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
+import { toJavaScript } from "curlconverter";
 
 export default function CurlToJavascript() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const { buttonText, handleCopy } = useCopyToClipboard();
-  const toJavascriptRef = useRef<(curlCommand: string | string[]) => string>();
-
-  const loadToJavaScript = useMemo(() => {
-    return async () => {
-      if (!toJavascriptRef.current) {
-        const module = await import("curlconverter");
-        toJavascriptRef.current = module.toJavaScript;
-      }
-      return toJavascriptRef.current;
-    };
-  }, []);
-
-  const handleFocus = useCallback(() => {
-    loadToJavaScript();
-  }, []);
-
   const handleChange = useCallback(
-    async (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
       const { value } = event.currentTarget;
       setInput(value);
 
@@ -41,7 +26,6 @@ export default function CurlToJavascript() {
       }
 
       try {
-        const toJavaScript = await loadToJavaScript();
         const fetchCode = toJavaScript(value.trim());
         setOutput(fetchCode);
       } catch {
@@ -77,7 +61,6 @@ export default function CurlToJavascript() {
               onChange={handleChange}
               className="mb-6"
               value={input}
-              onFocus={handleFocus}
             />
 
             <Label>JavaScript Fetch</Label>
