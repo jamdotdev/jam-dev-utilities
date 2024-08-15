@@ -1,6 +1,6 @@
 # Contributing Guidelines
 
-Many of these tools are built on the back of open-source libraries & frameworks. We're excited to add more! Any contributions you make are greatly appreciated (and rewarded with pizza).
+Thanks for contributing! Any contributions you make are greatly appreciated (and rewarded with pizza).
 
 ## Getting Started
 
