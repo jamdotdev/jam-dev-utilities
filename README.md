@@ -22,6 +22,23 @@
 
 Open-source data conversion utils for devs who don't like ads. Simple, lightweight and client-side so your data stays on-device. Plus, cmd+k search.
 
+Here is the list of all utilities:
+
+- [CSV to JSON](https://jam.dev/utilities/csv-to-json)
+- [Base64 Encode/Decode](https://jam.dev/utilities/base-64-encoder)
+- [JSON Formatter](https://jam.dev/utilities/json-formatter)
+- [YAML to JSON](https://jam.dev/utilities/yaml-to-json)
+- [URL Encode/Decode](https://jam.dev/utilities/url-encoder)
+- [Timestamp to Date Converter](https://jam.dev/utilities/timestamp-to-date)
+- [Query Parameters to JSON](https://jam.dev/utilities/query-params-to-json)
+- [HEX to RGB Converter](https://jam.dev/utilities/hex-to-rgb)
+- [Convert .env to netlify.toml](https://jam.dev/utilities/env-to-netlify-toml)
+- [Image to Base64 Converter](https://jam.dev/utilities/image-to-base64)
+- [JSON to CSV](https://jam.dev/utilities/json-to-csv)
+- [HAR file viewer](https://jam.dev/utilities/har-file-viewer)
+- [JSON to YAML](https://jam.dev/utilities/json-to-yaml)
+- [Number Base Changer](https://jam.dev/utilities/number-base-changer)
+
 ### Built With
 
 - [Next.js](https://nextjs.org)
