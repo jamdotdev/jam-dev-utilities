@@ -75,12 +75,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Reporting Issues
 
-If you encounter any issues, you can 1-click log them with [Jam](https://jam.dev) to this repo's [issue tracker](https://github.com/jamdotdev/jam-dev-utilities/issues). 
+If you encounter any issues, you can 1-click log them with [Jam](https://jam.dev) to this repo's [issue tracker](https://github.com/jamdotdev/jam-dev-utilities/issues).
 
 We appreciate your feedback and will do our best to address the issues promptly!
 
 ## Contributing
 
-We welcome and appreciate any contributions! 
+We welcome and appreciate any contributions!
 
 Check out the [contribution guide](https://github.com/jamdotdev/jam-dev-utilities/blob/main/CONTRIBUTING.md).
