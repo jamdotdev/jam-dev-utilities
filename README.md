@@ -10,8 +10,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Strawberry-Jam-Manufacturers/jam-dev-utilities?tab=readme-ov-file#getting-started"><strong>Getting started</strong></a> ·
-  <a href="https://github.com/Strawberry-Jam-Manufacturers/jam-dev-utilities/blob/main/CONTRIBUTING.md"><strong>Contribution guide</strong></a> ·
+  <a href="https://github.com/jamdotdev/jam-dev-utilities?tab=readme-ov-file#getting-started"><strong>Getting started</strong></a> ·
+  <a href="https://github.com/jamdotdev/jam-dev-utilities/blob/main/CONTRIBUTING.md"><strong>Contribution guide</strong></a> ·
   <a href="https://jam.dev"><strong>Jam.dev</strong></a>
 </p>
 <br/>
@@ -50,7 +50,7 @@ To start the development server, follow these steps:
 Clone the repository:
 
 ```bash
-git clone https://github.com/Strawberry-Jam-Manufacturers/jam-dev-utilities.git
+git clone https://github.com/jamdotdev/jam-dev-utilities.git
 ```
 
 Navigate to the project directory:
