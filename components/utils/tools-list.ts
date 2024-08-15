@@ -77,4 +77,10 @@ export const tools = [
       "Easily convert JSON to YAML with our converter. Perfect for when you're juggling configuration files and need a switch between formats.",
     link: "/utilities/json-to-yaml",
   },
+  {
+    title: "Number Base Changer",
+    description:
+      "Easily convert numbers between different bases (binary, octal, decimal, hexadecimal) with our free online Number Base Changer.",
+    link: "/utilities/number-base-changer",
+  },
 ];
