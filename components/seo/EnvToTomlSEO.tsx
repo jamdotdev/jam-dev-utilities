@@ -12,7 +12,7 @@ export default function EnvToTomlSEO() {
             Cassidy Williams
           </a>{" "}
           - software engineer, dev advocate, startup advisor, and investor. You
-          can find her meming on Twitter and sharing learnings and tools for
+          can find her memeing on Twitter and sharing learnings and tools for
           developers in her{" "}
           <a
             href="https://cassidoo.co/newsletter/"
