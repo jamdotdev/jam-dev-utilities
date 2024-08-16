@@ -7,13 +7,32 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import Meta from "@/components/Meta";
-import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
+
+const createRegex = (pattern: string): RegExp => {
+  if (!pattern) {
+    throw new Error("Pattern cannot be empty");
+  }
+
+  if (pattern.startsWith("/") && pattern.lastIndexOf("/") !== 0) {
+    const lastSlashIndex = pattern.lastIndexOf("/");
+    const patternBody = pattern.slice(1, lastSlashIndex);
+    const flags = pattern.slice(lastSlashIndex + 1);
+
+    if (!/^[gimsuy]*$/.test(flags)) {
+      throw new Error("Invalid regex flags");
+    }
+
+    return new RegExp(patternBody, flags);
+  } else {
+    return new RegExp(pattern);
+  }
+};
 
 export default function RegexTester() {
   const [pattern, setPattern] = useState("");
   const [testString, setTestString] = useState("");
   const [result, setResult] = useState<string | null>(null);
-  const { buttonText, handleCopy } = useCopyToClipboard();
+  const [matchStatus, setMatchStatus] = useState<string | null>(null);
 
   const handlePatternChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -31,13 +50,30 @@ export default function RegexTester() {
 
   const handleTest = useCallback(() => {
     try {
-      const regex = new RegExp(pattern);
-      const match = regex.test(testString);
-      setResult(match ? "Match found" : "No match found");
+      const regex = createRegex(pattern);
+      const matches = testString.match(regex);
+
+      if (matches) {
+        setResult(matches.join("\n"));
+        setMatchStatus("Match found");
+      } else {
+        setResult("");
+        setMatchStatus("No match found");
+      }
     } catch (error) {
-      setResult("Invalid regex pattern");
+      if (error instanceof Error) {
+        setResult(error.message);
+        setMatchStatus(null);
+      }
     }
   }, [pattern, testString]);
+
+  const handleClear = () => {
+    setPattern("");
+    setTestString("");
+    setResult(null);
+    setMatchStatus(null);
+  };
 
   return (
     <main>
@@ -61,7 +97,7 @@ export default function RegexTester() {
             <Label>Regex Pattern</Label>
             <Textarea
               rows={4}
-              placeholder="Enter regex pattern here"
+              placeholder="Enter regex pattern here (e.g., /pattern/g)"
               onChange={handlePatternChange}
               className="mb-6"
               value={pattern}
@@ -80,14 +116,24 @@ export default function RegexTester() {
               Test Regex
             </Button>
 
-            <Label>Result</Label>
+            <Label>
+              Result
+              {matchStatus && (
+                <span
+                  style={{
+                    color: matchStatus === "Match found" ? "green" : "red",
+                    marginLeft: "10px",
+                  }}
+                >
+                  {matchStatus}
+                </span>
+              )}
+            </Label>
             <Textarea value={result ?? ""} rows={2} readOnly className="mb-4" />
 
-            {result && (
-              <Button variant="outline" onClick={() => handleCopy(result)}>
-                {buttonText}
-              </Button>
-            )}
+            <Button variant="outline" onClick={handleClear}>
+              Clear
+            </Button>
           </div>
         </Card>
       </section>
