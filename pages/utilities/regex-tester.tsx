@@ -1,79 +1,59 @@
-import { useCallback, useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Textarea } from "@/components/ds/TextareaComponent";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
-import { Button } from "@/components/ds/ButtonComponent";
 import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import Meta from "@/components/Meta";
-
-const createRegex = (pattern: string): RegExp => {
-  if (!pattern) {
-    throw new Error("Pattern cannot be empty");
-  }
-
-  if (pattern.startsWith("/") && pattern.lastIndexOf("/") !== 0) {
-    const lastSlashIndex = pattern.lastIndexOf("/");
-    const patternBody = pattern.slice(1, lastSlashIndex);
-    const flags = pattern.slice(lastSlashIndex + 1);
-
-    if (!/^[gimsuy]*$/.test(flags)) {
-      throw new Error("Invalid regex flags");
-    }
-
-    return new RegExp(patternBody, flags);
-  } else {
-    return new RegExp(pattern);
-  }
-};
+import RegexHighlightText from "@/components/RegexHighlightText";
+import { createRegex } from "@/components/utils/regex-tester.utils";
 
 export default function RegexTester() {
   const [pattern, setPattern] = useState("");
   const [testString, setTestString] = useState("");
-  const [result, setResult] = useState<string | null>(null);
-  const [matchStatus, setMatchStatus] = useState<string | null>(null);
-
-  const handlePatternChange = useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setPattern(event.currentTarget.value);
-    },
-    []
-  );
-
-  const handleTestStringChange = useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setTestString(event.currentTarget.value);
-    },
-    []
-  );
+  const [result, setResult] = useState<string | null>("Please fill out");
+  const [matches, setMatches] = useState<string[] | null>(null);
 
   const handleTest = useCallback(() => {
     try {
       const regex = createRegex(pattern);
-      const matches = testString.match(regex);
+      let newMatches: string[] = [];
 
-      if (matches) {
-        setResult(matches.join("\n"));
-        setMatchStatus("Match found");
+      if (regex.flags.includes("g")) {
+        newMatches = Array.from(testString.matchAll(regex)).map((m) => m[0]);
       } else {
-        setResult("");
-        setMatchStatus("No match found");
+        const match = testString.match(regex);
+        if (match) {
+          newMatches = [match[0]];
+        }
+      }
+
+      const suffix = newMatches.length > 1 ? "matches" : "match";
+
+      if (newMatches.length > 0) {
+        setResult(`Match found: ${newMatches.length} ${suffix}`);
+        setMatches(newMatches);
+      } else {
+        setResult("No match found");
+        setMatches(null);
       }
     } catch (error) {
       if (error instanceof Error) {
         setResult(error.message);
-        setMatchStatus(null);
       }
+      setMatches(null);
     }
   }, [pattern, testString]);
 
-  const handleClear = () => {
-    setPattern("");
-    setTestString("");
-    setResult(null);
-    setMatchStatus(null);
-  };
+  useEffect(() => {
+    if (pattern && testString) {
+      handleTest();
+    } else {
+      setResult("");
+      setMatches(null);
+    }
+  }, [pattern, testString, handleTest]);
 
   return (
     <main>
@@ -96,47 +76,47 @@ export default function RegexTester() {
           <div>
             <Label>Regex Pattern</Label>
             <Textarea
-              rows={4}
+              rows={1}
               placeholder="Enter regex pattern here (e.g., /pattern/g)"
-              onChange={handlePatternChange}
-              className="mb-6"
+              onChange={(event) => setPattern(event.target.value)}
+              className="mb-6 min-h-0"
               value={pattern}
             />
 
             <Label>Test String</Label>
-            <Textarea
-              rows={4}
-              placeholder="Enter test string here"
-              onChange={handleTestStringChange}
-              className="mb-6"
-              value={testString}
-            />
+            <div>
+              <Textarea
+                rows={4}
+                placeholder="Enter test string here"
+                onChange={(event) => setTestString(event.target.value)}
+                className="mb-6"
+                value={testString}
+              />
+            </div>
 
-            <Button onClick={handleTest} className="mb-4">
-              Test Regex
-            </Button>
-
-            <Label>
-              Result
-              {matchStatus && (
-                <span
-                  style={{
-                    color: matchStatus === "Match found" ? "green" : "red",
-                    marginLeft: "10px",
-                  }}
-                >
-                  {matchStatus}
-                </span>
-              )}
-            </Label>
-            <Textarea value={result ?? ""} rows={2} readOnly className="mb-4" />
-
-            <Button variant="outline" onClick={handleClear}>
-              Clear
-            </Button>
+            <div>
+              <Label>Result</Label>
+              <div className="w-full rounded-lg border border-input bg-muted px-3 py-2 text-sm ring-offset-background">
+                <div>
+                  {result === ""
+                    ? "Please fill out all required fields"
+                    : result}
+                </div>
+                {matches && (
+                  <>
+                    <Divider />
+                    <RegexHighlightText text={testString} matches={matches} />
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </Card>
       </section>
     </main>
   );
 }
+
+const Divider = () => {
+  return <div className="bg-border h-[1px] my-2"></div>;
+};
