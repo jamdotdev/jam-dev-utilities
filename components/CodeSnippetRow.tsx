@@ -1,30 +1,25 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { ColorValue } from "@/components/utils/color-converter.utils";
 
-interface RGBValues {
-  r: string;
-  g: string;
-  b: string;
-}
-
-interface CodeSnippetRowProps {
+interface CodeSnippetRowProps<T extends ColorValue> {
   label: string;
-  convertFunction: (rgb: RGBValues) => string;
-  rgb: RGBValues;
+  value: T;
+  convertFunction: (value: T) => string;
 }
 
-export default function CodeSnippetRow({
+export default function CodeSnippetRow<T extends ColorValue>({
   label,
+  value,
   convertFunction,
-  rgb,
-}: CodeSnippetRowProps) {
+}: CodeSnippetRowProps<T>) {
   const [snippet, setSnippet] = useState(() =>
-    convertWithFallback(convertFunction, rgb)
+    convertWithFallback(convertFunction, value)
   );
   const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
-    setSnippet(convertWithFallback(convertFunction, rgb));
-  }, [rgb, convertFunction]);
+    setSnippet(convertWithFallback(convertFunction, value));
+  }, [value, convertFunction]);
 
   const copyToClipboard = useCallback(async () => {
     try {
@@ -49,17 +44,16 @@ export default function CodeSnippetRow({
   );
 }
 
-function convertWithFallback(
-  convertFunction: (rgb: RGBValues) => string,
-  rgb: RGBValues
+function convertWithFallback<T extends ColorValue>(
+  convertFunction: (value: T) => string,
+  value: T
 ): string {
-  const safeRgb: RGBValues = {
-    r: rgb.r || "0",
-    g: rgb.g || "0",
-    b: rgb.b || "0",
-  };
-
-  return convertFunction(safeRgb);
+  try {
+    return convertFunction(value) || 'Conversion error';
+  } catch (error) {
+    console.error("Conversion failed:", error);
+    return "Conversion error";
+  }
 }
 
 const CopiedMessage = () => (

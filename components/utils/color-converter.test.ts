@@ -7,9 +7,13 @@ import {
   toIOS,
   toAndroidColor,
   RGBValues,
-} from "./hex-to-rgb.utils";
+  convertToHSL,
+  convertToCMYK,
+  convertCMYKtoRGB,
+  CMYKValues,
+} from "./color-converter.utils";
 
-describe("hex-to-rgb.utils", () => {
+describe("color-converter.utils", () => {
   test("isValidHex should validate hex strings correctly", () => {
     expect(isValidHex("#ffffff")).toBe(true);
     expect(isValidHex("ffffff")).toBe(true);
@@ -55,4 +59,20 @@ describe("hex-to-rgb.utils", () => {
     const rgb: RGBValues = { r: "255", g: "255", b: "255" };
     expect(toAndroidColor(rgb)).toBe("Color.rgb(255, 255, 255)");
   });
+
+  test("convertToHSL should convert RGB values to HSL correctly", () => {
+    const rgb: RGBValues = { r: "255", g: "0", b: "0" };
+    expect(convertToHSL(rgb)).toEqual({ h: "0", s: "100", l: "50" });
+  });
+
+  test("convertToCMYK should convert RGB values to CMYK correctly", () => {
+    const rgb: RGBValues = { r: "255", g: "0", b: "0" };
+    expect(convertToCMYK(rgb)).toEqual({ c: "0", m: "100", y: "100", k: "0" });
+  });
+
+  test("convertCMYKtoRGB should convert CMYK values to RGB correctly", () => {
+    const cmyk: CMYKValues = { c: "0", m: "100", y: "100", k: "0" };
+    expect(convertCMYKtoRGB(cmyk)).toEqual({ r: "255", g: "0", b: "0" });
+  });
+
 });

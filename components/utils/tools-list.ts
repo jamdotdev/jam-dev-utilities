@@ -42,10 +42,10 @@ export const tools = [
     link: "/utilities/query-params-to-json",
   },
   {
-    title: "HEX to RGB Converter",
+    title: "Color Converter",
     description:
-      "Convert HEX to RGB and generate CSS snippets for web, Swift, and Android with our easy-to-use color converter.",
-    link: "/utilities/hex-to-rgb",
+      "Easily convert between HEX, RGB, HSL, and CMYK color formats with Jam's free color converter tool. Perfect for quick color code conversions—just paste the value and copy the resulting codes.",
+    link: "/utilities/color-converter",
   },
   {
     title: "Convert .env to netlify.toml",
