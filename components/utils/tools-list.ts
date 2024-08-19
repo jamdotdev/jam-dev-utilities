@@ -83,4 +83,10 @@ export const tools = [
       "Easily convert numbers between different bases (binary, octal, decimal, hexadecimal) with our free online Number Base Changer.",
     link: "/utilities/number-base-changer",
   },
+  {
+    title: "CSS to Inline Converter",
+    description:
+      "Easily convert your CSS styles to inline styles directly in your HTML. Perfect for improving email compatibility and reducing external stylesheet dependencies.",
+    link: "/utilities/css-to-inline-converter",
+  },
 ];
