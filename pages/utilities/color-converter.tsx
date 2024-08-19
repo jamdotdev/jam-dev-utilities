@@ -23,6 +23,7 @@ import { Input } from "@/components/ds/InputComponent";
 import CodeSnippetRow from "@/components/CodeSnippetRow";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
+import ColorConverterSEO from "@/components/seo/ColorConverterSEO";
 
 const DEFAULT_RGB: RGBValues = { r: "0", g: "0", b: "0" };
 const DEFAULT_HSL: HSLValues = { h: "0", s: "0", l: "0" };
@@ -269,6 +270,9 @@ export default function ColorConverter() {
       </section>
 
       <CallToActionGrid />
+      <section className="container max-w-2xl">
+        <ColorConverterSEO />
+      </section>
 
     </main>
   );
