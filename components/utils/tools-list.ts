@@ -84,9 +84,9 @@ export const tools = [
     link: "/utilities/number-base-changer",
   },
   {
-    title: "CSS to Inline Converter",
+    title: "CSS Inliner for Email",
     description:
       "Easily convert your CSS styles to inline styles directly in your HTML. Perfect for improving email compatibility and reducing external stylesheet dependencies.",
-    link: "/utilities/css-to-inline-converter",
+    link: "/utilities/css-inliner-for-email",
   },
 ];
