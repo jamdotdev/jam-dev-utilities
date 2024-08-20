@@ -9,15 +9,10 @@ import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import UploadIcon from "@/components/icons/UploadIcon";
-
-const MAX_FILE_SIZE = 4 * 1024 * 1024;
-type Status = "idle" | "loading" | "error" | "unsupported" | "hover";
+import ImageUpload from "@/components/ds/ImageUploadComponent";
 
 export default function ImageToBase64() {
-  const [status, setStatus] = useState<Status>("idle");
   const [base64, setBase64] = useState("");
-
   const copyHooks = [
     useCopyToClipboard(),
     useCopyToClipboard(),
@@ -29,39 +24,12 @@ export default function ImageToBase64() {
     { buttonText: buttonCSS, handleCopy: handleCopyCSS },
   ] = copyHooks;
 
-  const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-
-    const file = event.dataTransfer.files[0];
-    if (!file || !file.type.startsWith("image/")) {
-      setStatus("unsupported");
-      return;
-    }
-
-    if (file.size > MAX_FILE_SIZE) {
-      setStatus("error");
-      return;
-    }
-
-    setStatus("loading");
+  const handleFileSelect = useCallback((file: File) => {
     const reader = new FileReader();
     reader.onload = () => {
       setBase64(reader.result as string);
-      setStatus("idle");
     };
     reader.readAsDataURL(file);
-  }, []);
-
-  const handleDragOver = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      setStatus("hover");
-    },
-    []
-  );
-
-  const handleDragLeave = useCallback(() => {
-    setStatus("idle");
   }, []);
 
   return (
@@ -82,16 +50,7 @@ export default function ImageToBase64() {
 
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
-          <div
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            className="flex flex-col border border-dashed border-border p-6 text-center text-muted-foreground rounded-lg min-h-40 items-center justify-center bg-muted"
-          >
-            <UploadIcon />
-            {statusComponents[status]}
-          </div>
-          <div></div>
+          <ImageUpload onFileSelect={handleFileSelect} />
           <div className="pt-8">
             <Label>Base64 Output</Label>
             <Textarea
@@ -147,36 +106,9 @@ export default function ImageToBase64() {
   );
 }
 
-const StatusComponent = (props: StatusComponentProps) => (
-  <div>
-    <p>{props.title}</p>
-    <p>{props.message || "\u00A0"}</p>
-  </div>
-);
-
-const statusComponents: Record<Status, JSX.Element> = {
-  idle: (
-    <StatusComponent
-      title="Drag and drop your image here"
-      message="Max size 4MB"
-    />
-  ),
-  loading: <StatusComponent title="Converting..." message="" />,
-  error: <StatusComponent title="Image is too big!" message="4MB max" />,
-  unsupported: (
-    <StatusComponent title="Please provide a valid image" message="" />
-  ),
-  hover: <StatusComponent title="Drop it like it's hot! 🔥" message="" />,
-};
-
 const Divider = () => {
   return <div className="h-[1px] bg-border my-6"></div>;
 };
-
-interface StatusComponentProps {
-  title: string;
-  message: string;
-}
 
 const truncate = (input: string, maxLength: number) => {
   if (input.length <= maxLength) {
