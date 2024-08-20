@@ -10,6 +10,7 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import UploadIcon from "@/components/icons/UploadIcon";
+import ImageToBase64SEO from "@/components/seo/ImageToBase64SEO";
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024;
 type Status = "idle" | "loading" | "error" | "unsupported" | "hover";
@@ -188,6 +189,10 @@ export default function ImageToBase64() {
       </section>
 
       <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <ImageToBase64SEO />
+      </section>
     </main>
   );
 }
