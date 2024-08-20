@@ -17,6 +17,7 @@ interface ComboboxProps {
   data: { value: string; label: string }[];
   onSelect(value: string): void;
   defaultValue?: string;
+  disabled?: boolean;
 }
 
 export function Combobox(props: ComboboxProps) {
@@ -38,6 +39,7 @@ export function Combobox(props: ComboboxProps) {
           role="combobox"
           aria-expanded={open}
           className="justify-between"
+          disabled={props.disabled}
         >
           {selectedItem ? selectedItem.label : "Select base..."}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
