@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { Textarea } from "@/components/ds/TextareaComponent";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
@@ -8,18 +8,34 @@ import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import { resizeImage } from "../../components/utils/resize-image.utils";
 import ImageResizeSEO from "../../components/seo/ImageResizeSEO";
+import { resizeImage } from "../../components/utils/resize-image.utils";
+import { Combobox } from "../../components/ds/ComboboxComponent";
+import { Checkbox } from "../../components/ds/CheckboxComponent";
+import { Input } from "../../components/ds/InputComponent";
+
+type Format = "png" | "jpeg";
+interface FormatOption {
+  value: Format;
+  label: string;
+}
+
+const formatOptions: FormatOption[] = [
+  { value: "png", label: "PNG" },
+  { value: "jpeg", label: "JPEG" },
+];
 
 export default function ImageResize() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [output, setOutput] = useState<string>("");
-  const [format, setFormat] = useState<"png" | "jpeg">("png");
+  const [format, setFormat] = useState<Format>("png");
   const [width, setWidth] = useState<number | undefined>(undefined);
   const [height, setHeight] = useState<number | undefined>(undefined);
+  const [maintainAspectRatio, setMaintainAspectRatio] = useState(true);
+  const [quality, setQuality] = useState<number>(1);
 
   const handleFileChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (file) {
         setImageFile(file);
@@ -28,13 +44,85 @@ export default function ImageResize() {
           const img = new Image();
           img.src = e.target?.result as string;
           img.onload = () => {
-            resizeImage(img, width, height, format).then(setOutput);
+            setWidth(img.width);
+            setHeight(img.height);
+            resizeImage({
+              img,
+              width: img.width,
+              height: img.height,
+              format,
+              quality,
+              maintainAspectRatio,
+            }).then(setOutput);
           };
         };
         reader.readAsDataURL(file);
       }
     },
-    [width, height, format]
+    [format, maintainAspectRatio, quality]
+  );
+
+  const handleAspectRatioChange = useCallback(() => {
+    setMaintainAspectRatio((prev) => {
+      const newValue = !prev;
+
+      if (newValue && imageFile && width) {
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          img.src = e.target?.result as string;
+          img.onload = () => {
+            const newHeight = Math.round(width / (img.width / img.height));
+            setHeight(newHeight);
+          };
+        };
+        reader.readAsDataURL(imageFile);
+      }
+
+      return newValue;
+    });
+  }, [imageFile, width]);
+
+  const handleWidthChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newWidth = parseInt(e.target.value);
+      setWidth(newWidth);
+
+      if (maintainAspectRatio && imageFile) {
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          img.src = e.target?.result as string;
+          img.onload = () => {
+            const newHeight = Math.round(newWidth / (img.width / img.height));
+            setHeight(newHeight);
+          };
+        };
+        reader.readAsDataURL(imageFile);
+      }
+    },
+    [maintainAspectRatio, imageFile]
+  );
+
+  const handleHeightChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newHeight = parseInt(e.target.value);
+      setHeight(newHeight);
+
+      if (maintainAspectRatio && imageFile) {
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          img.src = e.target?.result as string;
+          img.onload = () => {
+            const newWidth = Math.round(newHeight * (img.width / img.height));
+            setWidth(newWidth);
+          };
+        };
+        reader.readAsDataURL(imageFile);
+      }
+    },
+    [maintainAspectRatio, imageFile]
   );
 
   const handleResize = useCallback(() => {
@@ -44,12 +132,40 @@ export default function ImageResize() {
         const img = new Image();
         img.src = e.target?.result as string;
         img.onload = () => {
-          resizeImage(img, width, height, format).then(setOutput);
+          resizeImage({
+            img,
+            width,
+            height,
+            format,
+            quality,
+            maintainAspectRatio,
+          }).then(setOutput);
         };
       };
       reader.readAsDataURL(imageFile);
     }
-  }, [imageFile, width, height, format]);
+  }, [imageFile, width, height, format, quality, maintainAspectRatio]);
+
+  const qualityInput = useMemo(() => {
+    if (format === "png") {
+      return null;
+    }
+    return (
+      <div className="flex justify-between items-center mb-4">
+        <Label className="mb-1">Quality (0.1 to 1.0)</Label>
+        <Input
+          type="number"
+          min="0.1"
+          max="1.0"
+          step="0.1"
+          value={quality}
+          onChange={(e) => setQuality(parseFloat(e.target.value))}
+          className="w-[88] border rounded p-2 text-right"
+          disabled={!imageFile}
+        />
+      </div>
+    );
+  }, [format, imageFile, quality]);
 
   return (
     <main>
@@ -78,14 +194,32 @@ export default function ImageResize() {
               className="mb-6"
             />
 
+            <div className="flex items-center mb-6 gap-2">
+              <Checkbox
+                id="mantain-aspect-ratio"
+                checked={maintainAspectRatio}
+                onCheckedChange={handleAspectRatioChange}
+                disabled={!imageFile}
+                className="mr-1"
+              />
+              <label
+                htmlFor="mantain-aspect-ratio"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Maintain Aspect Ratio
+              </label>
+            </div>
+
             <div className="flex justify-between items-center mb-2">
               <div className="flex-1 mr-2">
                 <Label className="mb-1">Width (px)</Label>
                 <Textarea
                   rows={1}
                   placeholder="Enter width"
-                  onChange={(e) => setWidth(parseInt(e.target.value))}
+                  onChange={handleWidthChange}
+                  value={width || ""}
                   className="mb-2"
+                  disabled={!imageFile}
                 />
               </div>
               <div className="flex-1 ml-2">
@@ -93,26 +227,32 @@ export default function ImageResize() {
                 <Textarea
                   rows={1}
                   placeholder="Enter height"
-                  onChange={(e) => setHeight(parseInt(e.target.value))}
+                  onChange={handleHeightChange}
+                  value={height || ""}
                   className="mb-2"
+                  disabled={!imageFile}
                 />
               </div>
             </div>
 
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-6">
               <Label className="mb-0">Format</Label>
-              <select
-                value={format}
-                onChange={(e) => setFormat(e.target.value as "png" | "jpeg")}
-                className="border rounded p-2"
-              >
-                <option value="png">PNG</option>
-                <option value="jpeg">JPEG</option>
-              </select>
+              <Combobox
+                data={formatOptions}
+                onSelect={(value) => setFormat(value as Format)}
+                defaultValue={format}
+                disabled={!imageFile}
+              />
             </div>
 
-            <Button variant="outline" onClick={handleResize}>
-              Resize and Download
+            {qualityInput}
+
+            <Button
+              variant="outline"
+              onClick={handleResize}
+              disabled={!imageFile}
+            >
+              Resize
             </Button>
 
             {output && (
