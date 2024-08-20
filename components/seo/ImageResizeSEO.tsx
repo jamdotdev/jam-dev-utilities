@@ -6,10 +6,13 @@ export default function ImageResizeSEO() {
       <section>
         <h2>Free, Open Source & Ad-free</h2>
         <p>
-          This free image resizer is a quick and easy way to resize images while
-          maintaining aspect ratio. Whether you need to reduce file size for
-          faster loading times or adjust the dimensions for a specific use case,
-          our tool can help. Made with 💜 by the developers building Jam.
+          This free image resizer is a versatile tool that allows you to resize
+          various image formats, including PNG, JPEG, and SVG. While PNG and
+          JPEG images are raster-based and can have their dimensions adjusted,
+          SVGs are vector-based and can be scaled infinitely without losing
+          quality. Whether you need to reduce file size, adjust dimensions, or
+          convert formats, our tool can help. Made with 💜 by the developers
+          building Jam.
         </p>
       </section>
 
@@ -23,15 +26,16 @@ export default function ImageResizeSEO() {
         <ul>
           <li>
             <b>Step 1:</b> <br /> Upload your image: Choose the image file you
-            want to resize.
+            want to resize. Supported formats include PNG, JPEG, and SVG.
           </li>
           <li>
-            <b>Step 2:</b> <br /> Select dimensions: Enter the width or height,
-            and the tool will maintain the aspect ratio.
+            <b>Step 2:</b> <br /> Select dimensions (for PNG/JPEG): Enter the
+            width or height, and the tool will maintain the aspect ratio. For
+            SVG, you can scale the image as needed.
           </li>
           <li>
-            <b>Step 3:</b> <br /> Choose the format: Select between PNG and JPEG
-            formats.
+            <b>Step 3:</b> <br /> Choose the format: Select between PNG, JPEG,
+            or keep it as SVG.
           </li>
           <li>
             <b>Step 4:</b> <br /> Download: Click the button to download the
@@ -59,7 +63,14 @@ export default function ImageResizeSEO() {
           </li>
           <li>
             <b>File Size Reduction:</b> <br /> Reducing the dimensions can
-            significantly decrease the file size without losing quality.
+            significantly decrease the file size without losing quality. This is
+            particularly effective with PNG and JPEG formats.
+          </li>
+          <li>
+            <b>SVG Scalability:</b> <br /> SVG images are vector-based, meaning
+            they can be scaled infinitely without losing quality. Our tool
+            allows you to resize SVGs for different contexts or convert them to
+            PNG/JPEG if needed.
           </li>
         </ul>
       </section>
@@ -90,22 +101,25 @@ export default function ImageResizeSEO() {
           <li>
             <b>How does the image resizer maintain quality?</b> <br /> Our tool
             uses advanced algorithms to resize images while preserving their
-            original quality, ensuring sharpness and clarity.
+            original quality, ensuring sharpness and clarity. For SVGs, the tool
+            ensures that the vector quality is maintained at any size.
           </li>
           <li>
             <b>What formats are supported?</b> <br /> Currently, our tool
-            supports PNG and JPEG formats, which are the most commonly used
-            image formats on the web.
+            supports PNG, JPEG, and SVG formats, which are the most commonly
+            used image formats on the web.
           </li>
           <li>
             <b>Can I resize images to specific dimensions?</b> <br /> Yes, you
             can specify either the width or height, and the aspect ratio will be
-            maintained automatically.
+            maintained automatically. This applies to both raster formats (PNG,
+            JPEG) and vector formats (SVG).
           </li>
           <li>
             <b>Is there a limit to the image size?</b> <br /> Our tool is
             designed to handle typical image sizes used in web and mobile
             applications, but extremely large files may take longer to process.
+            SVGs are generally lightweight and can be resized quickly.
           </li>
           <li>
             <b>Is this tool free to use?</b> <br /> Yes, the image resizer is
