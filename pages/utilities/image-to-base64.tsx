@@ -17,8 +17,8 @@ type Status = "idle" | "loading" | "error" | "unsupported" | "hover";
 export default function ImageToBase64() {
   const [status, setStatus] = useState<Status>("idle");
   const [base64, setBase64] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const isDisabled = !base64 ? true : false;
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const isDisabled = base64.length === 0;
   const copyHooks = [
     useCopyToClipboard(),
     useCopyToClipboard(),
@@ -30,16 +30,17 @@ export default function ImageToBase64() {
     { buttonText: buttonCSS, handleCopy: handleCopyCSS },
   ] = copyHooks;
 
-  const handleSelectFile = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileInputChange = useCallback((event: any) => {
-    let file: Blob | null = (event.target?.files) ? event.target?.files[0] : null;
-    validateImageFile(file, event);
+  const handleSelectFile = useCallback(() => {
+    fileInputRef.current?.click();
   }, []);
+
+  const handleFileInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0] ?? null;
+      validateImageFile(file, event);
+    },
+    []
+  );
 
   const validateImageFile = (
     file: Blob | null,
@@ -128,21 +129,23 @@ export default function ImageToBase64() {
               readOnly
               className="mb-4 overflow-x-hidden"
             />
-            <Button
-              variant="outline"
-              onClick={() => handleCopyBase64(base64)}
-              disabled={isDisabled}
-            >
-              {buttonBase64}
-            </Button>
-            <Button
-              className="ml-2"
-              variant="outline"
-              onClick={() => setBase64("")}
-              disabled={isDisabled}
-            >
-              Clear
-            </Button>
+            <div className="flex justify-between">
+              <Button
+                variant="outline"
+                onClick={() => handleCopyBase64(base64)}
+                disabled={isDisabled}
+              >
+                {buttonBase64}
+              </Button>
+              <Button
+                className="ml-2"
+                variant="default"
+                onClick={() => setBase64("")}
+                disabled={isDisabled}
+              >
+                Clear
+              </Button>
+            </div>
             <Divider />
 
             <Label>Use in {"<img>"} tag:</Label>
