@@ -83,4 +83,10 @@ export const tools = [
       "Easily convert numbers between different bases (binary, octal, decimal, hexadecimal) with our free online Number Base Changer.",
     link: "/utilities/number-base-changer",
   },
+  {
+    title: "Image Resizer",
+    description:
+      "Resize images while maintaining aspect ratio and choose between PNG and JPEG formats with our free tool.",
+    link: "/utilities/image-resizer",
+  },
 ];
