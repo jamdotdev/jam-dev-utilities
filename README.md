@@ -38,6 +38,7 @@ Here is the list of all utilities:
 - [HAR file viewer](https://jam.dev/utilities/har-file-viewer)
 - [JSON to YAML](https://jam.dev/utilities/json-to-yaml)
 - [Number Base Changer](https://jam.dev/utilities/number-base-changer)
+- [Image Resizer](https://jam.dev/utilities/image-resizer)
 
 ### Built With
 
