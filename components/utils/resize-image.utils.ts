@@ -1,8 +1,9 @@
+export type Format = "png" | "jpeg" | "svg";
 interface ResizeImageOptions {
   img: HTMLImageElement;
   width?: number;
   height?: number;
-  format?: "png" | "jpeg";
+  format?: Format;
   quality?: number;
   maintainAspectRatio?: boolean;
 }
@@ -15,11 +16,24 @@ export function resizeImage({
   quality,
   width,
 }: ResizeImageOptions): Promise<string> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    if (format === "svg") {
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${width || img.width}" height="${height || img.height}" viewBox="0 0 ${img.width} ${img.height}">
+          <image href="${img.src}" width="${img.width}" height="${img.height}" />
+        </svg>`;
+      const svgBlob = new Blob([svg], { type: "image/svg+xml" });
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.readAsDataURL(svgBlob);
+      return;
+    }
+
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
     if (!ctx) {
+      reject(new Error("Canvas context is not available"));
       return;
     }
 
@@ -56,3 +70,126 @@ export function resizeImage({
     resolve(dataURL);
   });
 }
+
+interface ProcessImageFileOptions {
+  file: File;
+  setWidth: (width: number) => void;
+  setHeight: (height: number) => void;
+  setOutput: (output: string) => void;
+  format: Format;
+  quality: number;
+  maintainAspectRatio: boolean;
+  done?: () => void;
+}
+
+export const processImageFile = ({
+  file,
+  format,
+  maintainAspectRatio,
+  quality,
+  setHeight,
+  setOutput,
+  setWidth,
+  done,
+}: ProcessImageFileOptions) => {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.src = e.target?.result as string;
+    img.onload = () => {
+      setWidth(img.width);
+      setHeight(img.height);
+      resizeImage({
+        img,
+        width: img.width,
+        height: img.height,
+        format,
+        quality,
+        maintainAspectRatio,
+      })
+        .then(setOutput)
+        .catch((error) => console.error(error))
+        .finally(() => {
+          if (done) {
+            done();
+          }
+        });
+    };
+  };
+  reader.readAsDataURL(file);
+};
+
+interface UpdateWidthOptions {
+  height: number;
+  file: File;
+  setWidth: (width: number) => void;
+}
+
+export const updateWidth = ({ file, height, setWidth }: UpdateWidthOptions) => {
+  const img = new Image();
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    img.src = e.target?.result as string;
+    img.onload = () => {
+      const newWidth = Math.round(height * (img.width / img.height));
+      setWidth(newWidth);
+    };
+  };
+  reader.readAsDataURL(file);
+};
+
+interface UpdateWidthOption {
+  width: number;
+  file: File;
+  setHeight: (height: number) => void;
+}
+
+export const updateHeight = ({ file, setHeight, width }: UpdateWidthOption) => {
+  const img = new Image();
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    img.src = e.target?.result as string;
+    img.onload = () => {
+      const newHeight = Math.round(width / (img.width / img.height));
+      setHeight(newHeight);
+    };
+  };
+  reader.readAsDataURL(file);
+};
+
+interface HandleResizeImage {
+  file: File;
+  width: number | undefined;
+  height: number | undefined;
+  format: Format;
+  quality: number;
+  maintainAspectRatio: boolean;
+  setOutput: (output: string) => void;
+}
+
+export const handleResizeImage = ({
+  file,
+  format,
+  height,
+  maintainAspectRatio,
+  quality,
+  setOutput,
+  width,
+}: HandleResizeImage) => {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.src = e.target?.result as string;
+    img.onload = () => {
+      resizeImage({
+        img,
+        width,
+        height,
+        format,
+        quality,
+        maintainAspectRatio,
+      }).then(setOutput);
+    };
+  };
+  reader.readAsDataURL(file);
+};
