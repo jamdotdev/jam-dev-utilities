@@ -1,5 +1,4 @@
-import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import { Textarea } from "@/components/ds/TextareaComponent";
+import { useCallback, useState, useMemo, ChangeEvent } from "react";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
 import { Button } from "@/components/ds/ButtonComponent";
@@ -9,12 +8,19 @@ import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import ImageResizeSEO from "../../components/seo/ImageResizeSEO";
-import { resizeImage } from "../../components/utils/resize-image.utils";
+import {
+  Format,
+  handleResizeImage,
+  processImageFile,
+  updateHeight,
+  updateWidth,
+} from "../../components/utils/resize-image.utils";
 import { Combobox } from "../../components/ds/ComboboxComponent";
 import { Checkbox } from "../../components/ds/CheckboxComponent";
 import { Input } from "../../components/ds/InputComponent";
+import ImageUpload from "../../components/ds/ImageUploadComponent";
 
-type Format = "png" | "jpeg";
+const MAX_DIMENSION = 1024 * 4;
 interface FormatOption {
   value: Format;
   label: string;
@@ -22,6 +28,7 @@ interface FormatOption {
 
 const formatOptions: FormatOption[] = [
   { value: "png", label: "PNG" },
+  { value: "svg", label: "SVG" },
   { value: "jpeg", label: "JPEG" },
 ];
 
@@ -33,31 +40,28 @@ export default function ImageResize() {
   const [height, setHeight] = useState<number | undefined>(undefined);
   const [maintainAspectRatio, setMaintainAspectRatio] = useState(true);
   const [quality, setQuality] = useState<number>(1);
+  const [showAnimation, setShowAnimation] = useState(false);
 
-  const handleFileChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (file) {
-        setImageFile(file);
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const img = new Image();
-          img.src = e.target?.result as string;
-          img.onload = () => {
-            setWidth(img.width);
-            setHeight(img.height);
-            resizeImage({
-              img,
-              width: img.width,
-              height: img.height,
-              format,
-              quality,
-              maintainAspectRatio,
-            }).then(setOutput);
-          };
-        };
-        reader.readAsDataURL(file);
-      }
+  function setOutputAndShowAnimation(output: string) {
+    setOutput(output);
+    setShowAnimation(true);
+    setTimeout(() => {
+      setShowAnimation(false);
+    }, 500);
+  }
+
+  const handleFileSelect = useCallback(
+    (file: File) => {
+      setImageFile(file);
+      processImageFile({
+        file,
+        format,
+        maintainAspectRatio,
+        quality,
+        setHeight,
+        setOutput: (output) => setOutputAndShowAnimation(output),
+        setWidth,
+      });
     },
     [format, maintainAspectRatio, quality]
   );
@@ -67,16 +71,7 @@ export default function ImageResize() {
       const newValue = !prev;
 
       if (newValue && imageFile && width) {
-        const img = new Image();
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          img.src = e.target?.result as string;
-          img.onload = () => {
-            const newHeight = Math.round(width / (img.width / img.height));
-            setHeight(newHeight);
-          };
-        };
-        reader.readAsDataURL(imageFile);
+        updateHeight({ width, file: imageFile, setHeight });
       }
 
       return newValue;
@@ -84,42 +79,30 @@ export default function ImageResize() {
   }, [imageFile, width]);
 
   const handleWidthChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const newWidth = parseInt(e.target.value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      let newWidth = parseInt(e.target.value);
+      if (newWidth > MAX_DIMENSION) {
+        newWidth = MAX_DIMENSION;
+      }
       setWidth(newWidth);
 
       if (maintainAspectRatio && imageFile) {
-        const img = new Image();
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          img.src = e.target?.result as string;
-          img.onload = () => {
-            const newHeight = Math.round(newWidth / (img.width / img.height));
-            setHeight(newHeight);
-          };
-        };
-        reader.readAsDataURL(imageFile);
+        updateHeight({ file: imageFile, setHeight, width: newWidth });
       }
     },
     [maintainAspectRatio, imageFile]
   );
 
   const handleHeightChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const newHeight = parseInt(e.target.value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      let newHeight = parseInt(e.target.value);
+      if (newHeight > MAX_DIMENSION) {
+        newHeight = MAX_DIMENSION;
+      }
       setHeight(newHeight);
 
       if (maintainAspectRatio && imageFile) {
-        const img = new Image();
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          img.src = e.target?.result as string;
-          img.onload = () => {
-            const newWidth = Math.round(newHeight * (img.width / img.height));
-            setWidth(newWidth);
-          };
-        };
-        reader.readAsDataURL(imageFile);
+        updateWidth({ file: imageFile, height: newHeight, setWidth });
       }
     },
     [maintainAspectRatio, imageFile]
@@ -127,44 +110,38 @@ export default function ImageResize() {
 
   const handleResize = useCallback(() => {
     if (imageFile) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.src = e.target?.result as string;
-        img.onload = () => {
-          resizeImage({
-            img,
-            width,
-            height,
-            format,
-            quality,
-            maintainAspectRatio,
-          }).then(setOutput);
-        };
-      };
-      reader.readAsDataURL(imageFile);
+      handleResizeImage({
+        file: imageFile,
+        format,
+        height,
+        maintainAspectRatio,
+        quality,
+        setOutput: (output) => setOutputAndShowAnimation(output),
+        width,
+      });
     }
   }, [imageFile, width, height, format, quality, maintainAspectRatio]);
 
   const qualityInput = useMemo(() => {
-    if (format === "png") {
-      return null;
+    if (format === "jpeg") {
+      return (
+        <div className="flex justify-between items-center mb-4">
+          <Label className="mb-1">Quality (0.1 to 1.0)</Label>
+          <Input
+            type="number"
+            min="0.1"
+            max="1.0"
+            step="0.1"
+            value={quality}
+            onChange={(e) => setQuality(parseFloat(e.target.value))}
+            className="w-[88] border rounded p-2 text-right"
+            disabled={!imageFile}
+          />
+        </div>
+      );
     }
-    return (
-      <div className="flex justify-between items-center mb-4">
-        <Label className="mb-1">Quality (0.1 to 1.0)</Label>
-        <Input
-          type="number"
-          min="0.1"
-          max="1.0"
-          step="0.1"
-          value={quality}
-          onChange={(e) => setQuality(parseFloat(e.target.value))}
-          className="w-[88] border rounded p-2 text-right"
-          disabled={!imageFile}
-        />
-      </div>
-    );
+
+    return null;
   }, [format, imageFile, quality]);
 
   return (
@@ -187,12 +164,7 @@ export default function ImageResize() {
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
             <Label>Upload Image</Label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="mb-6"
-            />
+            <ImageUpload onFileSelect={handleFileSelect} />
 
             <div className="flex items-center mb-6 gap-2">
               <Checkbox
@@ -213,22 +185,22 @@ export default function ImageResize() {
             <div className="flex justify-between items-center mb-2">
               <div className="flex-1 mr-2">
                 <Label className="mb-1">Width (px)</Label>
-                <Textarea
-                  rows={1}
+                <Input
+                  type="number"
                   placeholder="Enter width"
                   onChange={handleWidthChange}
-                  value={width || ""}
+                  value={width ?? ""}
                   className="mb-2"
                   disabled={!imageFile}
                 />
               </div>
               <div className="flex-1 ml-2">
                 <Label className="mb-1">Height (px)</Label>
-                <Textarea
-                  rows={1}
+                <Input
+                  typeof="number"
                   placeholder="Enter height"
                   onChange={handleHeightChange}
-                  value={height || ""}
+                  value={height ?? ""}
                   className="mb-2"
                   disabled={!imageFile}
                 />
@@ -247,11 +219,7 @@ export default function ImageResize() {
 
             {qualityInput}
 
-            <Button
-              variant="outline"
-              onClick={handleResize}
-              disabled={!imageFile}
-            >
+            <Button onClick={handleResize} disabled={!imageFile}>
               Resize
             </Button>
 
@@ -261,7 +229,7 @@ export default function ImageResize() {
                 <img
                   src={output}
                   alt="Resized output"
-                  className="w-full h-auto mb-4"
+                  className={`w-full h-auto mb-4 ${showAnimation ? "animate-grow-from-center" : ""}`}
                 />
                 <a
                   href={output}
