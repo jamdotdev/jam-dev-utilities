@@ -11,7 +11,7 @@ import Meta from "@/components/Meta";
 import { convertCSSToInline } from "../../components/utils/css-to-inline.utils";
 import { CMDK } from "../../components/CMDK";
 
-export default function CSSToInlineConverter() {
+export default function CSSInlinerForEmail() {
   const [htmlInput, setHtmlInput] = useState("");
   const [cssInput, setCssInput] = useState("");
   const [output, setOutput] = useState("");
@@ -21,8 +21,7 @@ export default function CSSToInlineConverter() {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
 
-    const hasTags =
-      doc.body.innerHTML.trim() !== "" && doc.body.children.length > 0;
+    const hasTags = doc.body?.children.length > 0;
     const hasParsingErrors = doc.querySelectorAll("parsererror").length > 0;
 
     return hasTags && !hasParsingErrors;
@@ -58,28 +57,32 @@ export default function CSSToInlineConverter() {
     ];
 
     const errorMessage =
-      conditions.find((value) => value.condition)?.message || null;
+      conditions.find((value) => value.condition)?.message ?? "";
 
     try {
       const inlinedHtml = convertCSSToInline(htmlInput, cssInput);
-      setOutput(errorMessage ?? inlinedHtml);
-    } catch (errorMessage: unknown) {
-      setOutput(errorMessage as string);
+      setOutput(errorMessage || inlinedHtml);
+    } catch (error) {
+      if (error instanceof Error) {
+        setOutput(error.message);
+      } else {
+        setOutput(errorMessage);
+      }
     }
   }, [htmlInput, cssInput]);
 
   return (
     <main>
       <Meta
-        title="CSS to Inline Converter by Jam.dev | Free, Open Source & Ad-free"
-        description="Convert CSS styles to inline styles directly in your HTML with Jam's free CSS to inline converter. Just paste your HTML and CSS, and get the inlined HTML result."
+        title="CSS Inliner for Email by Jam.dev | Free, Open Source & Ad-free"
+        description="Convert CSS styles to inline styles directly in your HTML with Jam's free CSS Inliner for Email. Just paste your HTML and CSS, and get the inlined HTML result."
       />
       <Header />
       <CMDK />
 
       <section className="container max-w-2xl mb-12">
         <PageHeader
-          title="CSS to Inline Converter"
+          title="CSS Inliner for Email"
           description="Convert your CSS to inline styles quickly and easily."
         />
       </section>
