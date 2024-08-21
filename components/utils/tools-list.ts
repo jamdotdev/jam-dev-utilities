@@ -89,4 +89,10 @@ export const tools = [
       "Easily convert your CSS styles to inline styles directly in your HTML. Perfect for improving email compatibility and reducing external stylesheet dependencies.",
     link: "/utilities/css-inliner-for-email",
   },
+  {
+    title: "Regex Tester",
+    description:
+      "Test and debug your regular expressions in real-time. Provides quick feedback on pattern matching for strings.",
+    link: "/utilities/regex-tester",
+  },
 ];
