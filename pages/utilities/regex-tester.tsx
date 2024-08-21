@@ -8,6 +8,7 @@ import { CMDK } from "@/components/CMDK";
 import Meta from "@/components/Meta";
 import RegexHighlightText from "@/components/RegexHighlightText";
 import { createRegex } from "@/components/utils/regex-tester.utils";
+import CallToActionGrid from "@/components/CallToActionGrid";
 
 export default function RegexTester() {
   const [pattern, setPattern] = useState("");
@@ -113,6 +114,8 @@ export default function RegexTester() {
           </div>
         </Card>
       </section>
+
+      <CallToActionGrid />
     </main>
   );
 }
