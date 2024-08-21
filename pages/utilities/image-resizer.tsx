@@ -7,18 +7,18 @@ import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import ImageResizeSEO from "../../components/seo/ImageResizeSEO";
+import ImageResizeSEO from "@/components/seo/ImageResizeSEO";
 import {
   Format,
   handleResizeImage,
   processImageFile,
   updateHeight,
   updateWidth,
-} from "../../components/utils/resize-image.utils";
-import { Combobox } from "../../components/ds/ComboboxComponent";
-import { Checkbox } from "../../components/ds/CheckboxComponent";
-import { Input } from "../../components/ds/InputComponent";
-import ImageUpload from "../../components/ds/ImageUploadComponent";
+} from "@/components/utils/resize-image.utils";
+import { Combobox } from "@/components/ds/ComboboxComponent";
+import { Checkbox } from "@/components/ds/CheckboxComponent";
+import { Input } from "@/components/ds/InputComponent";
+import { ImageUploadComponent } from "@/components/ds/ImageUploadComponent";
 
 const MAX_DIMENSION = 1024 * 4;
 interface FormatOption {
@@ -163,8 +163,7 @@ export default function ImageResize() {
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
-            <Label>Upload Image</Label>
-            <ImageUpload onFileSelect={handleFileSelect} />
+            <ImageUploadComponent onFileSelect={handleFileSelect} />
 
             <div className="flex items-center mb-6 gap-2">
               <Checkbox
@@ -184,7 +183,7 @@ export default function ImageResize() {
 
             <div className="flex justify-between items-center mb-2">
               <div className="flex-1 mr-2">
-                <Label className="mb-1">Width (px)</Label>
+                <Label className="mb-2">Width (px)</Label>
                 <Input
                   type="number"
                   placeholder="Enter width"
@@ -195,7 +194,7 @@ export default function ImageResize() {
                 />
               </div>
               <div className="flex-1 ml-2">
-                <Label className="mb-1">Height (px)</Label>
+                <Label className="mb-2">Height (px)</Label>
                 <Input
                   typeof="number"
                   placeholder="Enter height"

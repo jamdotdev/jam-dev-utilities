@@ -1,19 +1,19 @@
+"use client";
 import { DragEvent, useCallback, useRef, useState } from "react";
 import UploadIcon from "@/components/icons/UploadIcon";
 
 type Status = "idle" | "loading" | "error" | "unsupported" | "hover";
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024;
-
 interface ImageUploadProps {
   onFileSelect: (file: File) => void;
   maxFileSize?: number;
 }
 
-export default function ImageUploadComponent({
+const ImageUploadComponent = ({
   onFileSelect,
   maxFileSize = MAX_FILE_SIZE,
-}: ImageUploadProps) {
+}: ImageUploadProps) => {
   const [status, setStatus] = useState<Status>("idle");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -80,7 +80,7 @@ export default function ImageUploadComponent({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onClick={handleClick}
-      className="flex flex-col border border-dashed border-border p-6 text-center text-muted-foreground rounded-lg min-h-40 items-center justify-center bg-muted cursor-pointer"
+      className="flex flex-col border border-dashed border-border p-6 text-center text-muted-foreground rounded-lg min-h-40 items-center justify-center bg-muted cursor-pointer mb-2"
     >
       <input
         ref={inputRef}
@@ -93,7 +93,7 @@ export default function ImageUploadComponent({
       {statusComponents[status]}
     </div>
   );
-}
+};
 
 const StatusComponent = ({
   title,
@@ -120,3 +120,5 @@ const statusComponents: Record<Status, JSX.Element> = {
   unsupported: <StatusComponent title="Please provide a valid image" />,
   hover: <StatusComponent title="Drop it like it's hot! 🔥" />,
 };
+
+export { ImageUploadComponent };

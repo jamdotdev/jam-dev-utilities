@@ -9,7 +9,7 @@ import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import ImageUpload from "@/components/ds/ImageUploadComponent";
+import { ImageUploadComponent } from "@/components/ds/ImageUploadComponent";
 
 export default function ImageToBase64() {
   const [base64, setBase64] = useState("");
@@ -50,7 +50,7 @@ export default function ImageToBase64() {
 
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
-          <ImageUpload onFileSelect={handleFileSelect} />
+          <ImageUploadComponent onFileSelect={handleFileSelect} />
           <div className="pt-8">
             <Label>Base64 Output</Label>
             <Textarea
