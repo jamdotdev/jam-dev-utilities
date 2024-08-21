@@ -16,7 +16,7 @@ export default function Header() {
         <Button
           className="min-h-10 flex"
           variant="outline"
-          onClick={() => window.open("https://jam.dev", "_blank")}
+          onClick={() => window.open("https://jam.dev?ref=utils", "_blank")}
         >
           <span className="mr-2">Try Jam</span>
           <Favicon />

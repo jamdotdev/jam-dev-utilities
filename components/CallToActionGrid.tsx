@@ -13,7 +13,7 @@ export default function CallToActionGrid() {
         logo="jam"
         description="Auto-capture all the info engineers need to debug!"
         buttonText="Try Jam"
-        href="https://jam.dev"
+        href="https://jam.dev?ref=utils"
       />
     </section>
   );
