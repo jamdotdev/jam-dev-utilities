@@ -38,6 +38,7 @@ Here is the list of all utilities:
 - [HAR file viewer](https://jam.dev/utilities/har-file-viewer)
 - [JSON to YAML](https://jam.dev/utilities/json-to-yaml)
 - [Number Base Changer](https://jam.dev/utilities/number-base-changer)
+- [CSS Inliner for Email](https://jam.dev/utilities/css-inliner-for-email)
 
 ### Built With
 

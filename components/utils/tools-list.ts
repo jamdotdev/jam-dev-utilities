@@ -83,4 +83,10 @@ export const tools = [
       "Easily convert numbers between different bases (binary, octal, decimal, hexadecimal) with our free online Number Base Changer.",
     link: "/utilities/number-base-changer",
   },
+  {
+    title: "CSS Inliner for Email",
+    description:
+      "Easily convert your CSS styles to inline styles directly in your HTML. Perfect for improving email compatibility and reducing external stylesheet dependencies.",
+    link: "/utilities/css-inliner-for-email",
+  },
 ];
