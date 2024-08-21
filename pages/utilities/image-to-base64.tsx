@@ -10,6 +10,7 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { ImageUploadComponent } from "@/components/ds/ImageUploadComponent";
+import ImageToBase64SEO from "@/components/seo/ImageToBase64SEO";
 
 export default function ImageToBase64() {
   const [base64, setBase64] = useState("");
@@ -102,6 +103,10 @@ export default function ImageToBase64() {
       </section>
 
       <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <ImageToBase64SEO />
+      </section>
     </main>
   );
 }

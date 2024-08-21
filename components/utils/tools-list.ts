@@ -84,6 +84,18 @@ export const tools = [
     link: "/utilities/number-base-changer",
   },
   {
+    title: "CSS Inliner for Email",
+    description:
+      "Easily convert your CSS styles to inline styles directly in your HTML. Perfect for improving email compatibility and reducing external stylesheet dependencies.",
+    link: "/utilities/css-inliner-for-email",
+  },
+  {
+    title: "Regex Tester",
+    description:
+      "Test and debug your regular expressions in real-time. Provides quick feedback on pattern matching for strings.",
+    link: "/utilities/regex-tester",
+  },
+  {
     title: "Image Resizer",
     description:
       "Resize images while maintaining aspect ratio and choose between PNG and JPEG formats with our free tool.",
