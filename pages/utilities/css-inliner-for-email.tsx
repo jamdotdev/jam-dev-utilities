@@ -104,11 +104,11 @@ export default function CSSInlinerForEmail() {
               rows={6}
               placeholder="Paste CSS here"
               onChange={handleCssChange}
-              className="mb-6"
+              className="mb-4"
               value={cssInput}
             />
 
-            <Button onClick={handleConvert} className="mb-4">
+            <Button onClick={handleConvert} className="mb-6">
               Convert to Inline
             </Button>
 
