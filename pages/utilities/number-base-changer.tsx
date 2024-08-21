@@ -10,6 +10,7 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { Combobox } from "@/components/ds/ComboboxComponent";
+import NumberBaseChangerSEO from "@/components/seo/NumberBaseChangerSEO";
 
 export default function Base64Encoder() {
   const [fromBase, setFromBase] = useState(10);
@@ -86,6 +87,10 @@ export default function Base64Encoder() {
       </section>
 
       <CallToActionGrid />
+
+      <section className="container max-w-2xl mb-6">
+        <NumberBaseChangerSEO />
+      </section>
     </main>
   );
 }
