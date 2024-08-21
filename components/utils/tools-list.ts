@@ -95,4 +95,10 @@ export const tools = [
       "Test and debug your regular expressions in real-time. Provides quick feedback on pattern matching for strings.",
     link: "/utilities/regex-tester",
   },
+  {
+    title: "CSS Units Converter",
+    description:
+      "Easily convert your CSS units to other units values.",
+    link: "/utilities/css-units-converter",
+  },
 ];
