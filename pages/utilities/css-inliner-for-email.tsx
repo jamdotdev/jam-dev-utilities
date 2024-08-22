@@ -8,8 +8,9 @@ import Header from "@/components/Header";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import { convertCSSToInline } from "../../components/utils/css-to-inline.utils";
-import { CMDK } from "../../components/CMDK";
+import { convertCSSToInline } from "@/components/utils/css-to-inline.utils";
+import { CMDK } from "@/components/CMDK";
+import GitHubContribution from "@/components/GitHubContribution";
 
 export default function CSSInlinerForEmail() {
   const [htmlInput, setHtmlInput] = useState("");
@@ -121,6 +122,7 @@ export default function CSSInlinerForEmail() {
         </Card>
       </section>
 
+      <GitHubContribution username="EduardoDePatta" />
       <CallToActionGrid />
     </main>
   );
