@@ -34,7 +34,7 @@ describe("validateJsonSchema", () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        expect.stringContaining("should have required property 'age'")
+        expect.stringContaining("should have required property 'age'"),
       ])
     );
   });
@@ -47,7 +47,9 @@ describe("validateJsonSchema", () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        expect.stringContaining("Expected property name or '}' in JSON at position")
+        expect.stringContaining(
+          "Expected property name or '}' in JSON at position"
+        ),
       ])
     );
   });
@@ -68,7 +70,9 @@ describe("validateJsonSchema", () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        expect.stringContaining("Expected property name or '}' in JSON at position")
+        expect.stringContaining(
+          "Expected property name or '}' in JSON at position"
+        ),
       ])
     );
   });

@@ -23,9 +23,7 @@ export const validateJsonSchema = (
       return { valid: true, errors: [] };
     } else {
       const errors = validate.errors
-        ? validate.errors.map(
-            (error) => `${error.dataPath} ${error.message}`
-          )
+        ? validate.errors.map((error) => `${error.dataPath} ${error.message}`)
         : [];
       return { valid: false, errors };
     }

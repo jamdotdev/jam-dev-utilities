@@ -96,8 +96,9 @@ export const tools = [
     link: "/utilities/regex-tester",
   },
   {
-    "title": "JSON Schema Validator",
-    "description": "Validate and troubleshoot your JSON data structures in real-time. Ensure your JSON complies with the defined schema for accurate data handling.",
-    "link": "/utilities/json-schema-validator"
-  }  
+    title: "JSON Schema Validator",
+    description:
+      "Validate and troubleshoot your JSON data structures in real-time. Ensure your JSON complies with the defined schema for accurate data handling.",
+    link: "/utilities/json-schema-validator",
+  },
 ];

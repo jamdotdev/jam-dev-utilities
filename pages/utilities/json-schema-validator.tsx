@@ -100,9 +100,7 @@ export default function JsonSchemaValidator() {
               <div
                 className={`w-full rounded-lg border border-input px-3 py-2 text-sm ring-offset-background ${resultColor}`}
               >
-                <div>
-                  {result}
-                </div>
+                <div>{result}</div>
               </div>
             </div>
 
