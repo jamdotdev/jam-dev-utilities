@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import { CMDK } from "@/components/CMDK";
 import { Card } from "@/components/ds/CardComponent";
@@ -13,8 +13,6 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import {
   pxToRem,
   remToPx,
-  pxToEm,
-  emToPx,
   pxToVw,
   vwToPx,
   pxToVh,
@@ -24,89 +22,85 @@ import {
   pxToVmax,
   vmaxToPx,
 } from "@/components/utils/css-units-converter.utils";
+import CssUnitsConverter from "@/components/seo/CssUnitsConverter";
+
+type ConvertionFunction = (value: number, ...args: number[]) => number;
+type ConversionKey =
+  | "px-rem"
+  | "rem-px"
+  | "px-vw"
+  | "vw-px"
+  | "px-vh"
+  | "vh-px"
+  | "px-vmin"
+  | "vmin-px"
+  | "px-vmax"
+  | "vmax-px";
 
 export default function CSSUnitsConverter() {
   const [htmlInput, setHtmlInput] = useState("");
   const [fromUnit, setFromUnit] = useState("");
-  const [cssInput, setCssInput] = useState("");
+  const [widthInput, setWidthInput] = useState("");
+  const [heightInput, setHeightInput] = useState("");
   const [toUnit, setToUnit] = useState("");
   const [output, setOutput] = useState("");
-
   const { buttonText, handleCopy } = useCopyToClipboard();
-
-  const convertUnits = () => {
-    const value = parseFloat(htmlInput);
-    const containerWidthValue = parseFloat(cssInput);
-    if (isNaN(value) || (needsContainerInput && isNaN(containerWidthValue))) {
-      window.alert("Please provide valid values");
-      return;
-    }
-
-    let convertedValue: string | number = "Invalid conversion";
-    switch (fromUnit) {
-      case "px":
-        if (toUnit === "rem") convertedValue = pxToRem(value);
-        else if (toUnit === "em") convertedValue = pxToEm(value);
-        else if (toUnit === "vw" && containerWidthValue !== null)
-          convertedValue = pxToVw(value, containerWidthValue);
-        else if (toUnit === "vh" && containerWidthValue !== null)
-          convertedValue = pxToVh(value, containerWidthValue);
-        else if (toUnit === "vmin" && containerWidthValue !== null)
-          convertedValue = pxToVmin(
-            value,
-            containerWidthValue,
-            containerWidthValue
-          );
-        else if (toUnit === "vmax" && containerWidthValue !== null)
-          convertedValue = pxToVmax(
-            value,
-            containerWidthValue,
-            containerWidthValue
-          );
-        break;
-      case "rem":
-        if (toUnit === "px") convertedValue = remToPx(value);
-        break;
-      case "em":
-        if (toUnit === "px") convertedValue = emToPx(value);
-        break;
-      case "vw":
-        if (toUnit === "px" && containerWidthValue !== null)
-          convertedValue = vwToPx(value, containerWidthValue);
-        break;
-      case "vh":
-        if (toUnit === "px" && containerWidthValue !== null)
-          convertedValue = vhToPx(value, containerWidthValue);
-        break;
-      case "vmin":
-        if (toUnit === "px" && containerWidthValue !== null)
-          convertedValue = vminToPx(
-            value,
-            containerWidthValue,
-            containerWidthValue
-          );
-        break;
-      case "vmax":
-        if (toUnit === "px" && containerWidthValue !== null)
-          convertedValue = vmaxToPx(
-            value,
-            containerWidthValue,
-            containerWidthValue
-          );
-        break;
-      default:
-        convertedValue = "Invalid conversion";
-    }
-
-    if (typeof convertedValue === "number") {
-      convertedValue = convertedValue.toFixed(3);
-    }
-    setOutput(convertedValue.toString());
-  };
 
   const needsContainerInput =
     ["vw", "vh", "vmin", "vmax"].includes(fromUnit) ||
     ["vw", "vh", "vmin", "vmax"].includes(toUnit);
+
+  const convertUnits = useCallback(() => {
+    const value = parseFloat(htmlInput);
+    const containerWidthValue = parseFloat(widthInput);
+    const containerHeightValue = parseFloat(heightInput);
+
+    if (isNaN(value) || (needsContainerInput && isNaN(containerWidthValue))) {
+      setOutput("Invalid values.");
+      return;
+    }
+
+    const conversionKey = `${fromUnit}-${toUnit}` as ConversionKey;
+    const conversionFunction = conversionFunctionMapper[conversionKey];
+
+    if (!(conversionKey in conversionFunctionMapper)) {
+      setOutput("Invalid conversion");
+      return;
+    }
+
+    let convertedValue: string | number = "Invalid conversion";
+
+    if (conversionFunction) {
+      if (["px-vw", "vw-px"].includes(conversionKey)) {
+        convertedValue = conversionFunction(value, containerWidthValue);
+      } else if (["px-vh", "vh-px"].includes(conversionKey)) {
+        convertedValue = conversionFunction(value, containerHeightValue);
+      } else if (["px-vmin", "vmin-px"].includes(conversionKey)) {
+        convertedValue = conversionFunction(
+          value,
+          containerWidthValue,
+          containerHeightValue
+        );
+      } else if (["px-vmax", "vmax-px"].includes(conversionKey)) {
+        convertedValue = conversionFunction(
+          value,
+          containerWidthValue,
+          containerHeightValue
+        );
+      } else {
+        convertedValue = conversionFunction(value);
+      }
+
+      setOutput(convertedValue.toString());
+    }
+  }, [
+    fromUnit,
+    heightInput,
+    htmlInput,
+    needsContainerInput,
+    toUnit,
+    widthInput,
+  ]);
 
   return (
     <main>
@@ -154,8 +148,15 @@ export default function CSSUnitsConverter() {
                 <Textarea
                   className="mb-6"
                   rows={1}
-                  value={cssInput}
-                  onChange={(e) => setCssInput(e.target.value)}
+                  value={widthInput}
+                  onChange={(e) => setWidthInput(e.target.value)}
+                />
+                <Label>Container Height (px)</Label>
+                <Textarea
+                  className="mb-6"
+                  rows={1}
+                  value={heightInput}
+                  onChange={(e) => setHeightInput(e.target.value)}
                 />
               </div>
             )}
@@ -163,7 +164,7 @@ export default function CSSUnitsConverter() {
             <Label>Result</Label>
             <Textarea value={output} rows={3} readOnly className="mb-4" />
 
-            <Button variant="outline" onClick={convertUnits}>
+            <Button variant="outline" onClick={() => convertUnits()}>
               Convert
             </Button>
 
@@ -175,6 +176,10 @@ export default function CSSUnitsConverter() {
       </section>
 
       <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <CssUnitsConverter />
+      </section>
     </main>
   );
 }
@@ -182,12 +187,21 @@ export default function CSSUnitsConverter() {
 const unitOptions = [
   { value: "px", label: "Pixels (px)" },
   { value: "rem", label: "Rems (rem)" },
-  { value: "em", label: "Ems (em)" },
   { value: "vw", label: "Viewport Width (vw)" },
   { value: "vh", label: "Viewport Height (vh)" },
   { value: "vmin", label: "Viewport Min (vmin)" },
   { value: "vmax", label: "Viewport Max (vmax)" },
 ];
 
-
-// TODO create a func mapper - ref useState names - create test file
+const conversionFunctionMapper: Record<ConversionKey, ConvertionFunction> = {
+  "px-rem": pxToRem,
+  "rem-px": remToPx,
+  "px-vw": pxToVw,
+  "vw-px": vwToPx,
+  "px-vh": pxToVh,
+  "vh-px": vhToPx,
+  "px-vmin": pxToVmin,
+  "vmin-px": vminToPx,
+  "px-vmax": pxToVmax,
+  "vmax-px": vmaxToPx,
+};

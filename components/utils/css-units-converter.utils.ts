@@ -6,14 +6,6 @@ export function remToPx(rem: number, base: number = 16): number {
   return rem * base;
 }
 
-export function pxToEm(px: number, base: number = 16): number {
-  return px / base;
-}
-
-export function emToPx(em: number, base: number = 16): number {
-  return em * base;
-}
-
 export function pxToVw(px: number, viewportWidth: number): number {
   return (px / viewportWidth) * 100;
 }
