@@ -120,7 +120,3 @@ export default function JsonSchemaValidator() {
     </main>
   );
 }
-
-const Divider = () => {
-  return <div className="bg-border h-[1px] my-2"></div>;
-};
