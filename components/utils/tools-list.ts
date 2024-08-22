@@ -97,8 +97,7 @@ export const tools = [
   },
   {
     title: "CSS Units Converter",
-    description:
-      "Easily convert your CSS units to other units values.",
+    description: "Easily convert your CSS units to other units values.",
     link: "/utilities/css-units-converter",
   },
 ];
