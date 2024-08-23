@@ -9,7 +9,8 @@ import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import { decodeJWT } from "../../components/utils/jwt-parser.utils";
+import { decodeJWT } from "@/components/utils/jwt-parser.utils";
+import JWTParserSEO from "../../components/seo/JWTParserSEO";
 
 export default function JWTParser() {
   const [input, setInput] = useState("");
@@ -48,7 +49,7 @@ export default function JWTParser() {
   return (
     <main>
       <Meta
-        title="JWT Parser by Jam.dev | Free, Open Source & Ad-free"
+        title="JWT Parser | Free, Open Source & Ad-free"
         description="Decode JWT tokens quickly and easily with Jam's free online JWT Decoder. Just paste your token and get the decoded result. That's it."
       />
       <Header />
@@ -110,6 +111,10 @@ export default function JWTParser() {
       </section>
 
       <CallToActionGrid />
+
+      <section className="container max-w-2xl mb-6">
+        <JWTParserSEO />
+      </section>
     </main>
   );
 }
