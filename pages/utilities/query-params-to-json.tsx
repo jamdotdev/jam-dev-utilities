@@ -40,7 +40,7 @@ export default function QueryParamsToJSON() {
   return (
     <main>
       <Meta
-        title="Query Params to JSON Converter by Jam.dev | Free, Open Source & Ad-free"
+        title="Query Params to JSON Converter | Free, Open Source & Ad-free"
         description="This free tool is a quick and easy way to convert URL query parameters into JSON format. If you work with web applications, APIs, or data manipulation, you can use Jam's tool to transform query strings into structured JSON objects."
       />
       <Header />

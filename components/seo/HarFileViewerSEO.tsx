@@ -4,7 +4,7 @@ export default function HarFileViewerSEO() {
   return (
     <div className="content-wrapper">
       <section>
-        <h2>HAR File Viewer by Jam.dev</h2>
+        <h2>HAR File Viewer</h2>
         <p>
           Effortlessly view and analyze HAR (HTTP Archive) files with our free
           online tool. Debugging network performance has never been easier (or

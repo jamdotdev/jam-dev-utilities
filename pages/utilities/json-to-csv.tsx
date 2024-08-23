@@ -39,7 +39,7 @@ export default function JSONtoCSV() {
   return (
     <main>
       <Meta
-        title="JSON to CSV Converter by Jam.dev | Free, Open Source & Ad-free"
+        title="JSON to CSV Converter | Free, Open Source & Ad-free"
         description="Convert JSON files to CSV format quickly and easily with Jam's free online JSON to CSV converter. Just paste your JSON file and get the CSV result. That's it."
       />
       <Header />

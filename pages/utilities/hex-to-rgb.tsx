@@ -70,7 +70,7 @@ export default function HEXtoRGB() {
   return (
     <main>
       <Meta
-        title="HEX to RGB converter by Jam.dev | CSS Color Converter | Free & Open Source"
+        title="HEX to RGB converter | CSS Color Converter | Free & Open Source"
         description="Easily convert HEX to RGB and RGB to HEX with Jam's free color converter tool. Perfect for quick color code conversions—just paste the value and copy the resulting code."
       />
       <Header />

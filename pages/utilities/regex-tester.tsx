@@ -60,7 +60,7 @@ export default function RegexTester() {
   return (
     <main>
       <Meta
-        title="Regex Tester by Jam.dev | Free, Open Source & Ad-free"
+        title="Regex Tester | Free, Open Source & Ad-free"
         description="Test your regular expressions quickly and easily with Jam's free online Regex Tester. Paste your regex and test string to see if they match."
       />
       <Header />
