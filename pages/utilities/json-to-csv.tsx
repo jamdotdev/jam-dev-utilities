@@ -10,6 +10,7 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { convertJSONtoCSV } from "@/components/utils/json-to-csv.utils";
+import JsonToCsvSEO from "@/components/seo/JsonToCsvSEO";
 
 export default function JSONtoCSV() {
   const [input, setInput] = useState("");
@@ -77,6 +78,10 @@ export default function JSONtoCSV() {
       </section>
 
       <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <JsonToCsvSEO />
+      </section>
     </main>
   );
 }
