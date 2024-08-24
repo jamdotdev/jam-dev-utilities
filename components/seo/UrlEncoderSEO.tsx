@@ -59,7 +59,7 @@ export default function UrlEncoderSEO() {
         <h2>Discover Jam: The Ultimate Tool for Web Developers</h2>
         <p>
           While this URL tool helps you manage URLs efficiently,{" "}
-          <a href="https://jam.dev" target="_blank" rel="noreferrer">
+          <a href="https://jam.dev?ref=utils" target="_blank" rel="noreferrer">
             Jam
           </a>{" "}
           takes your debugging process to the next level.

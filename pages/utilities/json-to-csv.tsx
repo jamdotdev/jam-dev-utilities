@@ -10,6 +10,7 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { convertJSONtoCSV } from "@/components/utils/json-to-csv.utils";
+import JsonToCsvSEO from "@/components/seo/JsonToCsvSEO";
 
 export default function JSONtoCSV() {
   const [input, setInput] = useState("");
@@ -39,7 +40,7 @@ export default function JSONtoCSV() {
   return (
     <main>
       <Meta
-        title="JSON to CSV Converter by Jam.dev | Free, Open Source & Ad-free"
+        title="JSON to CSV Converter | Free, Open Source & Ad-free"
         description="Convert JSON files to CSV format quickly and easily with Jam's free online JSON to CSV converter. Just paste your JSON file and get the CSV result. That's it."
       />
       <Header />
@@ -77,6 +78,10 @@ export default function JSONtoCSV() {
       </section>
 
       <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <JsonToCsvSEO />
+      </section>
     </main>
   );
 }

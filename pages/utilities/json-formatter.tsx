@@ -36,7 +36,7 @@ export default function JSONFormatter() {
   return (
     <main>
       <Meta
-        title="JSON formatter by Jam.dev | Free, Open Source & Ad-free"
+        title="JSON formatter | Free, Open Source & Ad-free"
         description="Beautify and structure raw JSON data with proper indentation and formatting, making it easier to read, edit, and validate JSON content."
       />
       <Header />

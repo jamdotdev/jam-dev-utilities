@@ -19,6 +19,7 @@ import { Card } from "@/components/ds/CardComponent";
 import UploadIcon from "@/components/icons/UploadIcon";
 import PageHeader from "@/components/PageHeader";
 import CallToActionGrid from "@/components/CallToActionGrid";
+import HarFileViewerSEO from "@/components/seo/HarFileViewerSEO";
 
 type Status = "idle" | "unsupported" | "hover";
 
@@ -105,6 +106,9 @@ export default function HARFileViewer() {
       )}
 
       <CallToActionGrid />
+      <section className="container max-w-2xl">
+        <HarFileViewerSEO />
+      </section>
     </main>
   );
 }

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import { Textarea } from "@/components/ds/TextareaComponent";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
@@ -10,6 +10,7 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import UploadIcon from "@/components/icons/UploadIcon";
+import ImageToBase64SEO from "@/components/seo/ImageToBase64SEO";
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024;
 type Status = "idle" | "loading" | "error" | "unsupported" | "hover";
@@ -17,7 +18,8 @@ type Status = "idle" | "loading" | "error" | "unsupported" | "hover";
 export default function ImageToBase64() {
   const [status, setStatus] = useState<Status>("idle");
   const [base64, setBase64] = useState("");
-
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const isDisabled = base64.length === 0;
   const copyHooks = [
     useCopyToClipboard(),
     useCopyToClipboard(),
@@ -29,10 +31,22 @@ export default function ImageToBase64() {
     { buttonText: buttonCSS, handleCopy: handleCopyCSS },
   ] = copyHooks;
 
-  const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
+  const handleSelectFile = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
 
-    const file = event.dataTransfer.files[0];
+  const handleFileInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0] ?? null;
+      validateImageFile(file, event);
+    },
+    []
+  );
+
+  const validateImageFile = (
+    file: Blob | null,
+    event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>
+  ) => {
     if (!file || !file.type.startsWith("image/")) {
       setStatus("unsupported");
       return;
@@ -48,8 +62,17 @@ export default function ImageToBase64() {
     reader.onload = () => {
       setBase64(reader.result as string);
       setStatus("idle");
+      if (event.target instanceof HTMLInputElement) {
+        event.target.value = "";
+      }
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    validateImageFile(file, event);
   }, []);
 
   const handleDragOver = useCallback(
@@ -67,7 +90,7 @@ export default function ImageToBase64() {
   return (
     <main>
       <Meta
-        title="Image to Base64 Converter by Jam.dev | Free, Open Source & Ad-free"
+        title="Image to Base64 Converter | Free, Open Source & Ad-free"
         description="Convert images to Base64 format quickly and easily with Jam's free online image to Base64 converter. Just drag and drop your image and get the Base64 result. That's it."
       />
       <Header />
@@ -86,8 +109,15 @@ export default function ImageToBase64() {
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
-            className="flex flex-col border border-dashed border-border p-6 text-center text-muted-foreground rounded-lg min-h-40 items-center justify-center bg-muted"
+            onClick={handleSelectFile}
+            className="flex flex-col cursor-pointer border border-dashed border-border p-6 text-center text-muted-foreground rounded-lg min-h-40 items-center justify-center bg-muted"
           >
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="w-full h-full hidden"
+              onChange={handleFileInputChange}
+            />
             <UploadIcon />
             {statusComponents[status]}
           </div>
@@ -100,9 +130,23 @@ export default function ImageToBase64() {
               readOnly
               className="mb-4 overflow-x-hidden"
             />
-            <Button variant="outline" onClick={() => handleCopyBase64(base64)}>
-              {buttonBase64}
-            </Button>
+            <div className="flex justify-between">
+              <Button
+                variant="outline"
+                onClick={() => handleCopyBase64(base64)}
+                disabled={isDisabled}
+              >
+                {buttonBase64}
+              </Button>
+              <Button
+                className="ml-2"
+                variant="default"
+                onClick={() => setBase64("")}
+                disabled={isDisabled}
+              >
+                Clear
+              </Button>
+            </div>
             <Divider />
 
             <Label>Use in {"<img>"} tag:</Label>
@@ -117,6 +161,7 @@ export default function ImageToBase64() {
               onClick={() => {
                 handleCopyImgTag(`<img src="${base64}" alt="Base64 Image" />`);
               }}
+              disabled={isDisabled}
             >
               {buttonImgTag}
             </Button>
@@ -135,6 +180,7 @@ export default function ImageToBase64() {
               onClick={() => {
                 handleCopyCSS(`background-image: url(${base64});`);
               }}
+              disabled={isDisabled}
             >
               {buttonCSS}
             </Button>
@@ -143,6 +189,10 @@ export default function ImageToBase64() {
       </section>
 
       <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <ImageToBase64SEO />
+      </section>
     </main>
   );
 }

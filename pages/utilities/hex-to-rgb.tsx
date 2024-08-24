@@ -19,12 +19,22 @@ import CodeSnippetRow from "@/components/CodeSnippetRow";
 import HexToRgbSEO from "@/components/seo/HexToRgbSEO";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
+import { cn } from "@/lib/utils";
+import RgbToHexSEO from "@/components/seo/RgbToHexSEO";
 
 const DEFAULT_RGB: RGBValues = { r: "0", g: "0", b: "0" };
 
-export default function HEXtoRGB() {
+interface HEXtoRGBProps {
+  title: string;
+  invertOrder: boolean;
+}
+
+export default function HEXtoRGB(props: HEXtoRGBProps) {
   const [hex, setHex] = useState("");
   const [rgb, setRgb] = useState<RGBValues>(DEFAULT_RGB);
+  const pageTitle = props.invertOrder
+    ? "RGB to HEX Converter"
+    : "HEX to RGB Converter";
 
   const handleHexChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const invalidHexChars = /[^#0-9A-F]/gi;
@@ -70,7 +80,10 @@ export default function HEXtoRGB() {
   return (
     <main>
       <Meta
-        title="HEX to RGB converter by Jam.dev | CSS Color Converter | Free & Open Source"
+        title={
+          props.title ??
+          "HEX to RGB converter | CSS Color Converter | Free & Open Source"
+        }
         description="Easily convert HEX to RGB and RGB to HEX with Jam's free color converter tool. Perfect for quick color code conversions—just paste the value and copy the resulting code."
       />
       <Header />
@@ -78,7 +91,7 @@ export default function HEXtoRGB() {
 
       <section className="container max-w-2xl mb-12">
         <PageHeader
-          title="HEX / RGB Converter"
+          title={pageTitle}
           description="Free, Open Source & Ad-free"
         />
       </section>
@@ -86,50 +99,59 @@ export default function HEXtoRGB() {
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
-            <Label>HEX Value</Label>
-            <div className="flex items-center mb-6">
-              <Input
-                placeholder="#000000"
-                onChange={handleHexChange}
-                className="h-8 text-sm mr-4"
-                value={hex}
-                maxLength={7}
-              />
-              <div
-                className="w-8 h-8 border rounded-full block flex-none"
-                style={{
-                  backgroundColor: isValidHex(hex) ? hex : "#000000",
-                }}
-              ></div>
-            </div>
-            <Divider />
-
-            <div className="grid grid-cols-3 gap-4">
-              {(["r", "g", "b"] as (keyof RGBValues)[]).map((colorKey) => {
-                const colorNameMap: { [key in keyof RGBValues]: string } = {
-                  r: "Red",
-                  g: "Green",
-                  b: "Blue",
-                };
-
-                return (
-                  <div key={colorKey}>
-                    <Label className="min-w-12 block mr-1">
-                      {colorNameMap[colorKey]}
-                    </Label>
-                    <Input
-                      className="h-8 text-sm"
-                      type="number"
-                      value={rgb[colorKey]}
-                      onChange={(event) => handleRGBChange(colorKey, event)}
-                      onFocus={(e) => e.currentTarget.select()}
-                      placeholder="0"
-                      min="0"
-                      max="255"
-                    />
-                  </div>
-                );
+            <div
+              className={cn("flex flex-col", {
+                "flex-col-reverse": props.invertOrder,
               })}
+            >
+              <div>
+                <Label>HEX Value</Label>
+                <div className={cn("flex items-center")}>
+                  <Input
+                    placeholder="#000000"
+                    onChange={handleHexChange}
+                    className="h-8 text-sm mr-4"
+                    value={hex}
+                    maxLength={7}
+                  />
+                  <div
+                    className="w-8 h-8 border rounded-full block flex-none"
+                    style={{
+                      backgroundColor: isValidHex(hex) ? hex : "#000000",
+                    }}
+                  ></div>
+                </div>
+              </div>
+
+              <Divider />
+
+              <div className="grid grid-cols-3 gap-4">
+                {(["r", "g", "b"] as (keyof RGBValues)[]).map((colorKey) => {
+                  const colorNameMap: { [key in keyof RGBValues]: string } = {
+                    r: "Red",
+                    g: "Green",
+                    b: "Blue",
+                  };
+
+                  return (
+                    <div key={colorKey}>
+                      <Label className="min-w-12 block mr-1">
+                        {colorNameMap[colorKey]}
+                      </Label>
+                      <Input
+                        className="h-8 text-sm"
+                        type="number"
+                        value={rgb[colorKey]}
+                        onChange={(event) => handleRGBChange(colorKey, event)}
+                        onFocus={(e) => e.currentTarget.select()}
+                        placeholder="0"
+                        min="0"
+                        max="255"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             <Divider />
@@ -161,7 +183,7 @@ export default function HEXtoRGB() {
       <CallToActionGrid />
 
       <section className="container max-w-2xl">
-        <HexToRgbSEO />
+        {props.invertOrder ? <RgbToHexSEO /> : <HexToRgbSEO />}
       </section>
     </main>
   );
