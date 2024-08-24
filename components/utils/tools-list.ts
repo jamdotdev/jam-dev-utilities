@@ -83,4 +83,22 @@ export const tools = [
       "Easily convert numbers between different bases (binary, octal, decimal, hexadecimal) with our free online Number Base Changer.",
     link: "/utilities/number-base-changer",
   },
+  {
+    title: "CSS Inliner for Email",
+    description:
+      "Easily convert your CSS styles to inline styles directly in your HTML. Perfect for improving email compatibility and reducing external stylesheet dependencies.",
+    link: "/utilities/css-inliner-for-email",
+  },
+  {
+    title: "Regex Tester",
+    description:
+      "Test and debug your regular expressions in real-time. Provides quick feedback on pattern matching for strings.",
+    link: "/utilities/regex-tester",
+  },
+  {
+    title: "Hash Generator",
+    description:
+      "Quickly generate secure hashes for your text using algorithms like SHA-256, SHA-512, MD5, and more. Ideal for password hashing, data integrity checks, and cryptographic applications.",
+    link: "/utilities/hash-generator",
+  },
 ];
