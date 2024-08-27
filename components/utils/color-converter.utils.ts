@@ -17,7 +17,13 @@ export interface CMYKValues {
   k: string;
 }
 
-export type ColorValue = RGBValues | HSLValues | CMYKValues | string;
+export interface HSVValues {
+  h: string;
+  s: string;
+  v: string;
+}
+
+export type ColorValue = RGBValues | HSLValues | CMYKValues | HSVValues | string;
 
 export const isValidHex = (hex: string) => {
   const pattern = /^#?[a-fA-F0-9]{6}$/;
@@ -144,5 +150,73 @@ export const convertCMYKtoRGB = (cmyk: CMYKValues): RGBValues => {
     r: r.toString(),
     g: g.toString(),
     b: b.toString()
+  };
+};
+
+export const convertToHSV = (rgb: RGBValues): HSVValues => {
+  const r = parseInt(rgb.r) / 255;
+  const g = parseInt(rgb.g) / 255;
+  const b = parseInt(rgb.b) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const diff = max - min;
+
+  let h = 0;
+  const s = max === 0 ? 0 : diff / max;
+  const v = max;
+
+  if (max !== min) {
+    switch (max) {
+      case r:
+        h = (g - b) / diff + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / diff + 2;
+        break;
+      case b:
+        h = (r - g) / diff + 4;
+        break;
+    }
+    h /= 6;
+  }
+
+  return {
+    h: Math.round(h * 360).toString(),
+    s: Math.round(s * 100).toString(),
+    v: Math.round(v * 100).toString()
+  };
+};
+
+export const convertHSVtoRGB = (hsv: HSVValues): RGBValues => {
+  const h = parseInt(hsv.h) / 360;
+  const s = parseInt(hsv.s) / 100;
+  const v = parseInt(hsv.v) / 100;
+
+  let r, g, b;
+
+  const i = Math.floor(h * 6);
+  const f = h * 6 - i;
+  const p = v * (1 - s);
+  const q = v * (1 - f * s);
+  const t = v * (1 - (1 - f) * s);
+
+  switch (i % 6) {
+    case 0: r = v; g = t; b = p; break;
+    case 1: r = q; g = v; b = p; break;
+    case 2: r = p; g = v; b = t; break;
+    case 3: r = p; g = q; b = v; break;
+    case 4: r = t; g = p; b = v; break;
+    case 5: r = v; g = p; b = q; break;
+  }
+
+  if (typeof r === 'undefined' || typeof g === 'undefined' || typeof b === 'undefined') {
+    return { r: "0", g: "0", b: "0" };
+  }
+
+  return {
+    r: Math.round(r * 255).toString(),
+    g: Math.round(g * 255).toString(),
+    b: Math.round(b * 255).toString()
   };
 };

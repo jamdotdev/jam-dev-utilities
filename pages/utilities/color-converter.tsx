@@ -18,6 +18,9 @@ import {
   toCss,
   toIOS,
   convertCMYKtoRGB,
+  convertToHSV,
+  convertHSVtoRGB,
+  HSVValues,
 } from "@/components/utils/color-converter.utils";
 import { Input } from "@/components/ds/InputComponent";
 import CodeSnippetRow from "@/components/CodeSnippetRow";
@@ -28,12 +31,14 @@ import ColorConverterSEO from "@/components/seo/ColorConverterSEO";
 const DEFAULT_RGB: RGBValues = { r: "0", g: "0", b: "0" };
 const DEFAULT_HSL: HSLValues = { h: "0", s: "0", l: "0" };
 const DEFAULT_CMYK: CMYKValues = { c: "0", m: "0", y: "0", k: "100" };
+const DEFAULT_HSV: HSVValues = { h: "0", s: "0", v: "0" };
 
 export default function ColorConverter() {
   const [hex, setHex] = useState("#000000");
   const [rgb, setRgb] = useState<RGBValues>(DEFAULT_RGB);
   const [hsl, setHsl] = useState<HSLValues>(DEFAULT_HSL);
   const [cmyk, setCmyk] = useState<CMYKValues>(DEFAULT_CMYK);
+  const [hsv, setHsv] = useState<HSVValues>(DEFAULT_HSV);
 
   const colorPickerRef = useRef<HTMLInputElement>(null);
 
@@ -52,6 +57,7 @@ export default function ColorConverter() {
     setRgb(newRgb);
     setHsl(convertToHSL(newRgb));
     setCmyk(convertToCMYK(newRgb));
+    setHsv(convertToHSV(newRgb));
   };
 
   const handleHexChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +73,7 @@ export default function ColorConverter() {
       setRgb(DEFAULT_RGB);
       setHsl(DEFAULT_HSL);
       setCmyk(DEFAULT_CMYK);
+      setHsv(DEFAULT_HSV);
     }
 
     setHex(value);
@@ -120,6 +127,20 @@ export default function ColorConverter() {
     });
   };
 
+  const handleHSVChange = (
+    key: keyof HSVValues,
+    event: React.FormEvent<HTMLInputElement>
+  ): void => {
+    const value = event.currentTarget.value;
+    setHsv((hsv: HSVValues) => {
+      const newHsv = { ...hsv, [key]: value };
+      const newRgb = convertHSVtoRGB(newHsv);
+      const newHex = convertToHex(newRgb.r, newRgb.g, newRgb.b);
+      updateAllFormats(newHex);
+      return newHsv;
+    });
+  };
+
   return (
     <main>
       <Meta
@@ -166,31 +187,23 @@ export default function ColorConverter() {
             <Divider />
 
             <div className="grid grid-cols-3 gap-4 mb-6">
-              {(["r", "g", "b"] as (keyof RGBValues)[]).map((colorKey) => {
-                const colorNameMap: { [key in keyof RGBValues]: string } = {
-                  r: "Red",
-                  g: "Green",
-                  b: "Blue",
-                };
-
-                return (
-                  <div key={colorKey}>
-                    <Label className="min-w-12 block mr-1">
-                      {colorNameMap[colorKey]}
-                    </Label>
-                    <Input
-                      className="h-8 text-sm"
-                      type="number"
-                      value={rgb[colorKey]}
-                      onChange={(event) => handleRGBChange(colorKey, event)}
-                      onFocus={(e) => e.currentTarget.select()}
-                      placeholder="0"
-                      min="0"
-                      max="255"
-                    />
-                  </div>
-                );
-              })}
+              {(["r", "g", "b"] as (keyof RGBValues)[]).map((key) => (
+                <div key={key}>
+                  <Label className="min-w-12 block mr-1">
+                    {key.toUpperCase()}
+                  </Label>
+                  <Input
+                    className="h-8 text-sm"
+                    type="number"
+                    value={rgb[key]}
+                    onChange={(event) => handleRGBChange(key, event)}
+                    onFocus={(e) => e.currentTarget.select()}
+                    placeholder="0"
+                    min="0"
+                    max="255"
+                  />
+                </div>
+              ))}
             </div>
 
             <div className="grid grid-cols-3 gap-4 mb-6">
@@ -204,6 +217,26 @@ export default function ColorConverter() {
                     type="number"
                     value={hsl[key]}
                     onChange={(event) => handleHSLChange(key, event)}
+                    onFocus={(e) => e.currentTarget.select()}
+                    placeholder="0"
+                    min={key === "h" ? "0" : "0"}
+                    max={key === "h" ? "360" : "100"}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              {(["h", "s", "v"] as (keyof HSVValues)[]).map((key) => (
+                <div key={key}>
+                  <Label className="min-w-12 block mr-1">
+                    {key.toUpperCase()}
+                  </Label>
+                  <Input
+                    className="h-8 text-sm"
+                    type="number"
+                    value={hsv[key]}
+                    onChange={(event) => handleHSVChange(key, event)}
                     onFocus={(e) => e.currentTarget.select()}
                     placeholder="0"
                     min={key === "h" ? "0" : "0"}
@@ -236,6 +269,26 @@ export default function ColorConverter() {
             <Divider />
 
             <CodeSnippetRow<RGBValues>
+              label="RGB"
+              value={rgb}
+              convertFunction={(value) => `rgb(${value.r}, ${value.g}, ${value.b})`}
+            />
+            <CodeSnippetRow<HSLValues>
+              label="HSL"
+              value={hsl}
+              convertFunction={(value) => `hsl(${value.h}, ${value.s}%, ${value.l}%)`}
+            />
+            <CodeSnippetRow<HSVValues>
+              label="HSV"
+              value={hsv}
+              convertFunction={(value) => `hsv(${value.h}, ${value.s}%, ${value.v}%)`}
+            />
+            <CodeSnippetRow<CMYKValues>
+              label="CMYK"
+              value={cmyk}
+              convertFunction={(value) => `cmyk(${value.c}%, ${value.m}%, ${value.y}%, ${value.k}%)`}
+            />
+            <CodeSnippetRow<RGBValues>
               label="CSS"
               value={rgb}
               convertFunction={(value) => toCss(value)}
@@ -254,16 +307,6 @@ export default function ColorConverter() {
               label="Android"
               value={rgb}
               convertFunction={(value) => toAndroidColor(value)}
-            />
-            <CodeSnippetRow<HSLValues>
-              label="HSL"
-              value={hsl}
-              convertFunction={(value) => `hsl(${value.h}, ${value.s}%, ${value.l}%)`}
-            />
-            <CodeSnippetRow<CMYKValues>
-              label="CMYK"
-              value={cmyk}
-              convertFunction={(value) => `cmyk(${value.c}%, ${value.m}%, ${value.y}%, ${value.k}%)`}
             />
           </div>
         </Card>

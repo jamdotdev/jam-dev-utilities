@@ -11,6 +11,9 @@ import {
   convertToCMYK,
   convertCMYKtoRGB,
   CMYKValues,
+  convertToHSV,
+  convertHSVtoRGB,
+  HSVValues,
 } from "./color-converter.utils";
 
 describe("color-converter.utils", () => {
@@ -73,6 +76,16 @@ describe("color-converter.utils", () => {
   test("convertCMYKtoRGB should convert CMYK values to RGB correctly", () => {
     const cmyk: CMYKValues = { c: "0", m: "100", y: "100", k: "0" };
     expect(convertCMYKtoRGB(cmyk)).toEqual({ r: "255", g: "0", b: "0" });
+  });
+
+  test("convertToHSV should convert RGB values to HSV correctly", () => {
+    const rgb: RGBValues = { r: "255", g: "0", b: "0" };
+    expect(convertToHSV(rgb)).toEqual({ h: "0", s: "100", v: "100" });
+  });
+
+  test("convertHSVtoRGB should convert HSV values to RGB correctly", () => {
+    const hsv: HSVValues = { h: "0", s: "100", v: "100" };
+    expect(convertHSVtoRGB(hsv)).toEqual({ r: "255", g: "0", b: "0" });
   });
 
 });
