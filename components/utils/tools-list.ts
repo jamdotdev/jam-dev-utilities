@@ -95,4 +95,10 @@ export const tools = [
       "Test and debug your regular expressions in real-time. Provides quick feedback on pattern matching for strings.",
     link: "/utilities/regex-tester",
   },
+  {
+    title: "JSON Schema Validator",
+    description:
+      "Validate and troubleshoot your JSON data structures in real-time. Ensure your JSON complies with the defined schema for accurate data handling.",
+    link: "/utilities/json-schema-validator",
+  },
 ];
