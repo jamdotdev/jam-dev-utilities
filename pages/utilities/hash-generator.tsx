@@ -146,7 +146,7 @@ export default function HashGenerator() {
   }, [textInput, algorithm, hashFunctions]);
 
   return (
-    <main className="container mx-auto p-4">
+    <main>
       <Meta
         title="Hash Generator | Free, Open Source & Ad-free"
         description="Generate secure hashes for your text using various algorithms like SHA-256, SHA-512, MD5, and PBKDF2 with Jam's free Hash Generator."
