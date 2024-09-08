@@ -34,6 +34,8 @@ import {
 import { Button } from "@/components/ds/ButtonComponent";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
+import GitHubContribution from "@/components/GitHubContribution";
+import SQLFormatterSEO from "@/components/seo/SQLFormatterSEO";
 
 const defaultDialect = postgresql;
 const dialectOptionsMap = {
@@ -91,7 +93,7 @@ export default function SQLFormatter() {
     <main>
       <Meta
         title="SQL formatter | Free, Open Source & Ad-free"
-        description="Easily format and beautify SQL queries with Jam's free online SQL formatter. Just paste your query and get formatted output."
+        description="A free, open-source, and ad-free SQL formatter that allows you to easily format and beautify your SQL queries. Just paste your query, select your preferences, and get the formatted output. Supports a wide range of SQL dialects, including PostgreSQL, MySQL, SQLite, and more."
       />
       <Header />
       <CMDK />
@@ -105,8 +107,8 @@ export default function SQLFormatter() {
 
       <section className="container max-w-6xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
-          <div className="flex flex-col gap-6">
-            <div className="flex gap-4">
+          <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <div className="flex flex-1 flex-col">
                 <Label>Tabs</Label>
                 <Combobox
@@ -148,7 +150,7 @@ export default function SQLFormatter() {
                 />
               </div>
             </div>
-            <div className="flex gap-4">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Textarea
                   rows={16}
@@ -187,18 +189,20 @@ export default function SQLFormatter() {
                   </Button>
                 </div>
               </div>
-
               <div>
                 <Textarea
                   rows={16}
                   cols={64}
-                  placeholder="Your formatted query would be generated here."
+                  placeholder="Formatted query."
                   value={formattedQuery}
                   spellCheck={false}
                   className="font-mono mb-4"
                 />
 
-                <Button variant="outline" onClick={() => handleCopy(query)}>
+                <Button
+                  variant="outline"
+                  onClick={() => handleCopy(formattedQuery)}
+                >
                   {buttonText}
                 </Button>
               </div>
@@ -206,7 +210,11 @@ export default function SQLFormatter() {
           </div>
         </Card>
       </section>
+      <GitHubContribution username="aayushpagare21-compcoder" />
       <CallToActionGrid />
+      <section className="container max-w-2xl">
+        <SQLFormatterSEO />
+      </section>
     </main>
   );
 }
