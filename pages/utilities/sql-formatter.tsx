@@ -197,6 +197,7 @@ export default function SQLFormatter() {
                   value={formattedQuery}
                   spellCheck={false}
                   className="font-mono mb-4"
+                  readOnly
                 />
 
                 <Button
