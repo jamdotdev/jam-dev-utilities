@@ -14,7 +14,7 @@ export const tools = [
   {
     title: "JSON Formatter",
     description:
-      "Format and beautify your JSON data for better readability and debugging. Quickly visualize and organize your JSON data with ease.",
+      "Easily format and tidy up your SQL queries. This free tool helps make your database code more readable and organized. Just paste in your SQL, and get back a nicely formatted version. Great for working with configuration files, web apps, or any SQL-based project",
     link: "/utilities/json-formatter",
   },
   {
@@ -94,5 +94,11 @@ export const tools = [
     description:
       "Test and debug your regular expressions in real-time. Provides quick feedback on pattern matching for strings.",
     link: "/utilities/regex-tester",
+  },
+  {
+    title: "SQL Formatter",
+    description:
+      "Easily format and tidy up your SQL queries. This free tool helps make your database code more readable and organized. Just paste in your SQL, and get back a nicely formatted version. Great for working with configuration files, web apps, or any SQL-based project.",
+    link: "/utilities/sql-formatter",
   },
 ];

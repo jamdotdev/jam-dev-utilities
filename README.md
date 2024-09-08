@@ -40,6 +40,7 @@ Here is the list of all utilities:
 - [Number Base Changer](https://jam.dev/utilities/number-base-changer)
 - [CSS Inliner for Email](https://jam.dev/utilities/css-inliner-for-email)
 - [Regex Tester](https://jam.dev/utilities/regex-tester)
+- [SQL Formatter](https://jam.dev/utilities/sql-formatter)
 
 ### Built With
 
@@ -54,6 +55,7 @@ Here is the list of all utilities:
 - [Papa Parse](https://www.papaparse.com/)
 - [js-yaml](https://github.com/nodeca/js-yaml)
 - [curlconverter](https://github.com/curlconverter/curlconverter)
+- [sql-formatter](https://github.com/sql-formatter-org/sql-formatter)
 
 ## Getting Started
 

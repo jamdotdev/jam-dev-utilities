@@ -17,8 +17,14 @@ interface ComboboxProps {
   data: { value: string; label: string }[];
   onSelect(value: string): void;
   defaultValue?: string;
+  searchItemPlaceholder?: string;
+  searchItemNotFoundMessage?: string;
+  selectedItemFallbackLabel?: string;
 }
 
+const defaultItemSearchPlaceholder = "Search base...";
+const defaultSearchedItemNotFoundMessage = "Base not found.";
+const defaultSelectedItemFallbackLabel = "Select base...";
 export function Combobox(props: ComboboxProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(props.defaultValue || "");
@@ -39,15 +45,25 @@ export function Combobox(props: ComboboxProps) {
           aria-expanded={open}
           className="justify-between"
         >
-          {selectedItem ? selectedItem.label : "Select base..."}
+          {selectedItem
+            ? selectedItem.label
+            : (props.selectedItemFallbackLabel ??
+              defaultSelectedItemFallbackLabel)}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0 h-auto">
         <Command>
-          <CommandInput placeholder="Search base..." />
-          <CommandList className="h-auto">
-            <CommandEmpty>Base not found.</CommandEmpty>
+          <CommandInput
+            placeholder={
+              props.searchItemPlaceholder ?? defaultItemSearchPlaceholder
+            }
+          />
+          <CommandList className="max-h-[200px] h-auto overflow-y-auto">
+            <CommandEmpty>
+              {props.searchItemNotFoundMessage ??
+                defaultSearchedItemNotFoundMessage}
+            </CommandEmpty>
             <CommandGroup>
               {props.data.map((item) => (
                 <CommandItem
