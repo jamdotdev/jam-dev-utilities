@@ -95,4 +95,9 @@ export const tools = [
       "Test and debug your regular expressions in real-time. Provides quick feedback on pattern matching for strings.",
     link: "/utilities/regex-tester",
   },
+  {
+    title: "SQL Formatter",
+    description: "Format your raw SQL queries",
+    link: "/utilities/sql-formatter",
+  },
 ];
