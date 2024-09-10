@@ -19,6 +19,8 @@ import { Combobox } from "@/components/ds/ComboboxComponent";
 import { Checkbox } from "@/components/ds/CheckboxComponent";
 import { Input } from "@/components/ds/InputComponent";
 import { ImageUploadComponent } from "@/components/ds/ImageUploadComponent";
+import { cn } from "@/lib/utils";
+import { DownloadIcon } from "lucide-react";
 
 const MAX_DIMENSION = 1024 * 4;
 interface FormatOption {
@@ -125,8 +127,8 @@ export default function ImageResize() {
   const qualityInput = useMemo(() => {
     if (format === "jpeg") {
       return (
-        <div className="flex justify-between items-center mb-4">
-          <Label className="mb-1">Quality (0.1 to 1.0)</Label>
+        <div className="flex flex-col flex-1">
+          <Label>Quality (0.1 to 1.0)</Label>
           <Input
             type="number"
             min="0.1"
@@ -134,8 +136,8 @@ export default function ImageResize() {
             step="0.1"
             value={quality}
             onChange={(e) => setQuality(parseFloat(e.target.value))}
-            className="w-[88] border rounded p-2 text-right"
             disabled={!imageFile}
+            className="h-[32px] rounded-md"
           />
         </div>
       );
@@ -165,23 +167,7 @@ export default function ImageResize() {
           <div>
             <ImageUploadComponent onFileSelect={handleFileSelect} />
 
-            <div className="flex items-center mb-6 gap-2">
-              <Checkbox
-                id="mantain-aspect-ratio"
-                checked={maintainAspectRatio}
-                onCheckedChange={handleAspectRatioChange}
-                disabled={!imageFile}
-                className="mr-1"
-              />
-              <label
-                htmlFor="mantain-aspect-ratio"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-              >
-                Maintain Aspect Ratio
-              </label>
-            </div>
-
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-between items-center mb-2 pt-6">
               <div className="flex-1 mr-2">
                 <Label className="mb-2">Width (px)</Label>
                 <Input
@@ -206,38 +192,79 @@ export default function ImageResize() {
               </div>
             </div>
 
-            <div className="flex justify-between items-center mb-6">
-              <Label className="mb-0">Format</Label>
-              <Combobox
-                data={formatOptions}
-                onSelect={(value) => setFormat(value as Format)}
-                defaultValue={format}
+            <div className="flex items-center mb-6 gap-2">
+              <Checkbox
+                id="mantain-aspect-ratio"
+                checked={maintainAspectRatio}
+                onCheckedChange={handleAspectRatioChange}
                 disabled={!imageFile}
+                className="mr-1"
               />
+              <Label
+                htmlFor="mantain-aspect-ratio"
+                className="mb-0 hover:cursor-pointer"
+              >
+                Maintain Aspect Ratio
+              </Label>
             </div>
 
-            {qualityInput}
+            <Divider />
 
-            <Button onClick={handleResize} disabled={!imageFile}>
-              Resize
-            </Button>
-
-            {output && (
-              <div className="mt-6">
-                <Label>Resized Image</Label>
-                <img
-                  src={output}
-                  alt="Resized output"
-                  className={`w-full h-auto mb-4 ${showAnimation ? "animate-grow-from-center" : ""}`}
+            <div className="mb-6 flex w-full gap-4">
+              <div className="flex flex-1 flex-col">
+                <Label className="mb-2">Format</Label>
+                <Combobox
+                  data={formatOptions}
+                  onSelect={(value) => setFormat(value as Format)}
+                  defaultValue={format}
+                  disabled={!imageFile}
                 />
+              </div>
+
+              <div className="flex flex-1 flex-col">{qualityInput}</div>
+            </div>
+
+            <Divider />
+
+            <div className={cn(imageFile && "mb-6", "flex w-full gap-4")}>
+              <Button
+                className="flex flex-1"
+                onClick={handleResize}
+                disabled={!imageFile}
+              >
+                Resize
+              </Button>
+
+              <Button
+                disabled={!imageFile}
+                variant="outline"
+                className="flex flex-1"
+              >
+                <DownloadIcon className="h-4 w-4 mr-2" />
                 <a
+                  className={cn(!imageFile && "pointer-events-none")}
                   href={output}
                   download={`resized-image.${format}`}
-                  className="text-blue-500"
                 >
                   Download Image
                 </a>
-              </div>
+              </Button>
+            </div>
+
+            {output && (
+              <>
+                <Divider />
+                <div>
+                  <Label>Resized Image</Label>
+                  <div className="flex flex-col flex-1 items-center ring-1 ring-border rounded-lg p-1">
+                    <img
+                      src={output}
+                      alt="Resized output"
+                      className={`flex w-auto h-auto max-h-[640px] rounded-sm ${showAnimation ? "animate-grow-from-center" : ""}`}
+                    />
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </Card>
@@ -251,3 +278,7 @@ export default function ImageResize() {
     </main>
   );
 }
+
+const Divider = () => {
+  return <div className="h-[1px] bg-muted my-6"></div>;
+};
