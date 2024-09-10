@@ -23,16 +23,23 @@ import { cn } from "@/lib/utils";
 import { DownloadIcon } from "lucide-react";
 
 const MAX_DIMENSION = 1024 * 4;
+const MAX_FILE_SIZE = 40 * 1024 * 1024;
 interface FormatOption {
   value: Format;
   label: string;
 }
-
 const formatOptions: FormatOption[] = [
   { value: "png", label: "PNG" },
   { value: "svg", label: "SVG" },
   { value: "jpeg", label: "JPEG" },
 ];
+
+interface ResizedImageInfo {
+  width?: number;
+  height?: number;
+  format?: Format;
+  quality?: number;
+}
 
 export default function ImageResize() {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -40,9 +47,12 @@ export default function ImageResize() {
   const [format, setFormat] = useState<Format>("png");
   const [width, setWidth] = useState<number | undefined>(undefined);
   const [height, setHeight] = useState<number | undefined>(undefined);
-  const [maintainAspectRatio, setMaintainAspectRatio] = useState(true);
+  const [preserveAspectRatio, setPreserveAspectRatio] = useState(true);
   const [quality, setQuality] = useState<number>(1);
   const [showAnimation, setShowAnimation] = useState(false);
+  const [resizedImageInfo, setResizedImageInfo] = useState<ResizedImageInfo>(
+    {}
+  );
 
   function setOutputAndShowAnimation(output: string) {
     setOutput(output);
@@ -58,18 +68,25 @@ export default function ImageResize() {
       processImageFile({
         file,
         format,
-        maintainAspectRatio,
+        preserveAspectRatio,
         quality,
         setHeight,
-        setOutput: (output) => setOutputAndShowAnimation(output),
+        setOutput: (output) => {
+          setResizedImageInfo({
+            width: undefined,
+            height: undefined,
+            format: undefined,
+          });
+          setOutputAndShowAnimation(output);
+        },
         setWidth,
       });
     },
-    [format, maintainAspectRatio, quality]
+    [format, preserveAspectRatio, quality]
   );
 
   const handleAspectRatioChange = useCallback(() => {
-    setMaintainAspectRatio((prev) => {
+    setPreserveAspectRatio((prev) => {
       const newValue = !prev;
 
       if (newValue && imageFile && width) {
@@ -88,11 +105,11 @@ export default function ImageResize() {
       }
       setWidth(newWidth);
 
-      if (maintainAspectRatio && imageFile) {
+      if (preserveAspectRatio && imageFile) {
         updateHeight({ file: imageFile, setHeight, width: newWidth });
       }
     },
-    [maintainAspectRatio, imageFile]
+    [preserveAspectRatio, imageFile]
   );
 
   const handleHeightChange = useCallback(
@@ -103,11 +120,11 @@ export default function ImageResize() {
       }
       setHeight(newHeight);
 
-      if (maintainAspectRatio && imageFile) {
+      if (preserveAspectRatio && imageFile) {
         updateWidth({ file: imageFile, height: newHeight, setWidth });
       }
     },
-    [maintainAspectRatio, imageFile]
+    [preserveAspectRatio, imageFile]
   );
 
   const handleResize = useCallback(() => {
@@ -116,13 +133,34 @@ export default function ImageResize() {
         file: imageFile,
         format,
         height,
-        maintainAspectRatio,
+        preserveAspectRatio,
         quality,
-        setOutput: (output) => setOutputAndShowAnimation(output),
         width,
+        setOutput: (output) => {
+          setOutputAndShowAnimation(output);
+          setResizedImageInfo({ width, height, format, quality });
+        },
       });
     }
-  }, [imageFile, width, height, format, quality, maintainAspectRatio]);
+  }, [imageFile, width, height, format, quality, preserveAspectRatio]);
+
+  const resizedLabel = useMemo(() => {
+    const { height, width, format, quality } = resizedImageInfo;
+
+    if (width && height && format) {
+      const qualityLabel = format === "jpeg" ? `(Quality: ${quality})` : "";
+      return `${format.toUpperCase()} - ${width} x ${height} ${qualityLabel}`;
+    }
+    return "Click 'Resize' to see the dimensions";
+  }, [resizedImageInfo]);
+
+  const handleQualityInput = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    let value = parseFloat(e.target.value);
+    if (value > 1) {
+      value = 1;
+    }
+    setQuality(value);
+  }, []);
 
   const qualityInput = useMemo(() => {
     if (format === "jpeg") {
@@ -135,16 +173,15 @@ export default function ImageResize() {
             max="1.0"
             step="0.1"
             value={quality}
-            onChange={(e) => setQuality(parseFloat(e.target.value))}
+            onChange={handleQualityInput}
             disabled={!imageFile}
             className="h-[32px] rounded-md"
           />
         </div>
       );
     }
-
     return null;
-  }, [format, imageFile, quality]);
+  }, [format, handleQualityInput, imageFile, quality]);
 
   return (
     <main>
@@ -165,7 +202,10 @@ export default function ImageResize() {
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
-            <ImageUploadComponent onFileSelect={handleFileSelect} />
+            <ImageUploadComponent
+              maxFileSize={MAX_FILE_SIZE}
+              onFileSelect={handleFileSelect}
+            />
 
             <div className="flex justify-between items-center mb-2 pt-6">
               <div className="flex-1 mr-2">
@@ -182,7 +222,7 @@ export default function ImageResize() {
               <div className="flex-1 ml-2">
                 <Label className="mb-2">Height (px)</Label>
                 <Input
-                  typeof="number"
+                  type="number"
                   placeholder="Enter height"
                   onChange={handleHeightChange}
                   value={height ?? ""}
@@ -194,17 +234,17 @@ export default function ImageResize() {
 
             <div className="flex items-center mb-6 gap-2">
               <Checkbox
-                id="mantain-aspect-ratio"
-                checked={maintainAspectRatio}
+                id="preserve-aspect-ratio"
+                checked={preserveAspectRatio}
                 onCheckedChange={handleAspectRatioChange}
                 disabled={!imageFile}
                 className="mr-1"
               />
               <Label
-                htmlFor="mantain-aspect-ratio"
+                htmlFor="preserve-aspect-ratio"
                 className="mb-0 hover:cursor-pointer"
               >
-                Maintain Aspect Ratio
+                Preserve Aspect Ratio
               </Label>
             </div>
 
@@ -255,7 +295,10 @@ export default function ImageResize() {
               <>
                 <Divider />
                 <div>
-                  <Label>Resized Image</Label>
+                  <div className="flex flex-1 justify-between">
+                    <Label>Resized Image</Label>
+                    <Label>{resizedLabel}</Label>
+                  </div>
                   <div className="flex flex-col flex-1 items-center ring-1 ring-border rounded-lg p-1">
                     <img
                       src={output}
