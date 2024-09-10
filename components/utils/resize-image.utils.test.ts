@@ -54,7 +54,7 @@ describe("Image Processing Functions", () => {
     const result = await resizeImage({
       img,
       width: 500,
-      maintainAspectRatio: true,
+      preserveAspectRatio: true,
       format: "png",
       quality: 1,
     });
@@ -69,7 +69,7 @@ describe("Image Processing Functions", () => {
     const result = await resizeImage({
       img,
       height: 250,
-      maintainAspectRatio: true,
+      preserveAspectRatio: true,
       format: "jpeg",
       quality: 0.8,
     });
@@ -99,7 +99,7 @@ describe("Image Processing Functions", () => {
     processImageFile({
       file: mockFile,
       format: "jpeg",
-      maintainAspectRatio: true,
+      preserveAspectRatio: true,
       quality: 0.8,
       setWidth,
       setHeight,
@@ -154,7 +154,7 @@ describe("Image Processing Functions", () => {
       format: "jpeg",
       height: 400,
       width: 600,
-      maintainAspectRatio: true,
+      preserveAspectRatio: true,
       quality: 0.8,
       setOutput,
     });

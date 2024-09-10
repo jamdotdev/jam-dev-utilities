@@ -5,14 +5,14 @@ interface ResizeImageOptions {
   height?: number;
   format?: Format;
   quality?: number;
-  maintainAspectRatio?: boolean;
+  preserveAspectRatio?: boolean;
 }
 
 export function resizeImage({
   img,
   format,
   height,
-  maintainAspectRatio,
+  preserveAspectRatio,
   quality,
   width,
 }: ResizeImageOptions): Promise<string> {
@@ -37,7 +37,7 @@ export function resizeImage({
       return;
     }
 
-    if (maintainAspectRatio) {
+    if (preserveAspectRatio) {
       const ratio = img.width / img.height;
 
       const dimensionMapper = {
@@ -78,14 +78,14 @@ interface ProcessImageFileOptions {
   setOutput: (output: string) => void;
   format: Format;
   quality: number;
-  maintainAspectRatio: boolean;
+  preserveAspectRatio: boolean;
   done?: () => void;
 }
 
 export const processImageFile = ({
   file,
   format,
-  maintainAspectRatio,
+  preserveAspectRatio,
   quality,
   setHeight,
   setOutput,
@@ -105,7 +105,7 @@ export const processImageFile = ({
         height: img.height,
         format,
         quality,
-        maintainAspectRatio,
+        preserveAspectRatio,
       })
         .then(setOutput)
         .catch((error) => console.error(error))
@@ -163,7 +163,7 @@ interface HandleResizeImage {
   height: number | undefined;
   format: Format;
   quality: number;
-  maintainAspectRatio: boolean;
+  preserveAspectRatio: boolean;
   setOutput: (output: string) => void;
 }
 
@@ -171,7 +171,7 @@ export const handleResizeImage = ({
   file,
   format,
   height,
-  maintainAspectRatio,
+  preserveAspectRatio,
   quality,
   setOutput,
   width,
@@ -187,7 +187,7 @@ export const handleResizeImage = ({
         height,
         format,
         quality,
-        maintainAspectRatio,
+        preserveAspectRatio,
       }).then(setOutput);
     };
   };
