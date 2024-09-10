@@ -1,5 +1,5 @@
 "use client";
-import { DragEvent, useCallback, useRef, useState } from "react";
+import { DragEvent, useCallback, useMemo, useRef, useState } from "react";
 import UploadIcon from "@/components/icons/UploadIcon";
 
 type Status = "idle" | "loading" | "error" | "unsupported" | "hover";
@@ -16,6 +16,13 @@ const ImageUploadComponent = ({
 }: ImageUploadProps) => {
   const [status, setStatus] = useState<Status>("idle");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const formattedMaxSize = useMemo((): string => {
+    const sizeInMB = maxFileSize / (1024 * 1024);
+    return Number.isInteger(sizeInMB)
+      ? `${sizeInMB}MB`
+      : `${sizeInMB.toFixed(2)}MB`;
+  }, [maxFileSize]);
 
   const handleDrop = useCallback(
     (event: DragEvent<HTMLDivElement>) => {
@@ -90,7 +97,7 @@ const ImageUploadComponent = ({
         onChange={handleFileChange}
       />
       <UploadIcon />
-      {statusComponents[status]}
+      {statusComponents[status](formattedMaxSize)}
     </div>
   );
 };
@@ -108,17 +115,19 @@ const StatusComponent = ({
   </div>
 );
 
-const statusComponents: Record<Status, JSX.Element> = {
-  idle: (
+const statusComponents: Record<Status, (maxSize: string) => JSX.Element> = {
+  idle: (maxSize) => (
     <StatusComponent
       title="Drag and drop your image here, or click to select"
-      message="Max size 4MB"
+      message={`Max size ${maxSize}`}
     />
   ),
-  loading: <StatusComponent title="Loading..." />,
-  error: <StatusComponent title="Image is too big!" message="4MB max" />,
-  unsupported: <StatusComponent title="Please provide a valid image" />,
-  hover: <StatusComponent title="Drop it like it's hot! 🔥" />,
+  loading: () => <StatusComponent title="Loading..." />,
+  error: (maxSize) => (
+    <StatusComponent title="Image is too big!" message={`${maxSize} max`} />
+  ),
+  unsupported: () => <StatusComponent title="Please provide a valid image" />,
+  hover: () => <StatusComponent title="Drop it like it's hot! 🔥" />,
 };
 
 export { ImageUploadComponent };
