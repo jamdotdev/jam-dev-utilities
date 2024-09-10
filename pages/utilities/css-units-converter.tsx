@@ -7,7 +7,6 @@ import Meta from "@/components/Meta";
 import PageHeader from "@/components/PageHeader";
 import { Label } from "@/components/ds/LabelComponent";
 import { Combobox } from "@/components/ds/ComboboxComponent";
-import { Textarea } from "@/components/ds/TextareaComponent";
 import { Button } from "@/components/ds/ButtonComponent";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import {
@@ -23,6 +22,7 @@ import {
   vmaxToPx,
 } from "@/components/utils/css-units-converter.utils";
 import CssUnitsConverter from "@/components/seo/CssUnitsConverter";
+import { Input } from "@/components/ds/InputComponent";
 
 type ConvertionFunction = (value: number, ...args: number[]) => number;
 type ConversionKey =
@@ -39,10 +39,10 @@ type ConversionKey =
 
 export default function CSSUnitsConverter() {
   const [htmlInput, setHtmlInput] = useState("");
-  const [fromUnit, setFromUnit] = useState("");
+  const [fromUnit, setFromUnit] = useState("px");
   const [widthInput, setWidthInput] = useState("");
   const [heightInput, setHeightInput] = useState("");
-  const [toUnit, setToUnit] = useState("");
+  const [toUnit, setToUnit] = useState("rem");
   const [output, setOutput] = useState("");
   const { buttonText, handleCopy } = useCopyToClipboard();
 
@@ -102,6 +102,17 @@ export default function CSSUnitsConverter() {
     widthInput,
   ]);
 
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = e.target.value;
+      setHtmlInput(inputValue);
+      if (inputValue.trim() === "") {
+        setOutput("");
+      }
+    },
+    []
+  );
+
   return (
     <main>
       <Meta
@@ -120,11 +131,10 @@ export default function CSSUnitsConverter() {
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
             <Label>Input Value</Label>
-            <Textarea
+            <Input
               className="mb-6"
-              rows={3}
               value={htmlInput}
-              onChange={(e) => setHtmlInput(e.target.value)}
+              onChange={handleInputChange}
             />
             <div className="mb-6 flex w-full gap-4">
               <div className="flex flex-1 flex-col">
@@ -132,6 +142,7 @@ export default function CSSUnitsConverter() {
                 <Combobox
                   data={unitOptions}
                   onSelect={(value) => setFromUnit(value)}
+                  defaultValue={fromUnit}
                 />
               </div>
               <div className="flex flex-1 flex-col">
@@ -139,38 +150,42 @@ export default function CSSUnitsConverter() {
                 <Combobox
                   data={unitOptions}
                   onSelect={(value) => setToUnit(value)}
+                  defaultValue={toUnit}
                 />
               </div>
             </div>
             {needsContainerInput && (
-              <div className="mb-6">
-                <Label>Container Width (px)</Label>
-                <Textarea
-                  className="mb-6"
-                  rows={1}
-                  value={widthInput}
-                  onChange={(e) => setWidthInput(e.target.value)}
-                />
-                <Label>Container Height (px)</Label>
-                <Textarea
-                  className="mb-6"
-                  rows={1}
-                  value={heightInput}
-                  onChange={(e) => setHeightInput(e.target.value)}
-                />
+              <div className="mb-6 flex gap-4">
+                <div className="flex flex-1 flex-col">
+                  <Label>Container Width (px)</Label>
+                  <Input
+                    type="number"
+                    className="h-[32px]"
+                    value={widthInput}
+                    onChange={(e) => setWidthInput(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-1 flex-col">
+                  <Label>Container Height (px)</Label>
+                  <Input
+                    type="number"
+                    className="h-[32px]"
+                    value={heightInput}
+                    onChange={(e) => setHeightInput(e.target.value)}
+                  />
+                </div>
               </div>
             )}
 
             <Label>Result</Label>
-            <Textarea value={output} rows={3} readOnly className="mb-4" />
+            <Input value={output} readOnly className="mb-4" />
+            <div className="flex flex-1 justify-between">
+              <Button onClick={() => convertUnits()}>Convert</Button>
 
-            <Button variant="outline" onClick={() => convertUnits()}>
-              Convert
-            </Button>
-
-            <Button variant="outline" onClick={() => handleCopy(output)}>
-              {buttonText}
-            </Button>
+              <Button variant="outline" onClick={() => handleCopy(output)}>
+                {buttonText}
+              </Button>
+            </div>
           </div>
         </Card>
       </section>
