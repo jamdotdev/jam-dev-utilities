@@ -11,7 +11,6 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import UrlEncoderSEO from "@/components/seo/UrlEncoderSEO";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import { decode, encode } from "@/components/utils/url-encoder.utils";
 
 export default function URLEncoder() {
   const [type, setType] = useState<"encoder" | "decoder">("encoder");
@@ -25,7 +24,10 @@ export default function URLEncoder() {
       setInput(value);
 
       try {
-        const output = type === "encoder" ? encode(value) : decode(value);
+        const output =
+          type === "encoder"
+            ? encodeURIComponent(value)
+            : decodeURIComponent(value);
         setOutput(output);
       } catch (error) {
         setOutput("Invalid input");
@@ -43,7 +45,7 @@ export default function URLEncoder() {
   return (
     <main>
       <Meta
-        title="URL encoder/decoder by Jam.dev | Free, Open Source & Ad-free"
+        title="URL encoder/decoder | Free, Open Source & Ad-free"
         description="Easily encode and decode URLs online with Jam's free tool. Handle special characters, spaces, and non-ASCII symbols in web addresses and query strings efficiently."
       />
       <Header />

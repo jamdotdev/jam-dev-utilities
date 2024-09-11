@@ -38,7 +38,7 @@ export default function CurlToJavascript() {
   return (
     <main>
       <Meta
-        title="cURL to JavaScript Fetch Converter by Jam.dev | Free, Open Source & Ad-free"
+        title="cURL to JavaScript Fetch Converter | Free, Open Source & Ad-free"
         description="Convert cURL commands to JavaScript fetch code quickly and easily with Jam's free online converter. Just paste your cURL command and get the fetch code. That's it."
       />
       <Header />

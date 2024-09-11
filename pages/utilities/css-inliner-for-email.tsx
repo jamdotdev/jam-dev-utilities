@@ -8,8 +8,9 @@ import Header from "@/components/Header";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import { convertCSSToInline } from "../../components/utils/css-to-inline.utils";
-import { CMDK } from "../../components/CMDK";
+import { convertCSSToInline } from "@/components/utils/css-to-inline.utils";
+import { CMDK } from "@/components/CMDK";
+import GitHubContribution from "@/components/GitHubContribution";
 
 export default function CSSInlinerForEmail() {
   const [htmlInput, setHtmlInput] = useState("");
@@ -74,7 +75,7 @@ export default function CSSInlinerForEmail() {
   return (
     <main>
       <Meta
-        title="CSS Inliner for Email by Jam.dev | Free, Open Source & Ad-free"
+        title="CSS Inliner for Email | Free, Open Source & Ad-free"
         description="Convert CSS styles to inline styles directly in your HTML with Jam's free CSS Inliner for Email. Just paste your HTML and CSS, and get the inlined HTML result."
       />
       <Header />
@@ -121,6 +122,7 @@ export default function CSSInlinerForEmail() {
         </Card>
       </section>
 
+      <GitHubContribution username="EduardoDePatta" />
       <CallToActionGrid />
     </main>
   );

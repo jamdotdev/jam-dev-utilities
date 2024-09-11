@@ -42,7 +42,7 @@ export default function TimestampToDate() {
   return (
     <main>
       <Meta
-        title="Timestamp to Date Converter by Jam.dev | Free, Open Source & Ad-free"
+        title="Timestamp to Date Converter | Free, Open Source & Ad-free"
         description="Convert Unix timestamps to human-readable dates quickly and easily with Jam's free online Timestamp to Date converter. Perfect for developers, data analysts, and anyone working with time data."
       />
       <Header />

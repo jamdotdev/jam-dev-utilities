@@ -9,6 +9,7 @@ import Meta from "@/components/Meta";
 import RegexHighlightText from "@/components/RegexHighlightText";
 import { createRegex } from "@/components/utils/regex-tester.utils";
 import CallToActionGrid from "@/components/CallToActionGrid";
+import GitHubContribution from "@/components/GitHubContribution";
 
 export default function RegexTester() {
   const [pattern, setPattern] = useState("");
@@ -59,7 +60,7 @@ export default function RegexTester() {
   return (
     <main>
       <Meta
-        title="Regex Tester by Jam.dev | Free, Open Source & Ad-free"
+        title="Regex Tester | Free, Open Source & Ad-free"
         description="Test your regular expressions quickly and easily with Jam's free online Regex Tester. Paste your regex and test string to see if they match."
       />
       <Header />
@@ -115,6 +116,7 @@ export default function RegexTester() {
         </Card>
       </section>
 
+      <GitHubContribution username="shashankshet" />
       <CallToActionGrid />
     </main>
   );

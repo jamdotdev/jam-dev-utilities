@@ -36,7 +36,7 @@ export default function YAMLtoJSON() {
   return (
     <main>
       <Meta
-        title="YAML to JSON by Jam.dev | Free, Open Source & Ad-free"
+        title="YAML to JSON | Free, Open Source & Ad-free"
         description="Convert YAML to JSON format quickly and easily with Jam's free online YAML to JSON converter. Just paste your YAML data and get the JSON result. That's it."
       />
       <Header />

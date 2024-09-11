@@ -9,7 +9,8 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import yaml from "js-yaml";
 import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "@/components/CallToActionGrid";
-import Meta from "../../components/Meta";
+import Meta from "@/components/Meta";
+import JsonToYamlSEO from "@/components/seo/JsonToYaml";
 
 export default function JSONtoYAML() {
   const [input, setInput] = useState("");
@@ -69,6 +70,10 @@ export default function JSONtoYAML() {
       </section>
 
       <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <JsonToYamlSEO />
+      </section>
     </main>
   );
 }
