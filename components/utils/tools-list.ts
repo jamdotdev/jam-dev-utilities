@@ -100,4 +100,10 @@ export const tools = [
     description: "Easily convert your CSS units to other units values.",
     link: "/utilities/css-units-converter",
   },
+  {
+    title: "Image Resizer",
+    description:
+      "Resize images while maintaining aspect ratio and choose between PNG and JPEG formats with our free tool.",
+    link: "/utilities/image-resizer",
+  },
 ];
