@@ -21,8 +21,8 @@ import {
   pxToVmax,
   vmaxToPx,
 } from "@/components/utils/css-units-converter.utils";
-import CssUnitsConverter from "@/components/seo/CssUnitsConverter";
 import { Input } from "@/components/ds/InputComponent";
+import GitHubContribution from "@/components/GitHubContribution";
 
 type ConvertionFunction = (value: number, ...args: number[]) => number;
 type ConversionKey =
@@ -116,15 +116,15 @@ export default function CSSUnitsConverter() {
   return (
     <main>
       <Meta
-        title="CSS units converter by Jam.dev | Free, Open Source & Ad-free"
-        description="Convert your css units values to other options"
+        title="CSS units converter | Free, Open Source & Ad-free"
+        description="Easily convert px to rem with our simple CSS unit converter"
       />
       <Header />
       <CMDK />
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="CSS Units Converter"
-          description="Convert your css units values to other options"
+          description="Fast, free, open source, ad-free tools."
         />
       </section>
       <section className="container max-w-2xl mb-6">
@@ -190,11 +190,8 @@ export default function CSSUnitsConverter() {
         </Card>
       </section>
 
+      <GitHubContribution username="franciscoaiolfi" />
       <CallToActionGrid />
-
-      <section className="container max-w-2xl">
-        <CssUnitsConverter />
-      </section>
     </main>
   );
 }

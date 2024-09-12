@@ -97,7 +97,8 @@ export const tools = [
   },
   {
     title: "CSS Units Converter",
-    description: "Easily convert your CSS units to other units values.",
+    description:
+      "Easily convert px to rem with our simple CSS unit converter. Quickly transform pixel values to rem units for better scalability and accessibility.",
     link: "/utilities/css-units-converter",
   },
   {

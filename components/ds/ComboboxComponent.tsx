@@ -41,15 +41,15 @@ export function Combobox(props: ComboboxProps) {
           className="justify-between"
           disabled={props.disabled}
         >
-          {selectedItem ? selectedItem.label : "Select base..."}
+          {selectedItem ? selectedItem.label : "Select..."}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0 h-auto">
         <Command>
-          <CommandInput placeholder="Search base..." />
+          <CommandInput placeholder="Search..." />
           <CommandList className="h-auto">
-            <CommandEmpty>Base not found.</CommandEmpty>
+            <CommandEmpty>Nothing to see here.</CommandEmpty>
             <CommandGroup>
               {props.data.map((item) => (
                 <CommandItem

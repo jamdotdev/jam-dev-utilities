@@ -7,7 +7,6 @@ import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import ImageResizeSEO from "@/components/seo/ImageResizeSEO";
 import {
   Format,
   handleResizeImage,
@@ -21,6 +20,7 @@ import { Input } from "@/components/ds/InputComponent";
 import { ImageUploadComponent } from "@/components/ds/ImageUploadComponent";
 import { cn } from "@/lib/utils";
 import { DownloadIcon } from "lucide-react";
+import GitHubContribution from "@/components/GitHubContribution";
 
 const MAX_DIMENSION = 1024 * 4;
 const MAX_FILE_SIZE = 40 * 1024 * 1024;
@@ -186,7 +186,7 @@ export default function ImageResize() {
   return (
     <main>
       <Meta
-        title="Image Resizer by Jam.dev | Free, Open Source & Ad-free"
+        title="Image Resizer | Free, Open Source & Ad-free"
         description="Resize images online with Jam's free and open source Image Resizer. Adjust dimensions, maintain aspect ratio, and choose between PNG and JPEG formats."
       />
       <Header />
@@ -195,7 +195,7 @@ export default function ImageResize() {
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="Image Resizer"
-          description="Resize images while maintaining aspect ratio and choose between PNG and JPEG formats."
+          description="Fast, free, open source, ad-free tools."
         />
       </section>
 
@@ -313,11 +313,8 @@ export default function ImageResize() {
         </Card>
       </section>
 
+      <GitHubContribution username="EduardoDePatta" />
       <CallToActionGrid />
-
-      <section className="container max-w-2xl">
-        <ImageResizeSEO />
-      </section>
     </main>
   );
 }
