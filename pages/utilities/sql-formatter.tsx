@@ -38,25 +38,25 @@ import GitHubContribution from "@/components/GitHubContribution";
 import SQLFormatterSEO from "@/components/seo/SQLFormatterSEO";
 
 const defaultDialect = postgresql;
-const dialectOptionsMap = {
-  sqlite: sqlite,
-  bigquery: bigquery,
-  db2: db2,
-  db2i: db2i,
-  hive: hive,
-  mariadb: mariadb,
-  mysql: mysql,
-  tidb: tidb,
-  n1ql: n1ql,
-  plsql: plsql,
-  postgresql: postgresql,
-  redshift: redshift,
-  spark: spark,
-  sql: sql,
-  trino: trino,
-  transactsql: transactsql,
-  singlestoredb: singlestoredb,
-  snowflake: snowflake,
+const dialectOptionsMap: Record<string, DialectOptions> = {
+  ["sqlite"]: sqlite,
+  ["bigquery"]: bigquery,
+  ["db2"]: db2,
+  ["db2i"]: db2i,
+  ["hive"]: hive,
+  ["mariadb"]: mariadb,
+  ["mysql"]: mysql,
+  ["tidb"]: tidb,
+  ["n1ql"]: n1ql,
+  ["plsql"]: plsql,
+  ["postgresql"]: postgresql,
+  ["redshift"]: redshift,
+  ["spark"]: spark,
+  ["sql"]: sql,
+  ["trino"]: trino,
+  ["transactsql"]: transactsql,
+  ["singlestoredb"]: singlestoredb,
+  ["snowflake"]: snowflake,
 };
 const formatSQL = (
   query: string,
@@ -76,8 +76,8 @@ const formatSQL = (
       functionCase: options?.case,
       keywordCase: options?.case,
     });
-  } catch (err) {
-    return err.message;
+  } catch (err: unknown) {
+    return (err as Error)?.message;
   }
 };
 export default function SQLFormatter() {
@@ -114,9 +114,6 @@ export default function SQLFormatter() {
                 <Combobox
                   data={tabWidthData}
                   onSelect={(value) => setTabs(parseInt(value))}
-                  searchItemPlaceholder="Search number of tabs."
-                  searchItemNotFoundMessage="Please select 2, 4, 6 or 8 tabs."
-                  selectedItemFallbackLabel="Tabs..."
                 />
               </div>
               <div className="flex flex-1 flex-col">
@@ -124,18 +121,12 @@ export default function SQLFormatter() {
                 <Combobox
                   data={indentStyleData}
                   onSelect={(value) => setIndentStyle(value as IndentStyle)}
-                  selectedItemFallbackLabel="Indent style..."
-                  searchItemPlaceholder="Search indent style."
-                  searchItemNotFoundMessage="Please select standard, left or right."
                 />
               </div>
               <div className="flex flex-1 flex-col">
                 <Label>Case</Label>
                 <Combobox
                   data={queryCaseData}
-                  searchItemPlaceholder="Select case..."
-                  searchItemNotFoundMessage="Please select upper, lower or preserve"
-                  selectedItemFallbackLabel="Case..."
                   onSelect={(value) => setQueryCase(value as KeywordCase)}
                 />
               </div>
@@ -143,9 +134,6 @@ export default function SQLFormatter() {
                 <Label>Dialect</Label>
                 <Combobox
                   data={dialectData}
-                  searchItemPlaceholder="Select dialect..."
-                  searchItemNotFoundMessage="Please select from available dialect."
-                  selectedItemFallbackLabel="Dialect..."
                   onSelect={(value) => setDialect(dialectOptionsMap[value])}
                 />
               </div>

@@ -40,6 +40,8 @@ Here is the list of all utilities:
 - [Number Base Changer](https://jam.dev/utilities/number-base-changer)
 - [CSS Inliner for Email](https://jam.dev/utilities/css-inliner-for-email)
 - [Regex Tester](https://jam.dev/utilities/regex-tester)
+- [Image Resizer](https://jam.dev/utilities/image-resizer)
+- [CSS Units Converter](https://jam.dev/utilities/css-units-converter)
 - [SQL Formatter](https://jam.dev/utilities/sql-formatter)
 
 ### Built With
@@ -78,6 +80,14 @@ Navigate to the project directory:
 
 ```bash
 cd jam-dev-utilities
+```
+
+For macOS users with ARM architecture (M series processors), it's crucial to install these dependencies using `brew` to ensure full compatibility with the `node-canvas` library. This step is essential to prevent potential failures during the `npm install` process.
+
+If you don't have Homebrew installed, you can find it at [brew.sh](https://brew.sh/)
+
+```bash
+brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman python-setuptools
 ```
 
 Install the dependencies:
