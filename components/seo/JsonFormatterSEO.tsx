@@ -4,33 +4,25 @@ export default function JsonFormatterSEO() {
   return (
     <div className="content-wrapper">
       <section>
-        <h2>Free, Open Source & Ad-free</h2>
         <p>
-          This free JSON online formatter is a quick and easy way to format
-          minified JSON into a nicely structured format. If you work with JSON
-          data, you can use Jam's formatter to beautify your JSON. Just paste
-          your minified JSON and get the formatted result. Made with 💜 by the
-          developers building Jam.
+          You can use this JSON formatter to beautify your JSON and make it
+          easier to read. Just paste your minified JSON and get the formatted
+          result. Made with 💜 by the developers building Jam.
         </p>
       </section>
 
       <section>
         <h2>How to Use JSON Online Formatter</h2>
         <p>
-          Formatting JSON with our online tool is straightforward. With this
-          JSON editor you can easily format JSON files for various uses, such as
-          debugging, data analysis, and more. No signup required. Here's how:
+          Whether you're debugging or doing data analysis, with this JSON editor
+          you can quickly format JSON files by copying and pasting - no signup
+          required.
         </p>
-        <ul>
-          <li>
-            <b>Step 1:</b> <br /> Paste your data: Enter the minified JSON you
-            want to format.
-          </li>
-          <li>
-            <b>Step 2:</b> <br /> Get the formatted result: Copy to clipboard
-            the beautified JSON output.
-          </li>
-        </ul>
+        <p>
+          Our tool's built-in JSON Validator ensures the output is syntactically
+          correct and adheres to JSON standards. So, you can reliably use the
+          data in your applications.
+        </p>
       </section>
 
       <section>
@@ -50,14 +42,14 @@ export default function JsonFormatterSEO() {
             structures and relationships more effectively.
           </li>
           <li>
-            <b>Data Sharing:</b> <br /> Well-structured JSON is easier to share
-            and collaborate on with team members.
+            <b>Data Interchange:</b> <br /> Well-structured JSON is easier to
+            share and collaborate on with team members.
           </li>
         </ul>
       </section>
 
       <section>
-        <h2>Validate & Format JSON Outputs</h2>
+        <h2>JSON Validator</h2>
         <p>
           When formatting JSON, it's crucial to ensure the accuracy and
           integrity of the data. Our tool's built-in JSON Validator ensures the
@@ -67,7 +59,7 @@ export default function JsonFormatterSEO() {
       </section>
 
       <section>
-        <h2>More Tools for JSON: Easy Conversion</h2>
+        <h2>More JSON conversion tools for other programming languages</h2>
         <p>
           Convert CSV, query parameters, or YAML to JSON with Jam's free
           developer utilities. They're all available in dark mode too.
@@ -102,9 +94,9 @@ export default function JsonFormatterSEO() {
             your data remains unchanged.
           </li>
           <li>
-            <b>How to format JSON using a code editor?</b> <br /> Utilize a code
-            editor like Visual Studio Code with appropriate extensions, or
-            leverage our online tool for quick and free JSON formatting.
+            <b>How to format JSON using a code editor?</b> <br /> You can use a
+            code editor like Visual Studio Code with appropriate extensions, or
+            use this online JSON viewer for quick and free JSON formatting.
           </li>
           <li>
             <b>What is the structure of formatted JSON?</b> <br /> Our tool

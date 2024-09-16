@@ -4,34 +4,30 @@ export default function UrlEncoderSEO() {
   return (
     <div className="content-wrapper">
       <section>
-        <h2>Free, Open Source & Ad-free</h2>
         <p>
-          This free tool is a quick and easy way to handle URL encoding and
-          decoding, ensuring proper treatment of special characters, spaces, and
-          non-ASCII symbols in web addresses and query strings.
+          You can encode and decode URLs online with this free tool, ensuring
+          proper treatment of special characters, spaces, and non-ASCII symbols
+          in web addresses and query strings.
         </p>
-        <p>
-          Just enter your URL and get the output you need. Made with 💜 by the
-          developers building Jam.
-        </p>
+        <p>Made with 💜 by the developers building Jam.</p>
       </section>
 
       <section>
         <h2>How to Use Jam's URL Decode Tool</h2>
         <p>
-          Easily URL decode online, or vice versa in one easy step. Just paste
-          your URL and copy the result!
+          Easily handle URL encoding and decoding - in one step. Just paste your
+          URL and copy the result!
         </p>
       </section>
 
       <section>
-        <h2>Benefits of Using URL Encoder Online</h2>
+        <h2>How the URL Encoder/Decoder Works</h2>
         <p>
-          URL encoder changes characters to a safe format for transmitting over
-          the internet. This ensures that systems can handle special characters,
-          spaces, and symbols in web addresses and query strings. For example,
-          spaces are converted to %20, and special characters are changed to
-          their respective percent-encoded values.
+          This URL encoder changes characters to a safe format for transmitting
+          over the internet. This ensures that systems can handle special
+          characters, spaces, and symbols in web addresses and query strings.
+          For example, spaces are converted to %20, and special characters are
+          changed to their respective percent-encoded values.
         </p>
         <p>
           Transformed URLs help merge data more efficiently in web applications
@@ -46,17 +42,17 @@ export default function UrlEncoderSEO() {
       </section>
 
       <section>
-        <h2>Are You Here to Decode a URL?</h2>
+        <h2>Debugging Encoded URLs</h2>
         <p>
           Decoded URLs are easier to read and necessary to troubleshoot issues
           or understand how data is being passed through query strings. Decoded
-          URLs reveal the actual values being transmitted, which can be crucial
-          for debugging.
+          URLs are essential for debugging because they reveal the actual values
+          being transmitted.
         </p>
       </section>
 
       <section>
-        <h2>Discover Jam: The Ultimate Tool for Web Developers</h2>
+        <h2>Meet Jam: The Ultimate Tool for Web Developers</h2>
         <p>
           While this URL tool helps you manage URLs efficiently,{" "}
           <a href="https://jam.dev?ref=utils" target="_blank" rel="noreferrer">
@@ -65,21 +61,20 @@ export default function UrlEncoderSEO() {
           takes your debugging process to the next level.
         </p>
         <p>
-          Meet{" "}
+          Meet Jam,{" "}
           <a
             href="https://chromewebstore.google.com/detail/jam/iohjgamcilhbgmhbnllfolmkmmekfmci"
             target="_blank"
             rel="noreferrer"
           >
-            Jam, the browser extension
+            the browser extension
           </a>{" "}
-          helping over 130,000 users debug faster. Jam captures console logs,
+          helping over 140,000 users debug faster. Jam captures console logs,
           network requests, and more with just one click. Now anyone can log
           comprehensive bug reports and you can debug so much faster.
         </p>
         <p>
-          Say goodbye to tedious manual debugging. Try Jam and get back to
-          writing code instead of fixing old features.
+          Try Jam and get back to writing code instead of fixing old features.
         </p>
       </section>
       <section>

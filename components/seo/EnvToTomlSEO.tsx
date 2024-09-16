@@ -2,7 +2,6 @@ export default function EnvToTomlSEO() {
   return (
     <div className="content-wrapper">
       <section>
-        <h2>Free, Open Source & Ad-free</h2>
         <p>
           This free tool allows you to quickly and easily convert your{" "}
           <kbd>.env</kbd> file variables into the format needed for your{" "}
@@ -12,7 +11,7 @@ export default function EnvToTomlSEO() {
             Cassidy Williams
           </a>{" "}
           - software engineer, dev advocate, startup advisor, and investor. You
-          can find her memeing on Twitter and sharing learnings and tools for
+          can find her posting memes on Twitter and sharing learnings and tools for
           developers in her{" "}
           <a
             href="https://cassidoo.co/newsletter/"

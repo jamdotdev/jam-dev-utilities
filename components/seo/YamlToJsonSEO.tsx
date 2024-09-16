@@ -1,12 +1,13 @@
+import Link from "next/link";
+
 export default function YamlToJsonSEO() {
   return (
     <div className="content-wrapper">
       <section>
-        <h2>Free, Open Source & Ad-free</h2>
         <p>
-          This free tool quickly converts YAML to JSON. Ideal for configuration
-          files, data, or web apps. Just paste your YAML data and get the JSON
-          result. Built with 💜 by the Jam developers, using the open-source{" "}
+          You can use this free tool to convert YAML to JSON. Ideal for
+          configuration files, data, or web apps. Built with 💜 by the Jam
+          developers, using the open-source{" "}
           <a
             href="https://github.com/nodeca/js-yaml"
             target="_blank"
@@ -19,27 +20,57 @@ export default function YamlToJsonSEO() {
       </section>
 
       <section>
-        <h2>How to Use</h2>
+        <h2>How to Use the YAML to JSON Converter</h2>
         <p>
-          Converting YAML to JSON with our online tool is straightforward. You
-          can easily convert YAML files to JSON format for various uses, such as
-          configuration files, data exchange, and more. No signup required.
-          Here's how:
+          To convert YAML files to JSON format, just input the YAML file you
+          want to convert and copy the JSON output. No signup required.
+        </p>
+        <p>
+          Our tool's built-in JSON Validator ensures the output is syntactically
+          correct and adheres to JSON standards. So, you can reliably use the
+          data in your applications.
+        </p>
+        <p>
+          Need to convert the other way? You can use the JSON to YAML converter{" "}
+          <Link
+            href="/utilities/json-to-yaml"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            here
+          </Link>
+          .
+        </p>
+      </section>
+
+      <section>
+        <h2>More JSON conversion tools</h2>
+        <p>
+          Convert CSV, query parameters, or YAML to JSON with Jam's free
+          developer utilities. They're all available in dark mode too.
         </p>
         <ul>
           <li>
-            <b>Step 1:</b> <br /> Paste your data: Enter the YAML file you want
-            to convert.
+            <Link href="/utilities/csv-to-json">CSV to JSON</Link>: Easily
+            convert CSV data to JSON format—the quickest way to turn tabular
+            data into JSON for APIs and data processing.
           </li>
           <li>
-            <b>Step 2:</b> <br /> Get the JSON result: Copy to clipboard the
-            JSON output.
+            <Link href="/utilities/json-formatter">JSON Formatter</Link>: Format
+            and beautify your JSON data for better readability and debugging.
+          </li>
+          <li>
+            <Link href="/utilities/query-params-to-json">
+              Query Parameters to JSON
+            </Link>
+            : Simplify data handling and integration in your web applications by
+            converting query strings to JSON.
           </li>
         </ul>
       </section>
 
       <section>
-        <h2>Benefits of Converting YAML documents to JSON</h2>
+        <h2>Benefits of Converting YAML Documents to JSON</h2>
         <p>
           YAML (Ain't Markup Language) is a simple file format used for
           configuration files. JSON (JavaScript Object Notation) is an
@@ -60,16 +91,6 @@ export default function YamlToJsonSEO() {
             to share and exchange data between different systems and platforms.
           </li>
         </ul>
-      </section>
-
-      <section>
-        <h2>Validating JSON Outputs</h2>
-        <p>
-          When converting data, it's crucial to ensure the accuracy and
-          integrity of the converted JSON. Our tool's built-in JSON Validator
-          ensures the output is syntactically correct and adheres to JSON
-          standards. So, you can reliably use the data in your applications.
-        </p>
       </section>
 
       <section>
@@ -135,13 +156,7 @@ export default function YamlToJsonSEO() {
           <li>
             <b>Is the YAML to JSON converter suitable for all types of data?</b>{" "}
             <br /> Yes. Our tool can handle various types of data, including
-            multi-line strings and key-value pairs. This is beneficial for
-            developers and anyone who works with configuration files.
-          </li>
-          <li>
-            <b>How easy is it to use the YAML converter?</b> <br /> Jam's
-            converter is user-friendly and intuitive, allowing anyone to use it.
-            Simply paste your data, and the tool will do the rest.
+            multi-line strings and key-value pairs.
           </li>
           <li>
             <b>Are there any limitations to the converter?</b> <br /> The tool

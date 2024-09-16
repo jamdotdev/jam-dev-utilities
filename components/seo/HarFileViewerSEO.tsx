@@ -4,49 +4,19 @@ export default function HarFileViewerSEO() {
   return (
     <div className="content-wrapper">
       <section>
-        <h2>HAR File Viewer</h2>
         <p>
-          Effortlessly view and analyze HAR (HTTP Archive) files with our free
-          online tool. Debugging network performance has never been easier (or
-          has it?).
+          Effortlessly view and analyze HAR (HTTP Archive) online free.
+          Debugging network performance has never been easier (or has it?).
         </p>
         <p>Scroll down for a debugging surprise.</p>
       </section>
 
       <section>
-        <h2>Free, Open Source & Ad-free</h2>
+        <h2>How to Use the HAR Analyzer</h2>
         <p>
-          Upload your HAR file and start analyzing immediately. Made with 💜 by
-          the developers at Jam.
+          Upload your HTTP archive HAR files and start analyzing immediately.
+          Made with 💜 by the developers building Jam.
         </p>
-      </section>
-
-      <section>
-        <h2>Benefits of Using HAR File Analyzer</h2>
-        <p>
-          HAR files capture a comprehensive record of web requests and
-          responses, making them essential for debugging and analyzing web
-          traffic. They provide invaluable insights into network performance and
-          help troubleshoot issues efficiently.
-        </p>
-        <ul>
-          <li>
-            <b>Network Requests:</b> <br /> Inspect all network requests made
-            during a page load.
-          </li>
-          <li>
-            <b>Performance Analysis:</b> <br /> Analyze load times, resource
-            sizes, and more.
-          </li>
-          <li>
-            <b>Error Detection:</b> <br /> Identify and troubleshoot errors in
-            web requests.
-          </li>
-          <li>
-            <b>Data Sharing:</b> <br /> Share with team members or support for
-            collaborative debugging.
-          </li>
-        </ul>
       </section>
 
       <section>
@@ -85,30 +55,13 @@ export default function HarFileViewerSEO() {
       </section>
 
       <section>
-        <h2>How to View a HAR File</h2>
-        <ul>
-          <li>
-            <b>Web Browser Developer Tools:</b> <br /> If you don't use our
-            tool, you can view HAR files using various methods. Most modern web
-            browsers like Google Chrome, Firefox, and Microsoft Edge have
-            built-in developer tools that can open and analyze HAR files.
-          </li>
-          <li>
-            <b>Text Editor:</b> <br /> HAR files are essentially JSON files and
-            can be opened in any text editor.
-          </li>
-          <li>
-            <b>Browser Extensions:</b> <br /> There are{" "}
-            <a href="https://jam.dev/" target="_blank" rel="noreferrer">
-              browser extensions
-            </a>{" "}
-            available that can help you analyze HAR files.
-          </li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>How to Read a HAR File</h2>
+        <h2>How to Use the HAR File Viewer for Debugging</h2>
+        <p>
+          HAR files capture a comprehensive record of web requests and
+          responses, making them essential for debugging and analyzing web
+          traffic. With the HAR file viewer you can see network performance and
+          troubleshoot the root cause of front-end bugs.
+        </p>
         <ul>
           <li>
             <b>Upload:</b> <br /> HAR file analysis is simple with our online
@@ -139,28 +92,49 @@ export default function HarFileViewerSEO() {
       </section>
 
       <section>
-        <h2>Meet Jam: The Ultimate HAR File</h2>
+        <h2>Meet Jam: Everything in a HAR File + More in 1 Click</h2>
         <p>
-          While our HAR file viewer is great and helps you analyze network logs,
-          there's a better way. Imagine having a tool that not only captures all
-          the network requests, responses, and console logs like a HAR file but
-          goes beyond that. Jam auto-includes reproduction steps, custom
-          metadata, and much more—all packaged and ready to go in a link you can
-          share.
+          Chances are you’re stuck explaining all those steps above to actually
+          get a HAR file (or trying to reproduce issues so you can get it
+          yourself).
         </p>
         <p>
-          All in one single click. It's just a browser extension. It's
-          impossible to get it wrong, click Jam to capture your screen, and
-          that's it.
+          You can make your life a lot easier by asking your team to report bugs
+          with Jam’s browser extension. Jam auto-includes everything in a HAR
+          file plus reproduction steps, custom metadata, and an AI debugging
+          assistant — all packaged and ready to go in a link.
         </p>
         <p>
-          Never write repro steps again. Never follow up to debug an issue. Just
-          ask your team to report bugs with Jam.
+          Try it within minutes and debug faster with the same shortcuts you use
+          on Chrome dev tools.
         </p>
       </section>
 
       <section>
         <GetJamForFree />
+      </section>
+
+      <section>
+        <h2>How to View a HAR File</h2>
+        <ul>
+          <li>
+            <b>Web Browser Developer Tools:</b> <br /> If you don't use our
+            tool, you can view HAR files using various methods. Most modern web
+            browsers like Google Chrome, Firefox, and Microsoft Edge have
+            built-in developer tools that can open and analyze HAR files.
+          </li>
+          <li>
+            <b>Text Editor:</b> <br /> HAR files are essentially JSON files and
+            can be opened in any text editor.
+          </li>
+          <li>
+            <b>Browser Extensions:</b> <br /> There are{" "}
+            <a href="https://jam.dev/" target="_blank" rel="noreferrer">
+              browser extensions
+            </a>{" "}
+            available that can help you analyze HAR files.
+          </li>
+        </ul>
       </section>
 
       <section>

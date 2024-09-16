@@ -1,24 +1,18 @@
+import Link from "next/link";
+
 export default function RgbToHexSEO() {
   return (
     <div className="content-wrapper">
       <section>
         <p>
-          Welcome to Jam's free CSS color converter tool! Easily convert RGB to
-          HEX CSS color codes. Whether you're working with CSS, Objective-C,
-          Swift, or Android, Jam's free online utilities have you covered.
+          Easily convert RGB to HEX CSS/HTML color codes. Whether you're working
+          with CSS, Objective-C, Swift, or Android, Jam's free color code
+          converter has you covered.
         </p>
       </section>
 
       <section>
-        <h2>CSS Color Converter</h2>
-        <p>
-          Quick and easy HEX to RGB conversion. Simply enter your RGB color code
-          and voila!
-        </p>
-      </section>
-
-      <section>
-        <h2>How to use:</h2>
+        <h2>How to use the RGB to HEX color converter:</h2>
         <ul>
           <li>
             <b>Step 1:</b> <br /> Enter your RGB color code
@@ -30,20 +24,26 @@ export default function RgbToHexSEO() {
       </section>
 
       <section>
-        <h2>Understanding RGB HEX Conversion</h2>
+        <h2>How the CSS color converter works</h2>
         <p>
-          Color conversions between RGB and HEX are essential for web developers
-          and designers working with CSS. RGB (Red, Green, Blue) color codes use
-          a combination of red, green, and blue values ranging from 0 to 255 to
-          create a color. HEX color codes, also known as hexadecimal color
-          codes, use hexadecimal numbers to define colors in HTML and CSS with a
-          six-digit format, such as #000000 for black. In this case, black would
-          be: rgb(0, 0, 0).
+          This tool takes an RGB color combination of red, green, and blue
+          values ranging from 0 to 255 and gives you the resulting hexadecimal
+          color code (HEX for short), so you can define colors in HTML and CSS.
+          For example, if you're working with Figma designs, this tool allows
+          you to input the RGB color codes from your file, to get the HEX code
+          you would need for html elements.
         </p>
         <br />
         <p>
-          Converting from RGB to HEX is crucial for accurately matching colors
-          across different design tools and coding environments.
+          Need to convert the other way? You can use the Hex to RGB converter{" "}
+          <Link
+            href="/utilities/hex-to-rgb"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            here
+          </Link>
+          .
         </p>
       </section>
     </div>
