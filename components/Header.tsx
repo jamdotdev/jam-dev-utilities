@@ -15,7 +15,7 @@ export default function Header() {
       <div className="flex gap-3">
         <ThemeToggle />
         <Button
-          className="min-h-10 flex"
+          className="min-h-10 flex px-2 sm:px-4 min-w-10 sm:min-w-auto"
           variant="outline"
           onClick={() =>
             window.open(
@@ -24,7 +24,7 @@ export default function Header() {
             )
           }
         >
-          <span className="mr-2">Contribute</span>
+          <span className="mr-2 hidden sm:inline">Contribute</span>
           <GitHubLogoIcon />
         </Button>
         <Button
