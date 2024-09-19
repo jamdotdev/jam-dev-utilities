@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ds/ButtonComponent";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
 export default function Header() {
   return (
@@ -13,6 +14,19 @@ export default function Header() {
 
       <div className="flex gap-3">
         <ThemeToggle />
+        <Button
+          className="min-h-10 flex px-2 sm:px-4 min-w-10 sm:min-w-auto"
+          variant="outline"
+          onClick={() =>
+            window.open(
+              "https://github.com/jamdotdev/jam-dev-utilities",
+              "_blank"
+            )
+          }
+        >
+          <span className="mr-2 hidden sm:inline">Contribute</span>
+          <GitHubLogoIcon />
+        </Button>
         <Button
           className="min-h-10 flex"
           variant="outline"
