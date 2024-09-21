@@ -313,7 +313,7 @@ export default function ImageResize() {
         </Card>
       </section>
 
-      <GitHubContribution username="EduardoDePatta" />
+      <GitHubContribution contributors={[{ username: "EduardoDePatta" }]} />
       <CallToActionGrid />
     </main>
   );

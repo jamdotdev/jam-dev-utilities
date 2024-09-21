@@ -190,7 +190,7 @@ export default function CSSUnitsConverter() {
         </Card>
       </section>
 
-      <GitHubContribution username="franciscoaiolfi" />
+      <GitHubContribution contributors={[{ username: "franciscoaiolfi" }]} />
       <CallToActionGrid />
     </main>
   );

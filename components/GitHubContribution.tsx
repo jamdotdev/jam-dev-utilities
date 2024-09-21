@@ -1,7 +1,11 @@
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
-interface GitHubContributionProps {
+interface Contributor {
   username: string;
+}
+
+interface GitHubContributionProps {
+  contributors: Contributor[];
 }
 
 export default function GitHubContribution(props: GitHubContributionProps) {
@@ -9,13 +13,16 @@ export default function GitHubContribution(props: GitHubContributionProps) {
     <section className="container max-w-2xl content-wrapper mb-6">
       <p className="flex items-center gap-2 justify-center">
         <span>Built by</span> <GitHubLogoIcon />
-        <a
-          href={`https://github.com/${props.username}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          @{props.username}
-        </a>
+        {props.contributors.map((contributor: Contributor) => (
+          <a
+            href={`https://github.com/${contributor.username}`}
+            target="_blank"
+            rel="noreferrer"
+            key={contributor.username}
+          >
+            @{contributor.username}
+          </a>
+        ))}
       </p>
     </section>
   );

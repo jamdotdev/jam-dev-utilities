@@ -122,7 +122,7 @@ export default function CSSInlinerForEmail() {
         </Card>
       </section>
 
-      <GitHubContribution username="EduardoDePatta" />
+      <GitHubContribution contributors={[{ username: "EduardoDePatta" }]} />
       <CallToActionGrid />
     </main>
   );

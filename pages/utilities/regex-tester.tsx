@@ -116,7 +116,7 @@ export default function RegexTester() {
         </Card>
       </section>
 
-      <GitHubContribution username="shashankshet" />
+      <GitHubContribution contributors={[{ username: "shashankshet" }]} />
       <CallToActionGrid />
     </main>
   );
