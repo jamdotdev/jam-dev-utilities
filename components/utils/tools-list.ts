@@ -107,4 +107,10 @@ export const tools = [
       "Resize images while maintaining aspect ratio and choose between PNG and JPEG formats with our free tool.",
     link: "/utilities/image-resizer",
   },
+  {
+    title: "Minify CSS/JavaScript",
+    description:
+      "Quickly minify your CSS or JavaScript code to reduce file size and improve loading times for your web applications.",
+    link: "/utilities/minify-js-css",
+  },
 ];
