@@ -107,4 +107,10 @@ export const tools = [
       "Resize images while maintaining aspect ratio and choose between PNG and JPEG formats with our free tool.",
     link: "/utilities/image-resizer",
   },
+  {
+    title: "Text Difference Checker",
+    description:
+      "Compare two text files or strings and quickly identify differences between them.",
+    link: "/utilities/text-difference",
+  },
 ];
