@@ -11,6 +11,7 @@ import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { Combobox } from "@/components/ds/ComboboxComponent";
 import NumberBaseChangerSEO from "@/components/seo/NumberBaseChangerSEO";
+import { ArrowLeftRight } from "lucide-react";
 
 export default function Base64Encoder() {
   const [fromBase, setFromBase] = useState(10);
@@ -27,6 +28,13 @@ export default function Base64Encoder() {
     []
   );
 
+  const switchValues = () => {
+    const oldFromBase = fromBase;
+    setToBase(oldFromBase);
+    const oldToBase = toBase;
+    setFromBase(oldToBase);
+  };
+
   useEffect(() => {
     setOutput(convertBase(input, fromBase, toBase));
   }, [input, fromBase, toBase]);
@@ -34,7 +42,7 @@ export default function Base64Encoder() {
   return (
     <main>
       <Meta
-        title="Number Base Changer | Free & Open-Source Dev Utils"
+        title="Number Base Changer | Free, Open Source & Ad-free"
         description="Easily convert numbers between different bases (binary, decimal, hexadecimal) with our free online Number Base Changer. Perfect for developers and mathematicians looking for quick base conversions"
       />
       <Header />
@@ -43,7 +51,7 @@ export default function Base64Encoder() {
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="Number Base Changer"
-          description="Free, Open Source & Ad-free"
+          description="Fast, free, open source, ad-free tools."
         />
       </section>
 
@@ -63,14 +71,21 @@ export default function Base64Encoder() {
                 <Label>From</Label>
                 <Combobox
                   data={data}
+                  value={fromBase.toString()}
                   onSelect={(value) => setFromBase(parseInt(value))}
                   defaultValue="10"
                 />
+              </div>
+              <div className="flex flex-col justify-end">
+                <Button variant="outline" onClick={switchValues}>
+                  <ArrowLeftRight className="h-4 w-4" />
+                </Button>
               </div>
               <div className="flex flex-1 flex-col">
                 <Label>To</Label>
                 <Combobox
                   data={data}
+                  value={toBase.toString()}
                   onSelect={(value) => setToBase(parseInt(value))}
                   defaultValue="2"
                 />

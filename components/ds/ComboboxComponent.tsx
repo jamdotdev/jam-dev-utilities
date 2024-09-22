@@ -17,16 +17,19 @@ interface ComboboxProps {
   data: { value: string; label: string }[];
   onSelect(value: string): void;
   defaultValue?: string;
+  value?: string;
   disabled?: boolean;
 }
 
 export function Combobox(props: ComboboxProps) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(props.defaultValue || "");
+  const [internalValue, setInternalValue] = useState(props.defaultValue || "");
+
+  const value = props.value !== undefined ? props.value : internalValue;
   const selectedItem = props.data.find((item) => item.value === value);
 
   const setNewValue = (value: string) => {
-    setValue(value);
+    setInternalValue(value);
     setOpen(false);
     props.onSelect(value);
   };
