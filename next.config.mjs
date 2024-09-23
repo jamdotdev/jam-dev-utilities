@@ -15,11 +15,6 @@ const nextConfig = {
         destination: "/utilities",
         permanent: true,
       },
-      {
-        source: "/utilities/utilities/:path*",
-        destination: "/utilities/:path*",
-        permanent: true,
-      },
     ];
   },
   webpack: (config, { isServer }) => {
