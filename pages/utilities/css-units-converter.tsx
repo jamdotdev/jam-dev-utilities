@@ -141,16 +141,16 @@ export default function CSSUnitsConverter() {
                 <Label>From Unit</Label>
                 <Combobox
                   data={unitOptions}
+                  value={fromUnit}
                   onSelect={(value) => setFromUnit(value)}
-                  defaultValue={fromUnit}
                 />
               </div>
               <div className="flex flex-1 flex-col">
                 <Label>To Unit</Label>
                 <Combobox
                   data={unitOptions}
+                  value={toUnit}
                   onSelect={(value) => setToUnit(value)}
-                  defaultValue={toUnit}
                 />
               </div>
             </div>

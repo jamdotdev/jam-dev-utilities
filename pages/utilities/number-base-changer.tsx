@@ -13,9 +13,8 @@ import { Combobox } from "@/components/ds/ComboboxComponent";
 import NumberBaseChangerSEO from "@/components/seo/NumberBaseChangerSEO";
 import { ArrowLeftRight } from "lucide-react";
 
-export default function Base64Encoder() {
-  const [fromBase, setFromBase] = useState(10);
-  const [toBase, setToBase] = useState(2);
+export default function NumberBaseChanger() {
+  const [base, setBase] = useState({ from: 10, to: 2 });
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const { buttonText, handleCopy } = useCopyToClipboard();
@@ -28,16 +27,16 @@ export default function Base64Encoder() {
     []
   );
 
-  const switchValues = () => {
-    const oldFromBase = fromBase;
-    setToBase(oldFromBase);
-    const oldToBase = toBase;
-    setFromBase(oldToBase);
-  };
+  const switchValues = useCallback(() => {
+    setBase((prev) => ({
+      from: prev.to,
+      to: prev.from,
+    }));
+  }, []);
 
   useEffect(() => {
-    setOutput(convertBase(input, fromBase, toBase));
-  }, [input, fromBase, toBase]);
+    setOutput(convertBase(input, base.from, base.to));
+  }, [input, base.from, base.to]);
 
   return (
     <main>
@@ -71,9 +70,8 @@ export default function Base64Encoder() {
                 <Label>From</Label>
                 <Combobox
                   data={data}
-                  value={fromBase.toString()}
-                  onSelect={(value) => setFromBase(parseInt(value))}
-                  defaultValue="10"
+                  value={base.from.toString()}
+                  onSelect={(value) => switchValues}
                 />
               </div>
               <div className="flex flex-col justify-end">
@@ -85,9 +83,8 @@ export default function Base64Encoder() {
                 <Label>To</Label>
                 <Combobox
                   data={data}
-                  value={toBase.toString()}
-                  onSelect={(value) => setToBase(parseInt(value))}
-                  defaultValue="2"
+                  value={base.to.toString()}
+                  onSelect={(value) => switchValues}
                 />
               </div>
             </div>
