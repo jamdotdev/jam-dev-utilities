@@ -10,7 +10,7 @@ import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { decodeJWT } from "@/components/utils/jwt-parser.utils";
-import JWTParserSEO from "../../components/seo/JWTParserSEO";
+import GitHubContribution from "@/components/GitHubContribution";
 
 export default function JWTParser() {
   const [input, setInput] = useState("");
@@ -67,14 +67,16 @@ export default function JWTParser() {
           <div>
             <Label>JWT Token</Label>
             <Textarea
-              rows={6}
+              rows={3}
               placeholder="Paste JWT here"
               onChange={handleChange}
               className="mb-6"
               value={input}
             />
 
-            <div className="mb-4">
+            <Divider />
+
+            <div>
               <Label>Decoded Header</Label>
               <Textarea value={header} rows={6} readOnly className="mb-4" />
               <Button
@@ -85,7 +87,9 @@ export default function JWTParser() {
               </Button>
             </div>
 
-            <div className="mb-4">
+            <Divider />
+
+            <div>
               <Label>Decoded Payload</Label>
               <Textarea value={payload} rows={6} readOnly className="mb-4" />
               <Button
@@ -96,9 +100,16 @@ export default function JWTParser() {
               </Button>
             </div>
 
-            <div className="mb-4">
+            <Divider />
+
+            <div>
               <Label>Signature</Label>
-              <Textarea value={signature} rows={2} readOnly className="mb-4" />
+              <Textarea
+                value={signature}
+                rows={1}
+                readOnly
+                className="mb-4 min-h-0"
+              />
               <Button
                 variant="outline"
                 onClick={() => handleCopySignature(signature)}
@@ -110,11 +121,12 @@ export default function JWTParser() {
         </Card>
       </section>
 
+      <GitHubContribution username="EduardoDePatta" />
       <CallToActionGrid />
-
-      <section className="container max-w-2xl mb-6">
-        <JWTParserSEO />
-      </section>
     </main>
   );
 }
+
+const Divider = () => {
+  return <div className="bg-border h-[1px] my-6"></div>;
+};
