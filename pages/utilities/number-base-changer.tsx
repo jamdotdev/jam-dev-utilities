@@ -71,7 +71,12 @@ export default function NumberBaseChanger() {
                 <Combobox
                   data={data}
                   value={base.from.toString()}
-                  onSelect={(value) => switchValues}
+                  onSelect={(value) => {
+                    setBase((prev) => ({
+                      ...prev,
+                      from: parseInt(value),
+                    }));
+                  }}
                 />
               </div>
               <div className="flex flex-col justify-end">
@@ -84,7 +89,9 @@ export default function NumberBaseChanger() {
                 <Combobox
                   data={data}
                   value={base.to.toString()}
-                  onSelect={(value) => switchValues}
+                  onSelect={(value) => {
+                    setBase((prev) => ({ ...prev, to: parseInt(value) }));
+                  }}
                 />
               </div>
             </div>

@@ -149,7 +149,7 @@ export default function CSSUnitsConverter() {
                 <Combobox
                   data={unitOptions}
                   value={unit.from}
-                  onSelect={(value) => setUnit({from: value , to: unit.to})}
+                  onSelect={(value) => setUnit({ from: value, to: unit.to })}
                 />
               </div>
               <div className="flex flex-col justify-end">
@@ -162,7 +162,7 @@ export default function CSSUnitsConverter() {
                 <Combobox
                   data={unitOptions}
                   value={unit.to}
-                  onSelect={(value) => setUnit({from: unit.from , to: value})}
+                  onSelect={(value) => setUnit({ from: unit.from, to: value })}
                 />
               </div>
             </div>
