@@ -107,4 +107,10 @@ export const tools = [
       "Resize images while maintaining aspect ratio and choose between PNG and JPEG formats with our free tool.",
     link: "/utilities/image-resizer",
   },
+  {
+    title: "JWT Parser",
+    description:
+      "Easily decode JWT tokens and view their header, payload, and signature. Perfect for debugging and analyzing JSON Web Tokens.",
+    link: "/utilities/jwt-parser",
+  },
 ];
