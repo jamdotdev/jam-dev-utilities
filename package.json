@@ -24,6 +24,7 @@
     "cmdk": "^1.0.0",
     "curlconverter": "^4.10.1",
     "js-yaml": "^4.1.0",
+    "lorem-ipsum": "^2.0.8",
     "lucide-react": "^0.414.0",
     "next": "14.2.4",
     "next-themes": "^0.3.0",
