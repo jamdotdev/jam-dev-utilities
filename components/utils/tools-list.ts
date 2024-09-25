@@ -119,16 +119,4 @@ export const tools = [
       "Quickly generate secure hashes for your text using algorithms like SHA-256, SHA-512, MD5, and more. Ideal for password hashing, data integrity checks, and cryptographic applications.",
     link: "/utilities/hash-generator",
   },
-  {
-    title: "UUID Generator",
-    description:
-      "Generate random UUIDs. Useful for creating unique identifiers for various applications such as database keys, session IDs, and more.",
-    link: "/utilities/uuid-generator",
-  },
-  {
-    title: "SVG Viewer",
-    description:
-      "Instantly preview and validate SVG code in your browser. Perfect for developers working with vector graphics and debugging SVG markup.",
-    link: "/utilities/svg-viewer",
-  },
 ];

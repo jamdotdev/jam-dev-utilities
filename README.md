@@ -45,6 +45,7 @@ Here is the list of all utilities:
 - [JWT Parser](https://jam.dev/utilities/jwt-parser)
 - [UUID Generator](https://jam.dev/utilities/uuid-generator)
 - [SVG Viewer](https://jam.dev/utilities/svg-viewer)
+- [Lorem Ipsum Generator](https://jam.dev/utilities/lorem-ipsum-generator)
 
 ### Built With
 
@@ -59,6 +60,7 @@ Here is the list of all utilities:
 - [Papa Parse](https://www.papaparse.com/)
 - [js-yaml](https://github.com/nodeca/js-yaml)
 - [curlconverter](https://github.com/curlconverter/curlconverter)
+- [lorem-ipsum](https://github.com/knicklabs/lorem-ipsum.js)
 
 ## Getting Started
 
