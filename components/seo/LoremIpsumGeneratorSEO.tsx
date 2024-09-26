@@ -1,5 +1,3 @@
-import GetJamForFree from "./GetJamForFree";
-
 export default function LoremIpsumGeneratorSEO() {
   return (
     <div className="content-wrapper">
