@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function RgbToHexSEO() {
   return (
     <div className="content-wrapper">
