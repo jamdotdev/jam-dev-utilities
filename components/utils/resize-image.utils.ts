@@ -248,7 +248,7 @@ export function calculateCropDimensions(
   const scaleY = img.height / currentImageRef.clientHeight;
 
   const x = Math.min(cropRect.x, cropRect.x + cropRect.width) * scaleX;
-  const y = Math.min(cropRect.y, cropRect.y + cropRect.height) * scaleY; 
+  const y = Math.min(cropRect.y, cropRect.y + cropRect.height) * scaleY;
   const width = Math.abs(cropRect.width) * scaleX;
   const height = Math.abs(cropRect.height) * scaleY;
 

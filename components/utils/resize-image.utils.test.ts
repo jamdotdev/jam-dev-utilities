@@ -182,7 +182,11 @@ describe("Image Processing Functions", () => {
 
     const cropRect = { x: 50, y: 50, width: 100, height: 50 };
 
-    const result = calculateCropDimensions(imgMock, currentImageRefMock, cropRect);
+    const result = calculateCropDimensions(
+      imgMock,
+      currentImageRefMock,
+      cropRect
+    );
 
     expect(result).toEqual({
       x: 100,
@@ -197,16 +201,20 @@ describe("Image Processing Functions", () => {
       width: 1000,
       height: 500,
     } as HTMLImageElement;
-  
+
     const currentImageRefMock = {
       clientWidth: 500,
       clientHeight: 250,
     } as HTMLImageElement;
-  
+
     const cropRect = { x: 150, y: 150, width: -100, height: -50 };
-  
-    const result = calculateCropDimensions(imgMock, currentImageRefMock, cropRect);
-  
+
+    const result = calculateCropDimensions(
+      imgMock,
+      currentImageRefMock,
+      cropRect
+    );
+
     expect(result).toEqual({
       x: 100,
       y: 200,
