@@ -16,17 +16,15 @@ import {
 interface ComboboxProps {
   data: { value: string; label: string }[];
   onSelect(value: string): void;
-  defaultValue?: string;
+  value?: string;
   disabled?: boolean;
 }
 
 export function Combobox(props: ComboboxProps) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(props.defaultValue || "");
-  const selectedItem = props.data.find((item) => item.value === value);
+  const selectedItem = props.data.find((item) => item.value === props.value);
 
   const setNewValue = (value: string) => {
-    setValue(value);
     setOpen(false);
     props.onSelect(value);
   };
@@ -61,7 +59,7 @@ export function Combobox(props: ComboboxProps) {
                   <CheckIcon
                     className={cn(
                       "ml-auto h-4 w-4",
-                      value === item.value ? "opacity-100" : "opacity-0"
+                      props.value === item.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
