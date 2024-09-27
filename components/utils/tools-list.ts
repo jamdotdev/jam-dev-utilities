@@ -113,4 +113,10 @@ export const tools = [
       "Quickly minify your CSS or JavaScript code to reduce file size and improve loading times for your web applications.",
     link: "/utilities/minify-js-css",
   },
+  {
+    title: "JWT Parser",
+    description:
+      "Easily decode JWT tokens and view their header, payload, and signature. Perfect for debugging and analyzing JSON Web Tokens.",
+    link: "/utilities/jwt-parser",
+  },
 ];
