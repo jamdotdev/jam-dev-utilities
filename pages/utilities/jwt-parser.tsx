@@ -11,6 +11,7 @@ import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { decodeJWT } from "@/components/utils/jwt-parser.utils";
 import GitHubContribution from "@/components/GitHubContribution";
+import { DividerComponent } from "../../components/ds/DividerComponent";
 
 export default function JWTParser() {
   const [input, setInput] = useState("");
@@ -74,7 +75,7 @@ export default function JWTParser() {
               value={input}
             />
 
-            <Divider />
+            <DividerComponent margin="medium" />
 
             <div>
               <Label>Decoded Header</Label>
@@ -87,7 +88,7 @@ export default function JWTParser() {
               </Button>
             </div>
 
-            <Divider />
+            <DividerComponent margin="medium" />
 
             <div>
               <Label>Decoded Payload</Label>
@@ -100,7 +101,7 @@ export default function JWTParser() {
               </Button>
             </div>
 
-            <Divider />
+            <DividerComponent margin="medium" />
 
             <div>
               <Label>Signature</Label>
@@ -126,7 +127,3 @@ export default function JWTParser() {
     </main>
   );
 }
-
-const Divider = () => {
-  return <div className="bg-border h-[1px] my-6"></div>;
-};
