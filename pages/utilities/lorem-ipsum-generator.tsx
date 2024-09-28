@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { loremIpsum } from "lorem-ipsum";
+import { generateLoremIpsum } from "@/components/utils/lorem-ipsum-generator";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import { CMDK } from "@/components/CMDK";
 import { Button } from "@/components/ds/ButtonComponent";
@@ -22,13 +22,15 @@ const generationOptions = [
   { value: "words", label: "Words" },
 ];
 
-declare type LoremUnit = "words" | "sentences" | "paragraphs";
+declare type GenerationUnit = "words" | "sentences" | "paragraphs";
 
 export default function LoremIpsumGenerator() {
   const [inputAmount, setInputAmount] = useState(1);
   const [output, setOutput] = useState("");
-  const [generationUnit, setGenerationUnit] = useState<LoremUnit>("paragraphs");
+  const [generationUnit, setGenerationUnit] =
+    useState<GenerationUnit>("paragraphs");
   const [asHTML, setAsHTML] = useState(false);
+  const [startWithStandard, setStartWithStandard] = useState(false);
   const { buttonText, handleCopy } = useCopyToClipboard();
 
   const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
@@ -37,19 +39,15 @@ export default function LoremIpsumGenerator() {
   };
 
   const generateText = useCallback(() => {
-    const text = loremIpsum({
-      count: inputAmount,
-      format: asHTML ? "html" : "plain",
-      paragraphLowerBound: 3,
-      paragraphUpperBound: 6,
-      random: Math.random,
-      sentenceLowerBound: 7,
-      sentenceUpperBound: 14,
-      suffix: "\n\n",
-      units: generationUnit,
+    const text = generateLoremIpsum({
+      generationUnit: generationUnit,
+      inputAmount: inputAmount,
+      startWithStandard: startWithStandard,
+      asHTML: asHTML,
     });
+
     setOutput(text);
-  }, [inputAmount, generationUnit, asHTML]);
+  }, [inputAmount, generationUnit, asHTML, startWithStandard]);
 
   useEffect(() => {
     generateText();
@@ -88,21 +86,38 @@ export default function LoremIpsumGenerator() {
               <Combobox
                 data={generationOptions}
                 value={generationUnit}
-                onSelect={(value: LoremUnit) => setGenerationUnit(value)}
+                onSelect={(value: GenerationUnit) => setGenerationUnit(value)}
               />
             </div>
           </div>
 
-          <div className="flex items-center mb-6 mt-2 gap-2">
-            <Checkbox
-              id="as-html"
-              checked={asHTML}
-              onCheckedChange={() => setAsHTML(!asHTML)}
-              className="mr-1"
-            />
-            <Label htmlFor="as-html" className="mb-0 hover:cursor-pointer">
-              As HTML
-            </Label>
+          <div className="flex items-center justify-between  mb-6 mt-2">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="as-html"
+                checked={asHTML}
+                onCheckedChange={() => setAsHTML(!asHTML)}
+                className="mr-1"
+              />
+              <Label htmlFor="as-html" className="mb-0 hover:cursor-pointer">
+                As HTML
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="standard-sentence"
+                checked={startWithStandard}
+                onCheckedChange={() => setStartWithStandard(!startWithStandard)}
+                className="mr-1"
+                disabled={generationUnit === "words"}
+              />
+              <Label
+                htmlFor="standard-sentence"
+                className="mb-0 hover:cursor-pointer"
+              >
+                Start with Lorem Ipsum
+              </Label>
+            </div>
           </div>
 
           <Divider />
