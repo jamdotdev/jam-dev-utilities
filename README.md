@@ -60,7 +60,6 @@ Here is the list of all utilities:
 - [Papa Parse](https://www.papaparse.com/)
 - [js-yaml](https://github.com/nodeca/js-yaml)
 - [curlconverter](https://github.com/curlconverter/curlconverter)
-- [lorem-ipsum](https://github.com/knicklabs/lorem-ipsum.js)
 
 ## Getting Started
 
