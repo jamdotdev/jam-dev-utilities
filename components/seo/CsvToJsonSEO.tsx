@@ -1,19 +1,20 @@
+import Link from "next/link";
+
 export default function CsvToJsonSEO() {
   return (
     <div className="content-wrapper">
       <section>
         <p>
-          This free tool is a quick and easy way to convert CSV files into JSON.
-          If you work with APIs, data, or web apps, you can use Jam's CSV to
-          JSON converter to turn tabular data into JSON format.
+          You can convert CSV files into JSON online with this free tool. If you
+          work with APIs, data, or web apps, you can use Jam's CSV to JSON
+          converter to turn tabular data into JSON format.
         </p>
       </section>
 
       <section>
-        <h2>Free, Open Source & Ad-free</h2>
         <p>
           Just paste your CSV file and get the JSON result. Built with 💜 by the
-          Jam developers, using the open-source{" "}
+          developers at Jam, using the open-source{" "}
           <a
             href="https://github.com/mholt/PapaParse"
             target="_blank"
@@ -28,9 +29,9 @@ export default function CsvToJsonSEO() {
       <section>
         <h2>How to Use Jam's CSV to JSON Converter Tool</h2>
         <p>
-          Easily convert your CSV files to JSON online with our tool. Whether
-          you're working on web development projects, data analysis, or
-          integrating with APIs, our converter simplifies the process.
+          Whether you're working on web development projects, data analysis, or
+          integrating with APIs, this converter makes it easy to convert CSV
+          files into JSON data.
         </p>
         <ul>
           <li>
@@ -44,6 +45,43 @@ export default function CsvToJsonSEO() {
           <li>
             <b>Lowercase keys:</b> <br /> Optionally, choose to convert all keys
             in the JSON output to lowercase for consistency.
+          </li>
+        </ul>
+        <p>
+          Need to convert the other way? You can use the JSON to CSV converter{" "}
+          <Link
+            href="/utilities/json-to-csv"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            here
+          </Link>
+          .
+        </p>
+      </section>
+
+      <section>
+        <h2>More JSON Utilities</h2>
+        <p>
+          Beautify JSON, convert from query parameters, or YAML with Jam's free
+          developer utilities. They're all available in dark mode too.
+        </p>
+        <ul>
+          <li>
+            <Link href="/utilities/json-formatter">JSON Formatter</Link>: Format
+            and beautify your JSON data for better readability and debugging.
+          </li>
+          <li>
+            <Link href="/utilities/yaml-to-json">YAML to JSON</Link>: Easily
+            convert human-readable YAML to JSON. Useful where you're working
+            with configuration files and need to switch between them.
+          </li>
+          <li>
+            <Link href="/utilities/query-params-to-json">
+              Query Parameters to JSON
+            </Link>
+            : Simplify data handling and integration in your web applications by
+            converting query strings to JSON.
           </li>
         </ul>
       </section>

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function JsonToYamlSEO() {
   return (
     <div className="content-wrapper">
@@ -18,21 +20,51 @@ export default function JsonToYamlSEO() {
       </section>
 
       <section>
-        <h2>How to Use</h2>
+        <h2>How to Use the JSON to YAML Converter</h2>
         <p>
-          Converting JSON to YAML with our online tool is straightforward. You
-          can easily convert JSON files to YAML format for various uses, such as
-          configuration files, data exchange, and more. No signup required.
-          Here's how:
+          To convert JSON data to YAML files, just input the JSON file you want
+          to convert and copy the YAML output. No signup required.
+        </p>
+        <p>
+          Our tool's built-in YAML Validator ensures the output is syntactically
+          correct and adheres to YAML standards. So, you can reliably use the
+          data in your applications.
+        </p>
+        <p>
+          Need to convert the other way? You can use the YAML to JSON converter{" "}
+          <Link
+            href="/utilities/yaml-to-json"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            here
+          </Link>
+          .
+        </p>
+      </section>
+
+      <section>
+        <h2>More JSON conversion tools</h2>
+        <p>
+          Convert to CSV, query parameters, or beautify JSON with Jam's free
+          developer utilities. They're all available in dark mode too.
         </p>
         <ul>
           <li>
-            <b>Step 1:</b> <br /> Paste your data: Enter the JSON file you want
-            to convert.
+            <Link href="/utilities/csv-to-json">CSV to JSON</Link>: Easily
+            convert CSV data to JSON format—the quickest way to turn tabular
+            data into JSON for APIs and data processing.
           </li>
           <li>
-            <b>Step 2:</b> <br /> Get the YAML result: Copy to clipboard the
-            YAML output.
+            <Link href="/utilities/json-formatter">JSON Formatter</Link>: Format
+            and beautify your JSON data for better readability and debugging.
+          </li>
+          <li>
+            <Link href="/utilities/query-params-to-json">
+              Query Parameters to JSON
+            </Link>
+            : Simplify data handling and integration in your web applications by
+            converting query strings to JSON.
           </li>
         </ul>
       </section>
@@ -61,16 +93,6 @@ export default function JsonToYamlSEO() {
       </section>
 
       <section>
-        <h2>Validating YAML Outputs</h2>
-        <p>
-          When converting data, it's crucial to ensure the accuracy and
-          integrity of the converted YAML. Our tool's built-in YAML Validator
-          ensures the output is syntactically correct and adheres to YAML
-          standards. So, you can reliably use the data in your applications.
-        </p>
-      </section>
-
-      <section>
         <h2>JSON vs YAML: Which One to Use?</h2>
         <p>
           When working with configuration files and data serialization, it's
@@ -78,7 +100,7 @@ export default function JsonToYamlSEO() {
         </p>
         <ul>
           <li>
-            <b>Readability</b> <br />
+            <b>Readability:</b> <br />
             JSON is designed for efficient machine parsing, yet remains readable
             for humans. Its structured format allows quick interpretation by
             both computers and developers. YAML prioritizes human readability
@@ -147,11 +169,6 @@ export default function JsonToYamlSEO() {
             <b>Are there any limitations to the converter?</b> <br /> The tool
             functions effectively for all standard use cases. It can handle
             typical files and also extremely large files.
-          </li>
-          <li>
-            <b>How to use it with Swagger Editor?</b> <br /> You can use our
-            converter in conjunction with Swagger Editor online to design,
-            build, and document your APIs efficiently.
           </li>
         </ul>
       </section>

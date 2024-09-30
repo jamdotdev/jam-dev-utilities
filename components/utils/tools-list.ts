@@ -96,6 +96,24 @@ export const tools = [
     link: "/utilities/regex-tester",
   },
   {
+    title: "CSS Units Converter",
+    description:
+      "Easily convert px to rem with our simple CSS unit converter. Quickly transform pixel values to rem units for better scalability and accessibility.",
+    link: "/utilities/css-units-converter",
+  },
+  {
+    title: "Image Resizer",
+    description:
+      "Resize images while maintaining aspect ratio and choose between PNG and JPEG formats with our free tool.",
+    link: "/utilities/image-resizer",
+  },
+  {
+    title: "JWT Parser",
+    description:
+      "Easily decode JWT tokens and view their header, payload, and signature. Perfect for debugging and analyzing JSON Web Tokens.",
+    link: "/utilities/jwt-parser",
+  },
+  {
     title: "Hash Generator",
     description:
       "Quickly generate secure hashes for your text using algorithms like SHA-256, SHA-512, MD5, and more. Ideal for password hashing, data integrity checks, and cryptographic applications.",

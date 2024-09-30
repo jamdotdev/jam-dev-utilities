@@ -5,9 +5,8 @@ export default function TimestampSEO() {
     <div className="content-wrapper">
       <section>
         <p>
-          Welcome to our Timestamp to Date converter! This free tool is a quick
-          and easy way to convert Unix timestamps into human-readable dates.
-          Whether you&apos;re{" "}
+          You can easily convert Unix timestamps into human-readable dates with
+          this free tool. Whether you&apos;re{" "}
           <a
             href="https://jam.dev/tracing"
             target="_blank"
@@ -48,7 +47,6 @@ export default function TimestampSEO() {
           <li>
             <b>Step 1:</b> <br /> Input the timestamp.
           </li>
-
           <li>
             <b>Step 2:</b> <br /> Just kidding, there&apos;s no step 2.
           </li>

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function JsonToCsvSEO() {
   return (
     <div className="content-wrapper">
@@ -11,10 +13,9 @@ export default function JsonToCsvSEO() {
       </section>
 
       <section>
-        <h2>Free, Open Source & Ad-free</h2>
         <p>
           Simply paste your JSON data and get the CSV result. Built with 💜 by
-          the Jam developers, using the open-source{" "}
+          the developers at Jam, using the open-source{" "}
           <a
             href="https://github.com/mholt/PapaParse"
             target="_blank"
@@ -29,9 +30,9 @@ export default function JsonToCsvSEO() {
       <section>
         <h2>How to Use Jam's JSON to CSV Converter Tool</h2>
         <p>
-          Easily convert your JSON files to CSV online with our tool. Whether
-          you're working on data analysis, creating reports, or importing data
-          into spreadsheet applications, our converter simplifies the process.
+          Whether you're working on data analysis, creating reports, or
+          importing data into spreadsheet applications, our converter makes it
+          easy to convert your JSON files to CSV online.
         </p>
         <ul>
           <li>
@@ -48,6 +49,10 @@ export default function JsonToCsvSEO() {
             applications.
           </li>
         </ul>
+        <p>
+          Need to convert the other way? You can use the CSV to JSON converter{" "}
+          <Link href="/utilities/csv-to-json">here</Link>.
+        </p>
       </section>
 
       <section>
