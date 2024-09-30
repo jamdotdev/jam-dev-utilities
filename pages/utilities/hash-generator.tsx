@@ -13,7 +13,7 @@ import { Combobox } from "@/components/ds/ComboboxComponent";
 import { Input } from "@/components/ds/InputComponent";
 import crypto, { BinaryToTextEncoding } from "crypto";
 import { generateHash } from "@/components/utils/hash-generator.utils";
-import HashGeneratorSEO from "@/components/seo/HashGeneratorSEO";
+import GitHubContribution from "@/components/GitHubContribution";
 
 const MAX_ITERATIONS = 50_000;
 
@@ -157,13 +157,13 @@ export default function HashGenerator() {
       <section className="max-w-2xl mx-auto mb-12">
         <PageHeader
           title="Hash Generator"
-          description="Generate secure hashes for your text with different cryptographic algorithms."
+          description="Fast, free, open source, ad-free tools."
         />
       </section>
 
-      <section className="max-w-2xl mx-auto mb-6">
-        <Card className="flex flex-col space-y-6 p-6 hover:shadow-none shadow-none rounded-xl">
-          <div className="space-y-4">
+      <section className="container max-w-2xl mb-6">
+        <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
+          <div>
             <Label>Text</Label>
             <Textarea
               rows={4}
@@ -171,17 +171,39 @@ export default function HashGenerator() {
               onChange={handleTextChange}
               className="mb-6"
               value={textInput}
+              onKeyDown={(event) => {
+                if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+                  handleGenerateHash();
+                }
+              }}
             />
 
-            <Label>Algorithm</Label>
-            <Combobox
-              data={algorithmOptions}
-              onSelect={handleAlgorithmChange}
-              defaultValue={algorithm}
-            />
+            <Divider />
+
+            <div className="flex flex-1 gap-4">
+              <div className="flex flex-col flex-1">
+                <Label>Algorithm</Label>
+                <Combobox
+                  data={algorithmOptions}
+                  onSelect={handleAlgorithmChange}
+                  defaultValue={algorithm}
+                />
+              </div>
+
+              <div className="flex flex-col flex-1">
+                <Label>Output Encoding</Label>
+                <Combobox
+                  data={encodingOptions}
+                  onSelect={handleEncodingChange}
+                  defaultValue={encoding}
+                />
+              </div>
+            </div>
+
+            <Divider />
 
             {algorithm === "pbkdf2" && (
-              <div className="space-y-4">
+              <div>
                 <Label>Salt (optional)</Label>
                 <Input
                   type="text"
@@ -214,7 +236,7 @@ export default function HashGenerator() {
             )}
 
             {(algorithm === "hmac-sha256" || algorithm === "hmac-sha512") && (
-              <div className="space-y-4">
+              <div>
                 <Label>Secret Key (optional)</Label>
                 <Input
                   type="text"
@@ -225,20 +247,13 @@ export default function HashGenerator() {
                 />
               </div>
             )}
-
-            <Label>Output Encoding</Label>
-            <Combobox
-              data={encodingOptions}
-              onSelect={handleEncodingChange}
-              defaultValue={encoding}
-            />
           </div>
 
-          <Button onClick={handleGenerateHash} className="mt-6">
-            Generate Hash
-          </Button>
+          <Button onClick={handleGenerateHash}>Generate Hash</Button>
 
-          <div className="space-y-4">
+          <Divider />
+
+          <div>
             <Label>Generated Hash</Label>
             <Textarea value={hashOutput} rows={4} readOnly className="mb-4" />
             <Button variant="outline" onClick={() => handleCopy(hashOutput)}>
@@ -248,11 +263,12 @@ export default function HashGenerator() {
         </Card>
       </section>
 
+      <GitHubContribution username="EduardoDePatta" />
       <CallToActionGrid />
-
-      <section className="container max-w-2xl">
-        <HashGeneratorSEO />
-      </section>
     </main>
   );
 }
+
+const Divider = () => {
+  return <div className="h-[1px] bg-border my-6"></div>;
+};
