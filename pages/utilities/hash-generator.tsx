@@ -11,26 +11,24 @@ import Meta from "@/components/Meta";
 import { CMDK } from "@/components/CMDK";
 import { Combobox } from "@/components/ds/ComboboxComponent";
 import { Input } from "@/components/ds/InputComponent";
-import crypto, { BinaryToTextEncoding } from "crypto";
-import { generateHash } from "@/components/utils/hash-generator.utils";
+import crypto, { BinaryToTextEncoding, Encoding } from "crypto";
+import {
+  Algorithm,
+  generateHash,
+} from "@/components/utils/hash-generator.utils";
 import GitHubContribution from "@/components/GitHubContribution";
 
 const MAX_ITERATIONS = 50_000;
 
-type Algorithm =
-  | "sha256"
-  | "sha512"
-  | "md5"
-  | "pbkdf2"
-  | "hmac-sha256"
-  | "hmac-sha512";
-
-interface Option {
-  value: string;
+type HashFunctions = {
+  [K in Algorithm]: () => string;
+};
+interface Option<T extends string> {
+  value: T;
   label: string;
 }
 
-const algorithmOptions: Option[] = [
+const algorithmOptions: Option<Algorithm>[] = [
   { value: "sha256", label: "SHA-256" },
   { value: "sha512", label: "SHA-512" },
   { value: "md5", label: "MD5" },
@@ -39,7 +37,7 @@ const algorithmOptions: Option[] = [
   { value: "hmac-sha512", label: "HMAC-SHA-512" },
 ];
 
-const encodingOptions: Option[] = [
+const encodingOptions: Option<Encoding>[] = [
   { value: "hex", label: "Hex" },
   { value: "base64", label: "Base64" },
   { value: "latin1", label: "Latin1" },
@@ -77,8 +75,8 @@ export default function HashGenerator() {
     []
   );
 
-  const handleAlgorithmChange = useCallback((value: string) => {
-    setAlgorithm(value as Algorithm);
+  const handleAlgorithmChange = useCallback((value: Algorithm) => {
+    setAlgorithm(value);
   }, []);
 
   const handleIterationsChange = useCallback(
@@ -96,11 +94,11 @@ export default function HashGenerator() {
     []
   );
 
-  const handleEncodingChange = useCallback((value: string) => {
-    setEncoding(value as BinaryToTextEncoding);
+  const handleEncodingChange = useCallback((value: BinaryToTextEncoding) => {
+    setEncoding(value);
   }, []);
 
-  const hashFunctions = useMemo(() => {
+  const hashFunctions = useMemo((): HashFunctions => {
     const resolvedSecretKey =
       secretKey || crypto.randomBytes(32).toString("hex");
 
@@ -112,7 +110,7 @@ export default function HashGenerator() {
         const salt = saltInput || crypto.randomBytes(16).toString("hex");
         return crypto
           .pbkdf2Sync(textInput, salt, iterations, outputLength, "sha512")
-          .toString(encoding as BufferEncoding);
+          .toString(encoding);
       },
       "hmac-sha256": () =>
         generateHash("hmac-sha256", textInput, encoding, resolvedSecretKey),
