@@ -184,7 +184,7 @@ export default function HashGenerator() {
                 <Combobox
                   data={algorithmOptions}
                   onSelect={handleAlgorithmChange}
-                  defaultValue={algorithm}
+                  value={algorithm}
                 />
               </div>
 
@@ -193,7 +193,7 @@ export default function HashGenerator() {
                 <Combobox
                   data={encodingOptions}
                   onSelect={handleEncodingChange}
-                  defaultValue={encoding}
+                  value={encoding}
                 />
               </div>
             </div>
