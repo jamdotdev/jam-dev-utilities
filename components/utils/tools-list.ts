@@ -125,4 +125,10 @@ export const tools = [
       "Generate random UUIDs. Useful for creating unique identifiers for various applications such as database keys, session IDs, and more.",
     link: "/utilities/uuid-generator",
   },
+  {
+    title: "SVG Viewer",
+    description:
+      "Easily view and render SVG files online for free.",
+    link: "/utilities/svg-viewer",
+  },
 ];
