@@ -108,15 +108,9 @@ export const tools = [
     link: "/utilities/image-resizer",
   },
   {
-    title: "XML to JSON Converter",
+    title: "XML & JSON Converter",
     description:
-      "Easily convert XML data to JSON format for better compatibility with modern APIs and web development.",
-    link: "/utilities/xml-to-json",
-  },
-  {
-    title: "JSON to XML Converter",
-    description:
-      "Easily convert JSON data to XML format for seamless data exchange and system integrations. Perfect for working with APIs and structured data.",
-    link: "/utilities/json-to-xml",
+      "Effortlessly convert between XML and JSON formats for seamless data exchange, system integration, and modern API compatibility. Perfect for web development and working with structured data.",
+    link: "/utilities/xml-json",
   },
 ];
