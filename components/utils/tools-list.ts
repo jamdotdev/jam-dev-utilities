@@ -113,4 +113,10 @@ export const tools = [
       "Effortlessly convert between XML and JSON formats for seamless data exchange, system integration, and modern API compatibility. Perfect for web development and working with structured data.",
     link: "/utilities/xml-json",
   },
+  {
+    title: "JWT Parser",
+    description:
+      "Easily decode JWT tokens and view their header, payload, and signature. Perfect for debugging and analyzing JSON Web Tokens.",
+    link: "/utilities/jwt-parser",
+  },
 ];
