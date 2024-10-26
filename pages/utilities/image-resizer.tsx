@@ -255,8 +255,8 @@ export default function ImageResize() {
                 <Label className="mb-2">Format</Label>
                 <Combobox
                   data={formatOptions}
+                  value={format}
                   onSelect={(value) => setFormat(value as Format)}
-                  defaultValue={format}
                   disabled={!imageFile}
                 />
               </div>

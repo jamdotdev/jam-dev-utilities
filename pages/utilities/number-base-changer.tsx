@@ -11,10 +11,10 @@ import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { Combobox } from "@/components/ds/ComboboxComponent";
 import NumberBaseChangerSEO from "@/components/seo/NumberBaseChangerSEO";
+import { ArrowLeftRight } from "lucide-react";
 
-export default function Base64Encoder() {
-  const [fromBase, setFromBase] = useState(10);
-  const [toBase, setToBase] = useState(2);
+export default function NumberBaseChanger() {
+  const [base, setBase] = useState({ from: 10, to: 2 });
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const { buttonText, handleCopy } = useCopyToClipboard();
@@ -27,14 +27,21 @@ export default function Base64Encoder() {
     []
   );
 
+  const switchValues = useCallback(() => {
+    setBase((prev) => ({
+      from: prev.to,
+      to: prev.from,
+    }));
+  }, []);
+
   useEffect(() => {
-    setOutput(convertBase(input, fromBase, toBase));
-  }, [input, fromBase, toBase]);
+    setOutput(convertBase(input, base.from, base.to));
+  }, [input, base.from, base.to]);
 
   return (
     <main>
       <Meta
-        title="Number Base Changer | Free & Open-Source Dev Utils"
+        title="Number Base Changer | Free, Open Source & Ad-free"
         description="Easily convert numbers between different bases (binary, decimal, hexadecimal) with our free online Number Base Changer. Perfect for developers and mathematicians looking for quick base conversions"
       />
       <Header />
@@ -43,7 +50,7 @@ export default function Base64Encoder() {
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="Number Base Changer"
-          description="Free, Open Source & Ad-free"
+          description="Fast, free, open source, ad-free tools."
         />
       </section>
 
@@ -63,16 +70,28 @@ export default function Base64Encoder() {
                 <Label>From</Label>
                 <Combobox
                   data={data}
-                  onSelect={(value) => setFromBase(parseInt(value))}
-                  defaultValue="10"
+                  value={base.from.toString()}
+                  onSelect={(value) => {
+                    setBase((prev) => ({
+                      ...prev,
+                      from: parseInt(value),
+                    }));
+                  }}
                 />
+              </div>
+              <div className="flex flex-col justify-end">
+                <Button variant="outline" onClick={switchValues}>
+                  <ArrowLeftRight className="h-4 w-4" />
+                </Button>
               </div>
               <div className="flex flex-1 flex-col">
                 <Label>To</Label>
                 <Combobox
                   data={data}
-                  onSelect={(value) => setToBase(parseInt(value))}
-                  defaultValue="2"
+                  value={base.to.toString()}
+                  onSelect={(value) => {
+                    setBase((prev) => ({ ...prev, to: parseInt(value) }));
+                  }}
                 />
               </div>
             </div>

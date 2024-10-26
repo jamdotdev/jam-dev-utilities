@@ -23,6 +23,7 @@ import {
 } from "@/components/utils/css-units-converter.utils";
 import { Input } from "@/components/ds/InputComponent";
 import GitHubContribution from "@/components/GitHubContribution";
+import { ArrowLeftRight } from "lucide-react";
 
 type ConvertionFunction = (value: number, ...args: number[]) => number;
 type ConversionKey =
@@ -39,16 +40,15 @@ type ConversionKey =
 
 export default function CSSUnitsConverter() {
   const [htmlInput, setHtmlInput] = useState("");
-  const [fromUnit, setFromUnit] = useState("px");
+  const [unit, setUnit] = useState({ from: "px", to: "rem" });
   const [widthInput, setWidthInput] = useState("");
   const [heightInput, setHeightInput] = useState("");
-  const [toUnit, setToUnit] = useState("rem");
   const [output, setOutput] = useState("");
   const { buttonText, handleCopy } = useCopyToClipboard();
 
   const needsContainerInput =
-    ["vw", "vh", "vmin", "vmax"].includes(fromUnit) ||
-    ["vw", "vh", "vmin", "vmax"].includes(toUnit);
+    ["vw", "vh", "vmin", "vmax"].includes(unit.from) ||
+    ["vw", "vh", "vmin", "vmax"].includes(unit.to);
 
   const convertUnits = useCallback(() => {
     const value = parseFloat(htmlInput);
@@ -60,7 +60,7 @@ export default function CSSUnitsConverter() {
       return;
     }
 
-    const conversionKey = `${fromUnit}-${toUnit}` as ConversionKey;
+    const conversionKey = `${unit.from}-${unit.to}` as ConversionKey;
     const conversionFunction = conversionFunctionMapper[conversionKey];
 
     if (!(conversionKey in conversionFunctionMapper)) {
@@ -94,11 +94,11 @@ export default function CSSUnitsConverter() {
       setOutput(convertedValue.toString());
     }
   }, [
-    fromUnit,
+    unit.from,
     heightInput,
     htmlInput,
     needsContainerInput,
-    toUnit,
+    unit.to,
     widthInput,
   ]);
 
@@ -112,6 +112,13 @@ export default function CSSUnitsConverter() {
     },
     []
   );
+
+  const switchValues = useCallback(() => {
+    setUnit((prev) => ({
+      from: prev.to,
+      to: prev.from,
+    }));
+  }, []);
 
   return (
     <main>
@@ -141,16 +148,21 @@ export default function CSSUnitsConverter() {
                 <Label>From Unit</Label>
                 <Combobox
                   data={unitOptions}
-                  onSelect={(value) => setFromUnit(value)}
-                  defaultValue={fromUnit}
+                  value={unit.from}
+                  onSelect={(value) => setUnit({ from: value, to: unit.to })}
                 />
+              </div>
+              <div className="flex flex-col justify-end">
+                <Button variant="outline" onClick={switchValues}>
+                  <ArrowLeftRight className="h-4 w-4" />
+                </Button>
               </div>
               <div className="flex flex-1 flex-col">
                 <Label>To Unit</Label>
                 <Combobox
                   data={unitOptions}
-                  onSelect={(value) => setToUnit(value)}
-                  defaultValue={toUnit}
+                  value={unit.to}
+                  onSelect={(value) => setUnit({ from: unit.from, to: value })}
                 />
               </div>
             </div>

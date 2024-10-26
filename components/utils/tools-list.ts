@@ -113,4 +113,10 @@ export const tools = [
       "Compare two text files or strings and quickly identify differences between them.",
     link: "/utilities/text-difference",
   },
+  {
+    title: "JWT Parser",
+    description:
+      "Easily decode JWT tokens and view their header, payload, and signature. Perfect for debugging and analyzing JSON Web Tokens.",
+    link: "/utilities/jwt-parser",
+  },
 ];
