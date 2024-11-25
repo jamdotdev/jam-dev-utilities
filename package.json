@@ -23,6 +23,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "curlconverter": "^4.10.1",
+    "diff": "^7.0.0",
     "js-yaml": "^4.1.0",
     "lucide-react": "^0.414.0",
     "next": "14.2.4",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
+    "@types/diff": "^5.2.2",
     "@types/jest": "^29.5.12",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20",
