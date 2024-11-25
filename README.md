@@ -43,6 +43,7 @@ Here is the list of all utilities:
 - [Image Resizer](https://jam.dev/utilities/image-resizer)
 - [CSS Units Converter](https://jam.dev/utilities/css-units-converter)
 - [JWT Parser](https://jam.dev/utilities/jwt-parser)
+- [UUID Generator](https://jam.dev/utilities/uuid-generator)
 
 ### Built With
 
