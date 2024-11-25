@@ -44,6 +44,7 @@ Here is the list of all utilities:
 - [CSS Units Converter](https://jam.dev/utilities/css-units-converter)
 - [JWT Parser](https://jam.dev/utilities/jwt-parser)
 - [UUID Generator](https://jam.dev/utilities/uuid-generator)
+- [SVG Viewer](https://jam.dev/utilities/svg-viewer)
 
 ### Built With
 
