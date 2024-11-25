@@ -11,15 +11,7 @@ import { Input } from "@/components/ds/InputComponent";
 import GitHubContribution from "@/components/GitHubContribution";
 
 export default function UuidGenerator() {
-  const { buttonText, handleCopy } = useCopyToClipboard();
-  const { buttonText: copyAndNextText, handleCopy: handleCopyAndNext } =
-    useCopyToClipboard("Copy and Generate Next");
-
-  const copyAndNext = () => {
-    handleCopyAndNext(currentUuid);
-    setCurrentUUid(crypto.randomUUID());
-  };
-
+  const { buttonText, handleCopy } = useCopyToClipboard("Copy");
   const [currentUuid, setCurrentUUid] = useState(crypto.randomUUID());
 
   return (
@@ -44,20 +36,21 @@ export default function UuidGenerator() {
             <Input
               value={currentUuid}
               readOnly
-              className="w-80 mb-4 justify-center"
+              className="mb-4 justify-center"
             />
           </div>
-          <div className="flex justify-center items-center">
-            <div className="w-80">
-              <Button className="max-w-40" variant="outline" onClick={() => handleCopy(currentUuid)}>
-                {buttonText}
-              </Button>
-              <Button className="w-48 float-right" onClick={() => copyAndNext()}>
-                {copyAndNextText}
-              </Button>
-            </div>
+          <div className="flex flex-1 justify-between items-center">
+            <Button
+              className="max-w-40"
+              variant="outline"
+              onClick={() => handleCopy(currentUuid)}
+            >
+              {buttonText}
+            </Button>
+            <Button onClick={() => setCurrentUUid(crypto.randomUUID())}>
+              Generate New UUID
+            </Button>
           </div>
-
         </Card>
       </section>
 

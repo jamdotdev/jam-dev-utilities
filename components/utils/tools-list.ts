@@ -122,7 +122,7 @@ export const tools = [
   {
     title: "UUID Generator",
     description:
-      "Generate random UUIDs.",
+      "Generate random UUIDs. Useful for creating unique identifiers for various applications such as database keys, session IDs, and more.",
     link: "/utilities/uuid-generator",
   },
 ];
