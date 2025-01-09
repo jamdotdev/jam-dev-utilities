@@ -5,16 +5,16 @@ import { Card } from "@/components/ds/CardComponent";
 import { Button } from "@/components/ds/ButtonComponent";
 import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
-import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import { CMDK } from "@/components/CMDK";
 import JsonFormatterSEO from "../../components/seo/JsonFormatterSEO";
 import CallToActionGrid from "../../components/CallToActionGrid";
 import Meta from "@/components/Meta";
 
 export default function JSONFormatter() {
+  const [errorText, setErrorText] = useState("");
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
-  const { buttonText, handleCopy } = useCopyToClipboard();
+  const [buttonText, setButtonText] = useState("Copy");
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -32,6 +32,28 @@ export default function JSONFormatter() {
     },
     []
   );
+
+  const handleCopy = async () => {
+    try {
+      // Create unstable Blob with invalid MIME type to force error
+      const blob = new Blob([output], { type: "x-invalid/type" });
+      const clipboardItem = new ClipboardItem({
+        "x-invalid/type": blob,
+      });
+
+      // This will fail due to invalid MIME type
+      await navigator.clipboard.write([clipboardItem]);
+
+      setButtonText("Copied!");
+    } catch (error) {
+      setErrorText("Failed to copy to clipboard, please contact support.");
+      console.error("Clipboard API error:", error);
+    }
+
+    setTimeout(() => {
+      setButtonText("Copy");
+    }, 2000);
+  };
 
   return (
     <main>
@@ -62,9 +84,12 @@ export default function JSONFormatter() {
             />
             <Label>Formatted JSON</Label>
             <Textarea value={output} rows={6} readOnly className="mb-4" />
-            <Button variant="outline" onClick={() => handleCopy(output)}>
-              {buttonText}
-            </Button>
+            <div className="flex items-center gap-4 justify-between">
+              <Button variant="outline" onClick={() => handleCopy()}>
+                {buttonText}
+              </Button>
+              <span className="text-red-700 text-[14px]">{errorText}</span>
+            </div>
           </div>
         </Card>
       </section>
