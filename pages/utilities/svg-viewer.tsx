@@ -7,11 +7,25 @@ import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import SvgViewerSEO from "@/components/seo/SvgViewerSEO";
+import GitHubContribution from "@/components/GitHubContribution";
+
+type Status = "idle" | "invalid" | "error";
+
+const getStatusMessage = (status: Status) => {
+  switch (status) {
+    case "invalid":
+      return "Input does not contain an SVG tag";
+    case "error":
+      return "Failed to process SVG. Please check your input.";
+    default:
+      return null;
+  }
+};
 
 export default function SVGViewer() {
   const [input, setInput] = useState("");
-  const [svgContent, setSvgContent] = useState<string | null>(null);
+  const [base64, setBase64] = useState<string | null>(null);
+  const [status, setStatus] = useState<Status>("idle");
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -19,11 +33,37 @@ export default function SVGViewer() {
       setInput(value);
 
       if (value.trim() === "") {
-        setSvgContent(null);
+        setBase64(null);
+        setStatus("idle");
         return;
       }
 
-      setSvgContent(event.target.value);
+      try {
+        if (!value.toLowerCase().includes("<svg")) {
+          setStatus("invalid");
+          setBase64(null);
+          return;
+        }
+
+        const blob = new Blob([value], { type: "image/svg+xml" });
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          setBase64(reader.result as string);
+          setStatus("idle");
+        };
+
+        reader.onerror = () => {
+          setStatus("error");
+          setBase64(null);
+        };
+
+        reader.readAsDataURL(blob);
+      } catch (err) {
+        console.error("Failed to process SVG:", err);
+        setStatus("error");
+        setBase64(null);
+      }
     },
     []
   );
@@ -32,7 +72,7 @@ export default function SVGViewer() {
     <main>
       <Meta
         title="SVG Viewer | Free, Open Source & Ad-free"
-        description="View SVG files quickly and easily with Jam's free online SVG viewer. Just paste your SVG file and get the SVG result. That's it."
+        description="View SVG quickly and easily with Jam's free online SVG viewer. Just paste your SVG code and get the SVG result. That's it."
       />
       <Header />
       <CMDK />
@@ -47,31 +87,42 @@ export default function SVGViewer() {
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
-            <Label>SVG</Label>
+            <Label>SVG Code</Label>
             <Textarea
               rows={6}
-              placeholder="Paste SVG here"
+              placeholder="Paste SVG code here"
               onChange={handleChange}
-              className="mb-6"
               value={input}
+              aria-label="SVG code input"
             />
 
-            <div className="flex justify-between items-center mb-2">
-              {svgContent ? (
-                <div dangerouslySetInnerHTML={{ __html: svgContent }} />
-              ) : (
-                <Label className="mb-0">No SVG loaded yet</Label>
+            {status !== "idle" && (
+              <div className="mt-6 flex text-red-600 text-sm" role="alert">
+                {getStatusMessage(status)}
+              </div>
+            )}
+
+            <div className="w-full">
+              {base64 && (
+                <div className="mt-6 border rounded p-4 overflow-auto">
+                  <img
+                    src={base64}
+                    alt="SVG Preview"
+                    className="w-full h-auto"
+                    onError={() => {
+                      setStatus("error");
+                      setBase64(null);
+                    }}
+                  />
+                </div>
               )}
             </div>
           </div>
         </Card>
       </section>
 
+      <GitHubContribution username="samiashi" />
       <CallToActionGrid />
-
-      <section className="container max-w-2xl">
-        <SvgViewerSEO />
-      </section>
     </main>
   );
 }
