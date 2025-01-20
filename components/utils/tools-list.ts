@@ -128,7 +128,7 @@ export const tools = [
   {
     title: "SVG Viewer",
     description:
-      "Easily view and render SVG files online for free.",
+      "Instantly preview and validate SVG code in your browser. Perfect for developers working with vector graphics and debugging SVG markup.",
     link: "/utilities/svg-viewer",
   },
 ];
