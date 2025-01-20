@@ -27,15 +27,25 @@ export default function HARFileViewer() {
   const [harData, setHarData] = useState<HarData | null>(null);
   const [status, setStatus] = useState<Status>("idle");
 
-  const handleFile = useCallback((file: File) => {
-    const reader = new FileReader();
+  const handleFileUpload = useCallback((file: File | undefined) => {
+    if (!file) {
+      return;
+    }
 
+    if (!file.name.endsWith(".har")) {
+      setStatus("unsupported");
+      return;
+    }
+
+    const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const json = JSON.parse(e.target?.result as string);
         setHarData(json);
+        setStatus("idle");
       } catch (error) {
         console.error("Error parsing HAR file:", error);
+        setStatus("unsupported");
       }
     };
     reader.readAsText(file);
@@ -52,10 +62,10 @@ export default function HARFileViewer() {
         return;
       }
 
-      handleFile(file);
+      handleFileUpload(file);
       setStatus("idle");
     },
-    [handleFile]
+    [handleFileUpload]
   );
 
   const handleDragOver = useCallback(
@@ -87,8 +97,14 @@ export default function HARFileViewer() {
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={() => setStatus("idle")}
-            className="flex flex-col border border-dashed bor der-border p-6 text-center text-muted-foreground rounded-lg min-h-40 items-center justify-center bg-muted"
+            className="relative flex flex-col border border-dashed bor der-border p-6 text-center text-muted-foreground rounded-lg min-h-40 items-center justify-center bg-muted"
           >
+            <input
+              type="file"
+              accept=".har"
+              onChange={(event) => handleFileUpload(event.target.files?.[0])}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
             <UploadIcon />
             <div>
               {status === "idle" && <p>Drop your .har file here</p>}
