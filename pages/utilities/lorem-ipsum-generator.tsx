@@ -71,7 +71,7 @@ export default function LoremIpsumGenerator() {
 
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
-          <div className="flex mb-2 w-full gap-4">
+          <div className="flex mb-6 w-full gap-4">
             <div className="flex-1">
               <Label className="mb-2">Amount</Label>
               <Input
@@ -91,19 +91,8 @@ export default function LoremIpsumGenerator() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between  mb-6 mt-2">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="as-html"
-                checked={asHTML}
-                onCheckedChange={() => setAsHTML(!asHTML)}
-                className="mr-1"
-              />
-              <Label htmlFor="as-html" className="mb-0 hover:cursor-pointer">
-                As HTML
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-1">
               <Checkbox
                 id="standard-sentence"
                 checked={startWithStandard}
@@ -116,6 +105,18 @@ export default function LoremIpsumGenerator() {
                 className="mb-0 hover:cursor-pointer"
               >
                 Start with Lorem Ipsum
+              </Label>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Checkbox
+                id="as-html"
+                checked={asHTML}
+                onCheckedChange={() => setAsHTML(!asHTML)}
+                className="mr-1"
+              />
+              <Label htmlFor="as-html" className="mb-0 hover:cursor-pointer">
+                As HTML
               </Label>
             </div>
           </div>
@@ -146,5 +147,5 @@ export default function LoremIpsumGenerator() {
 }
 
 const Divider = () => {
-  return <div className="h-[1px] bg-muted my-6"></div>;
+  return <div className="h-[1px] bg-border my-6"></div>;
 };
