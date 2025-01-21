@@ -45,6 +45,7 @@ Here is the list of all utilities:
 - [JWT Parser](https://jam.dev/utilities/jwt-parser)
 - [UUID Generator](https://jam.dev/utilities/uuid-generator)
 - [SVG Viewer](https://jam.dev/utilities/svg-viewer)
+- [Lorem Ipsum Generator](https://jam.dev/utilities/lorem-ipsum-generator)
 
 ### Built With
 

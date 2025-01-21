@@ -120,15 +120,9 @@ export const tools = [
     link: "/utilities/hash-generator",
   },
   {
-    title: "UUID Generator",
+    title: "Lorem Ipsum Generator",
     description:
-      "Generate random UUIDs. Useful for creating unique identifiers for various applications such as database keys, session IDs, and more.",
-    link: "/utilities/uuid-generator",
-  },
-  {
-    title: "SVG Viewer",
-    description:
-      "Instantly preview and validate SVG code in your browser. Perfect for developers working with vector graphics and debugging SVG markup.",
-    link: "/utilities/svg-viewer",
+      "Easily generate random Lorem Ipsum text for your design projects. Perfect for placeholder content and layout previews.",
+    link: "/utilities/lorem-ipsum-generator",
   },
 ];
