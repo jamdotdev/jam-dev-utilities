@@ -80,6 +80,7 @@ export default function LoremIpsumGenerator() {
                 className="h-8 text-sm"
                 value={inputAmount}
                 onChange={handleChange}
+                onFocus={(event) => event.target.select()}
               />
             </div>
             <div className="flex flex-col justify-end">
@@ -130,7 +131,7 @@ export default function LoremIpsumGenerator() {
               {buttonText}
             </Button>
             <Button variant="default" onClick={() => generateText()}>
-              Refresh
+              Regenerate
             </Button>
           </div>
         </Card>
