@@ -137,4 +137,10 @@ export const tools = [
       "Easily generate random Lorem Ipsum text for your design projects. Perfect for placeholder content and layout previews.",
     link: "/utilities/lorem-ipsum-generator",
   },
+  {
+    title: "SQL Minifier",
+    description:
+      "Minify SQL by removing comments, extra spaces, and formatting for cleaner, optimized queries.",
+    link: "/utilities/sql-minifier",
+  },
 ];
