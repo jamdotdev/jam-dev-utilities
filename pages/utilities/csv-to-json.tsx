@@ -22,6 +22,10 @@ export default function CSVtoJSON() {
   const [lowercase, setLowercase] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const SAMPLE_DATA = `Name,Age,Country
+John,25,USA
+Alice,30,Canada
+Bob,35,UK`;
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -42,6 +46,13 @@ export default function CSVtoJSON() {
     },
     [lowercase]
   );
+
+  const handleFillSampleData = useCallback(() => {
+    setInput(SAMPLE_DATA);
+    handleChange({
+      currentTarget: { value: SAMPLE_DATA },
+    } as React.ChangeEvent<HTMLTextAreaElement>);
+  }, []);
 
   const toggleLowercase = useCallback(() => {
     setLowercase((prevValue) => {
@@ -155,15 +166,25 @@ export default function CSVtoJSON() {
           <div>
             <div className="flex justify-between items-center mb-2">
               <Label className="mb-0">CSV</Label>
-              <Button
-                variant="outline"
-                onClick={triggerFileInput}
-                type="button"
-                size="sm"
-                className="gap-2"
-              >
-                <UploadIcon className="w-[16px]" /> Upload CSV
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={handleFillSampleData}
+                >
+                  Fill Sample Data
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={triggerFileInput}
+                  type="button"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <UploadIcon className="w-[16px]" /> Upload CSV
+                </Button>
+              </div>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -219,9 +240,20 @@ export default function CSVtoJSON() {
             </div>
 
             <Textarea value={output} rows={6} readOnly className="mb-4" />
-            <Button variant="outline" onClick={() => handleCopy(output)}>
-              {buttonText}
-            </Button>
+            <div className="flex gap-2 justify-between">
+              <Button variant="outline" onClick={() => handleCopy(output)}>
+                {buttonText}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setInput("");
+                  setOutput("");
+                }}
+              >
+                Clear
+              </Button>
+            </div>
           </div>
         </Card>
       </section>
