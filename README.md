@@ -113,6 +113,32 @@ If you encounter any issues, you can 1-click log them with [Jam](https://jam.dev
 
 We appreciate your feedback and will do our best to address the issues promptly!
 
+## Running with Docker
+
+You can also run the application using Docker:
+
+### Using Docker Compose (recommended)
+
+```bash
+# Build and start the container
+docker-compose up --build
+
+# Run in detached mode
+docker-compose up -d
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+### Using Docker directly
+
+```bash
+# Build the Docker image
+docker build -t jam-dev-utilities .
+
+# Run the container
+docker run -p 3000:3000 jam-dev-utilities
+```
+
 ## Contributing
 
 We welcome and appreciate any contributions!
