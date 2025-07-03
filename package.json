@@ -25,7 +25,7 @@
     "curlconverter": "^4.10.1",
     "js-yaml": "^4.1.0",
     "lucide-react": "^0.414.0",
-    "next": "14.2.4",
+    "next": "^14.2.23",
     "next-themes": "^0.3.0",
     "papaparse": "^5.4.1",
     "react": "^18",
