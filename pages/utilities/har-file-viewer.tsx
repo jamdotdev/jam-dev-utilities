@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState, Fragment, useEffect } from "react";
+import { useRouter } from "next/router";
 import { BeforeMount, Editor } from "@monaco-editor/react";
 import {
   FilterType,
@@ -20,12 +21,51 @@ import UploadIcon from "@/components/icons/UploadIcon";
 import PageHeader from "@/components/PageHeader";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import HarFileViewerSEO from "@/components/seo/HarFileViewerSEO";
-
-type Status = "idle" | "unsupported" | "hover";
+import { HarWaterfall } from "@/components/har-waterfall";
+import { Table, BarChart3 } from "lucide-react";
 
 export default function HARFileViewer() {
+  const router = useRouter();
+  const [status, setStatus] = useState<"idle" | "unsupported" | "hover">(
+    "idle"
+  );
   const [harData, setHarData] = useState<HarData | null>(null);
-  const [status, setStatus] = useState<Status>("idle");
+  const [activeFilter, setActiveFilter] = useState<FilterType>("All");
+  const [viewMode, setViewMode] = useState<"table" | "waterfall">("table");
+
+  // Initialize view mode from query param
+  useEffect(() => {
+    const viewParam = router.query.view as string;
+    if (viewParam === "waterfall") {
+      setViewMode("waterfall");
+    } else if (!viewParam) {
+      // Set default view param without navigation
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, view: "table" },
+        },
+        undefined,
+        { shallow: true }
+      );
+    }
+  }, [router.query.view]);
+
+  // Update URL when view mode changes
+  const handleViewChange = useCallback(
+    (newView: "table" | "waterfall") => {
+      setViewMode(newView);
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, view: newView },
+        },
+        undefined,
+        { shallow: true }
+      );
+    },
+    [router]
+  );
 
   const handleFileUpload = useCallback((file: File | undefined) => {
     if (!file) {
@@ -116,9 +156,75 @@ export default function HARFileViewer() {
       </section>
 
       {harData && (
-        <section className="container max-w-7xl overflow-y-scroll">
-          <HarTable entries={harData.log.entries} />
-        </section>
+        <>
+          <section className="container max-w-7xl mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex space-x-2">
+                {(
+                  [
+                    "All",
+                    "XHR",
+                    "JS",
+                    "CSS",
+                    "Img",
+                    "Media",
+                    "Other",
+                    "Errors",
+                  ] as FilterType[]
+                ).map((type) => (
+                  <Button
+                    key={type}
+                    variant="outline"
+                    className={cn(
+                      activeFilter === type && "bg-border hover:bg-border"
+                    )}
+                    onClick={() => setActiveFilter(type)}
+                  >
+                    {type}
+                  </Button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant={viewMode === "waterfall" ? "default" : "outline"}
+                  onClick={() => handleViewChange("waterfall")}
+                  className="h-8 relative"
+                >
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Waterfall
+                  <span className="ml-2 inline-flex items-center rounded-full bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-600 dark:text-green-400">
+                    New
+                  </span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant={viewMode === "table" ? "default" : "outline"}
+                  onClick={() => handleViewChange("table")}
+                  className="h-8"
+                >
+                  <Table className="h-4 w-4 mr-2" />
+                  Table view
+                </Button>
+              </div>
+            </div>
+          </section>
+
+          <section className="container max-w-7xl overflow-y-scroll">
+            {viewMode === "table" ? (
+              <HarTable
+                entries={harData.log.entries}
+                activeFilter={activeFilter}
+              />
+            ) : (
+              <HarWaterfall
+                entries={harData.log.entries}
+                activeFilter={activeFilter}
+                className="mb-6"
+              />
+            )}
+          </section>
+        </>
       )}
 
       <CallToActionGrid />
@@ -129,29 +235,14 @@ export default function HARFileViewer() {
   );
 }
 
-interface FilterButtonProps {
-  type: FilterType;
-  active: boolean;
-  onClick: () => void;
-}
-
-const FilterButton = (props: FilterButtonProps) => {
-  return (
-    <Button
-      variant="outline"
-      className={cn(props.active && "bg-border hover:bg-border")}
-      onClick={props.onClick}
-    >
-      {props.type}
-    </Button>
-  );
-};
-
 type SortField = "size" | "time";
 type SortOrder = "asc" | "desc";
 
-const HarTable = ({ entries }: HarTableProps) => {
-  const [activeFilter, setActiveFilter] = useState<FilterType>("All");
+interface HarTableComponentProps extends HarTableProps {
+  activeFilter: FilterType;
+}
+
+const HarTable = ({ entries, activeFilter }: HarTableComponentProps) => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
@@ -197,17 +288,6 @@ const HarTable = ({ entries }: HarTableProps) => {
     }
   };
 
-  const filterTypes: FilterType[] = [
-    "All",
-    "XHR",
-    "JS",
-    "CSS",
-    "Img",
-    "Media",
-    "Other",
-    "Errors",
-  ];
-
   const tableHeaderStyles = "border p-2 px-3 text-left text-[14px]";
   const tableHeaderSortableStyles = `${tableHeaderStyles} cursor-pointer hover:bg-muted-foreground/10`;
   const tableCellStyles = "border p-2 px-3 min-w-[80px] max-w-[320px] w-full truncate"; //prettier-ignore
@@ -217,17 +297,6 @@ const HarTable = ({ entries }: HarTableProps) => {
 
   return (
     <div className="w-full mb-6">
-      <div className="mb-4 flex space-x-2">
-        {filterTypes.map((type) => (
-          <FilterButton
-            key={type}
-            type={type}
-            active={activeFilter === type}
-            onClick={() => setActiveFilter(type)}
-          />
-        ))}
-      </div>
-
       <table className="w-full border-collapse">
         <thead>
           <tr>
