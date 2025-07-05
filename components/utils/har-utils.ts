@@ -4,12 +4,14 @@ export interface HarEntry {
   request: {
     url: string;
     method: string;
+    httpVersion?: string;
     headers: { name: string; value: string }[];
     postData?: {
       mimeType: string;
       text: string;
     };
   };
+  serverIPAddress?: string;
   response: {
     status: number;
     statusText: string;
@@ -21,8 +23,13 @@ export interface HarEntry {
     };
   };
   timings: {
+    blocked?: number;
+    dns?: number;
+    connect?: number;
+    send?: number;
     wait: number;
     receive: number;
+    ssl?: number;
   };
 }
 
