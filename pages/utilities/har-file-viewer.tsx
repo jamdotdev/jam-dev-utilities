@@ -234,6 +234,7 @@ const HarTable = ({ entries }: HarTableProps) => {
             <th className={tableHeaderStyles}>Name</th>
             <th className={tableHeaderStyles}>Status</th>
             <th className={tableHeaderStyles}>Type</th>
+            <th className={tableHeaderStyles}>Started at</th>
             <th
               className={tableHeaderSortableStyles}
               onClick={() => handleSort("size")}
@@ -277,6 +278,9 @@ const HarTable = ({ entries }: HarTableProps) => {
                   {entry.response.content.mimeType}
                 </td>
                 <td className={cn(tableCellStyles, "cursor-pointer")}>
+                  {new Date(entry.startedDateTime).toLocaleTimeString()}
+                </td>
+                <td className={cn(tableCellStyles, "cursor-pointer")}>
                   {(entry.response.content.size / 1024).toFixed(1) + "kB"}
                 </td>
                 <td className={tableCellStyles}>
@@ -297,7 +301,7 @@ const HarTable = ({ entries }: HarTableProps) => {
 
               {expandedRow === index && (
                 <tr className={cn(index % 2 === 0 && tableRowOddStyles)}>
-                  <td colSpan={5} className={tableCellStyles}>
+                  <td colSpan={6} className={tableCellStyles}>
                     <ExpandedDetails entry={entry} />
                   </td>
                 </tr>
