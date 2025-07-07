@@ -31,11 +31,6 @@ export default function HARFileViewer() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [viewMode, setViewMode] = useState<"table" | "waterfall">("table");
 
-  const handleViewChange = useCallback((newView: "table" | "waterfall") => {
-    setViewMode(newView);
-    fetch(`/utilities/har-viewer-${newView}-view`);
-  }, []);
-
   const handleFileUpload = useCallback((file: File | undefined) => {
     if (!file) {
       return;
@@ -157,7 +152,7 @@ export default function HARFileViewer() {
                 <Button
                   size="sm"
                   variant={viewMode === "waterfall" ? "default" : "outline"}
-                  onClick={() => handleViewChange("waterfall")}
+                  onClick={() => setViewMode("waterfall")}
                   className="h-8 relative"
                 >
                   <BarChart3 className="h-4 w-4 mr-2" />
@@ -169,7 +164,7 @@ export default function HARFileViewer() {
                 <Button
                   size="sm"
                   variant={viewMode === "table" ? "default" : "outline"}
-                  onClick={() => handleViewChange("table")}
+                  onClick={() => setViewMode("table")}
                   className="h-8"
                 >
                   <Table className="h-4 w-4 mr-2" />
