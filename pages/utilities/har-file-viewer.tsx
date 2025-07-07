@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState, Fragment, useEffect } from "react";
-import { useRouter } from "next/router";
 import { BeforeMount, Editor } from "@monaco-editor/react";
 import {
   FilterType,
@@ -25,7 +24,6 @@ import { HarWaterfall } from "@/components/har-waterfall";
 import { Table, BarChart3 } from "lucide-react";
 
 export default function HARFileViewer() {
-  const router = useRouter();
   const [status, setStatus] = useState<"idle" | "unsupported" | "hover">(
     "idle"
   );
@@ -33,39 +31,10 @@ export default function HARFileViewer() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [viewMode, setViewMode] = useState<"table" | "waterfall">("table");
 
-  // Initialize view mode from query param
-  useEffect(() => {
-    const viewParam = router.query.view as string;
-    if (viewParam === "waterfall") {
-      setViewMode("waterfall");
-    } else if (!viewParam) {
-      // Set default view param without navigation
-      router.replace(
-        {
-          pathname: router.pathname,
-          query: { ...router.query, view: "table" },
-        },
-        undefined,
-        { shallow: true }
-      );
-    }
-  }, [router.query.view]);
-
-  // Update URL when view mode changes
-  const handleViewChange = useCallback(
-    (newView: "table" | "waterfall") => {
-      setViewMode(newView);
-      router.replace(
-        {
-          pathname: router.pathname,
-          query: { ...router.query, view: newView },
-        },
-        undefined,
-        { shallow: true }
-      );
-    },
-    [router]
-  );
+  const handleViewChange = useCallback((newView: "table" | "waterfall") => {
+    setViewMode(newView);
+    fetch(`/utilities/har-viewer-${newView}-view`);
+  }, []);
 
   const handleFileUpload = useCallback((file: File | undefined) => {
     if (!file) {
