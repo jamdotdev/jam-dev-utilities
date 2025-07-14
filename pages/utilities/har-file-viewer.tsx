@@ -21,7 +21,86 @@ import PageHeader from "@/components/PageHeader";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import HarFileViewerSEO from "@/components/seo/HarFileViewerSEO";
 import { HarWaterfall } from "@/components/har-waterfall";
-import { Table, BarChart3 } from "lucide-react";
+import { Table, BarChart3, Filter } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ds/PopoverComponent";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ds/CommandMenu";
+import { Checkbox } from "@/components/ds/CheckboxComponent";
+
+interface MultiSelectComboboxProps {
+  data: { value: string; label: string }[];
+  selectedValues: string[];
+  onSelectionChange: (values: string[]) => void;
+}
+
+function MultiSelectCombobox({
+  data,
+  selectedValues,
+  onSelectionChange,
+}: MultiSelectComboboxProps) {
+  const [open, setOpen] = useState(false);
+
+  const handleToggle = (value: string) => {
+    const newSelection = selectedValues.includes(value)
+      ? selectedValues.filter((v) => v !== value)
+      : [...selectedValues, value];
+    onSelectionChange(newSelection);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="p-2 h-8 w-8"
+          title={
+            selectedValues.length > 0
+              ? `${selectedValues.length} status codes selected`
+              : "Filter by status code"
+          }
+        >
+          <Filter className="h-4 w-4" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0 w-64">
+        <Command>
+          <CommandInput placeholder="Search status codes..." />
+          <CommandList className="max-h-60">
+            <CommandEmpty>No status codes found.</CommandEmpty>
+            <CommandGroup>
+              {data.map((item) => (
+                <CommandItem
+                  key={item.value}
+                  value={item.label}
+                  onSelect={() => handleToggle(item.value)}
+                  className="flex items-center space-x-2"
+                >
+                  <Checkbox
+                    checked={selectedValues.includes(item.value)}
+                    onChange={() => handleToggle(item.value)}
+                  />
+                  <span>{item.label}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 export default function HARFileViewer() {
   const [status, setStatus] = useState<"idle" | "unsupported" | "hover">(
@@ -30,6 +109,7 @@ export default function HARFileViewer() {
   const [harData, setHarData] = useState<HarData | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [viewMode, setViewMode] = useState<"table" | "waterfall">("table");
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
 
   const handleFileUpload = useCallback((file: File | undefined) => {
     if (!file) {
@@ -47,6 +127,7 @@ export default function HARFileViewer() {
         const json = JSON.parse(e.target?.result as string);
         setHarData(json);
         setStatus("idle");
+        setStatusFilter([]); // Reset status filter when new file is loaded
       } catch (error) {
         console.error("Error parsing HAR file:", error);
         setStatus("unsupported");
@@ -179,6 +260,8 @@ export default function HARFileViewer() {
               <HarTable
                 entries={harData.log.entries}
                 activeFilter={activeFilter}
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
               />
             ) : (
               <HarWaterfall
@@ -204,9 +287,16 @@ type SortOrder = "asc" | "desc";
 
 interface HarTableComponentProps extends HarTableProps {
   activeFilter: FilterType;
+  statusFilter: string[];
+  onStatusFilterChange: (statusCodes: string[]) => void;
 }
 
-const HarTable = ({ entries, activeFilter }: HarTableComponentProps) => {
+const HarTable = ({
+  entries,
+  activeFilter,
+  statusFilter,
+  onStatusFilterChange,
+}: HarTableComponentProps) => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
@@ -215,17 +305,62 @@ const HarTable = ({ entries, activeFilter }: HarTableComponentProps) => {
     setExpandedRow(null);
   }, [activeFilter]);
 
+  // Helper function to get status text
+  const getStatusText = (statusCode: number): string => {
+    const statusTexts: Record<number, string> = {
+      101: "Switching Protocols",
+      200: "OK",
+      201: "Created",
+      204: "No Content",
+      206: "Partial Content",
+      301: "Moved Permanently",
+      302: "Found",
+      304: "Not Modified",
+      400: "Bad Request",
+      401: "Unauthorized",
+      403: "Forbidden",
+      404: "Not Found",
+      500: "Internal Server Error",
+      502: "Bad Gateway",
+      503: "Service Unavailable",
+    };
+    return statusTexts[statusCode] || "Unknown";
+  };
+
+  // Extract unique status codes for the filter
+  const uniqueStatusCodes = useMemo(() => {
+    const statusCodes = new Set(
+      entries.map((entry) => entry.response.status.toString())
+    );
+    return Array.from(statusCodes)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .map((code) => ({
+        value: code,
+        label: `${code} - ${getStatusText(parseInt(code))}`,
+      }));
+  }, [entries]);
+
   const maxTime = useMemo(
     () => Math.max(...entries.map((entry) => entry.time)),
     [entries]
   );
 
   const filteredAndSortedEntries = useMemo(() => {
-    const result =
-      activeFilter === "All"
-        ? entries
-        : entries.filter((entry) => getFilterType(entry) === activeFilter);
+    let result = entries;
 
+    // Apply content type filter
+    if (activeFilter !== "All") {
+      result = result.filter((entry) => getFilterType(entry) === activeFilter);
+    }
+
+    // Apply status code filter
+    if (statusFilter.length > 0) {
+      result = result.filter((entry) =>
+        statusFilter.includes(entry.response.status.toString())
+      );
+    }
+
+    // Apply sorting
     if (sortField) {
       result.sort((a, b) => {
         let comparison = 0;
@@ -241,7 +376,7 @@ const HarTable = ({ entries, activeFilter }: HarTableComponentProps) => {
     }
 
     return result;
-  }, [entries, activeFilter, sortField, sortOrder]);
+  }, [entries, activeFilter, statusFilter, sortField, sortOrder]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -254,28 +389,39 @@ const HarTable = ({ entries, activeFilter }: HarTableComponentProps) => {
 
   const tableHeaderStyles = "border p-2 px-3 text-left text-[14px]";
   const tableHeaderSortableStyles = `${tableHeaderStyles} cursor-pointer hover:bg-muted-foreground/10`;
-  const tableCellStyles = "border p-2 px-3 min-w-[80px] max-w-[320px] w-full truncate"; //prettier-ignore
+  const tableCellStyles = "border p-2 px-3 truncate"; //prettier-ignore
   const tableRowStyles = "text-[13px] leading-[1] hover:bg-muted-foreground/10";
   const tableRowOddStyles = "bg-muted";
   const tableRowErrorStyles = "bg-red-500/10";
 
   return (
     <div className="w-full mb-6">
-      <table className="w-full border-collapse">
+      <table className="w-full border-collapse table-fixed">
         <thead>
           <tr>
-            <th className={tableHeaderStyles}>Name</th>
-            <th className={tableHeaderStyles}>Status</th>
-            <th className={tableHeaderStyles}>Type</th>
-            <th className={tableHeaderStyles}>Started at</th>
+            <th className={`${tableHeaderStyles} w-[40%]`}>Name</th>
+            <th className={`${tableHeaderStyles} w-[12%]`}>
+              <div className="flex items-center justify-between">
+                <span>Status</span>
+                <div className="ml-2">
+                  <MultiSelectCombobox
+                    data={uniqueStatusCodes}
+                    selectedValues={statusFilter}
+                    onSelectionChange={onStatusFilterChange}
+                  />
+                </div>
+              </div>
+            </th>
+            <th className={`${tableHeaderStyles} w-[15%]`}>Type</th>
+            <th className={`${tableHeaderStyles} w-[15%]`}>Started at</th>
             <th
-              className={tableHeaderSortableStyles}
+              className={`${tableHeaderSortableStyles} w-[8%]`}
               onClick={() => handleSort("size")}
             >
               Size {sortField === "size" && (sortOrder === "asc" ? " ▲" : " ▼")}
             </th>
             <th
-              className={tableHeaderSortableStyles}
+              className={`${tableHeaderSortableStyles} w-[10%]`}
               onClick={() => handleSort("time")}
             >
               Time {sortField === "time" && (sortOrder === "asc" ? " ▲" : " ▼")}
