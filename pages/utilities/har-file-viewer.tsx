@@ -186,6 +186,7 @@ export default function HARFileViewer() {
           >
             <input
               type="file"
+              data-testid="input"
               accept=".har"
               onChange={(event) => handleFileUpload(event.target.files?.[0])}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -433,6 +434,7 @@ const HarTable = ({
           {filteredAndSortedEntries.map((entry, index) => (
             <Fragment key={index}>
               <tr
+                data-testid="table-row"
                 className={cn(
                   tableRowStyles,
                   index % 2 === 0 && tableRowOddStyles,
@@ -450,7 +452,10 @@ const HarTable = ({
                 >
                   {entry.request.url}
                 </td>
-                <td className={cn(tableCellStyles, "cursor-pointer")}>
+                <td
+                  data-testid="column-status-code"
+                  className={cn(tableCellStyles, "cursor-pointer")}
+                >
                   {entry.response.status}
                 </td>
                 <td className={cn(tableCellStyles, "cursor-pointer")}>
