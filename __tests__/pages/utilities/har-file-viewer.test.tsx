@@ -1,6 +1,17 @@
 import { render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import HARFileViewer from "./har-file-viewer";
+import HARFileViewer from "../../../pages/utilities/har-file-viewer";
+
+// Mock next/navigation for all tests
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    refresh: jest.fn(),
+  }),
+}));
 
 // Mock HAR file data
 const mockHarData = {
