@@ -137,4 +137,10 @@ export const tools = [
       "Easily generate random Lorem Ipsum text for your design projects. Perfect for placeholder content and layout previews.",
     link: "/utilities/lorem-ipsum-generator",
   },
+  {
+    title: "WebP Converter",
+    description:
+      "Convert any image format to WebP for better web performance. Supports JPEG, PNG, GIF, BMP, TIFF, and SVG with multiple file uploads.",
+    link: "/utilities/webp-converter",
+  },
 ];
