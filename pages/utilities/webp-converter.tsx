@@ -157,47 +157,54 @@ export default function WebPConverter() {
             {files.length > 0 && (
               <>
                 <div className="flex justify-between items-center mb-4 pt-6">
-                  <Label className="text-sm font-medium">
-                    Selected Files ({files.length})
-                  </Label>
+                  <div>
+                    <Label className="text-base font-semibold">
+                      Selected Files ({files.length})
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Total size: {formatFileSize(totalOriginalSize)}
+                    </p>
+                  </div>
                   <Button 
                     variant="outline" 
                     size="sm" 
                     onClick={clearAllFiles}
-                    className="h-8"
+                    className="h-9"
                   >
                     <TrashIcon className="h-4 w-4 mr-1" />
                     Clear All
                   </Button>
                 </div>
 
-                <div className="max-h-48 overflow-y-auto border border-border rounded-md p-2 mb-4">
+                <div className="max-h-48 overflow-y-auto space-y-2 mb-4">
                   {files.map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center justify-between p-2 hover:bg-muted rounded-sm"
+                      className="flex items-center justify-between p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-center min-w-0 flex-1">
-                        <FileImageIcon className="h-4 w-4 mr-2 text-muted-foreground flex-shrink-0" />
-                        <span className="text-sm truncate mr-2">{item.file.name}</span>
-                        <span className="text-xs text-muted-foreground flex-shrink-0">
-                          {formatFileSize(item.file.size)}
-                        </span>
+                        <div className="flex-shrink-0 w-10 h-10 bg-muted rounded-lg flex items-center justify-center mr-3">
+                          <FileImageIcon className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="font-medium text-sm truncate">
+                            {item.file.name}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {formatFileSize(item.file.size)}
+                          </div>
+                        </div>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => removeFile(item.id)}
-                        className="h-6 w-6 p-0 ml-2 flex-shrink-0"
+                        className="h-8 w-8 p-0 ml-3 flex-shrink-0 hover:bg-destructive/10 hover:text-destructive"
                       >
-                        <TrashIcon className="h-3 w-3" />
+                        <TrashIcon className="h-4 w-4" />
                       </Button>
                     </div>
                   ))}
-                </div>
-
-                <div className="text-sm text-muted-foreground mb-4">
-                  Total size: {formatFileSize(totalOriginalSize)}
                 </div>
 
                 <Divider />
@@ -268,61 +275,58 @@ export default function WebPConverter() {
                       <div>
                         <h3 className="text-lg font-semibold mb-4">Conversion Results</h3>
                         
-                        {/* Summary Cards */}
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                          <div className="border border-border rounded-lg p-4 bg-card">
-                            <div className="text-2xl font-bold text-green-600 mb-1">
+                        {/* Summary Section - Full Width */}
+                        <div className="border border-border rounded-lg p-6 bg-card mb-6">
+                          <div className="text-center mb-6">
+                            <div className="text-4xl font-bold text-green-600 mb-2">
                               {conversionStats.successful}
                             </div>
-                            <div className="text-sm text-muted-foreground">
-                              Successful
+                            <div className="text-lg text-muted-foreground">
+                              {conversionStats.successful === 1 ? 'Image' : 'Images'} converted successfully
                             </div>
+                            {conversionStats.failed > 0 && (
+                              <div className="mt-3">
+                                <span className="text-sm text-red-600 font-medium">
+                                  {conversionStats.failed} failed
+                                </span>
+                              </div>
+                            )}
                           </div>
-                          
-                          {conversionStats.failed > 0 && (
-                            <div className="border border-border rounded-lg p-4 bg-card">
-                              <div className="text-2xl font-bold text-red-600 mb-1">
-                                {conversionStats.failed}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                Failed
-                              </div>
-                            </div>
-                          )}
-                        </div>
 
-                        {/* Size Comparison */}
-                        <div className="border border-border rounded-lg p-6 bg-card">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                          {/* Size Comparison */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center mb-6">
                             <div>
-                              <div className="text-lg font-medium text-muted-foreground mb-2">
+                              <div className="text-sm font-medium text-muted-foreground mb-1">
                                 Original Size
                               </div>
-                              <div className="text-2xl font-bold">
+                              <div className="text-xl font-bold">
                                 {formatFileSize(conversionStats.totalOriginal)}
                               </div>
                             </div>
                             
                             <div className="flex items-center justify-center">
-                              <div className="hidden md:block text-muted-foreground">→</div>
+                              <div className="text-2xl text-muted-foreground">→</div>
                             </div>
                             
                             <div>
-                              <div className="text-lg font-medium text-muted-foreground mb-2">
+                              <div className="text-sm font-medium text-muted-foreground mb-1">
                                 WebP Size
                               </div>
-                              <div className="text-2xl font-bold">
+                              <div className="text-xl font-bold">
                                 {formatFileSize(conversionStats.totalWebP)}
                               </div>
                             </div>
                           </div>
                           
-                          <div className="mt-6 pt-6 border-t border-border text-center">
-                            <div className="text-lg font-medium text-muted-foreground mb-2">
-                              Compression Ratio
-                            </div>
-                            <div className="text-3xl font-bold text-green-600">
-                              {conversionStats.compressionRatio.toFixed(1)}% reduction
+                          {/* Savings Display */}
+                          <div className="pt-6 border-t border-border text-center">
+                            <div className="space-y-2">
+                              <div className="text-3xl font-bold text-green-600">
+                                {conversionStats.compressionRatio.toFixed(1)}% reduction
+                              </div>
+                              <div className="text-lg font-medium text-green-600">
+                                {formatFileSize(conversionStats.totalOriginal - conversionStats.totalWebP)} saved
+                              </div>
                             </div>
                           </div>
                         </div>
