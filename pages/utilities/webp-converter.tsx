@@ -4,6 +4,8 @@ import { Card } from "@/components/ds/CardComponent";
 import { Button } from "@/components/ds/ButtonComponent";
 import { Label } from "@/components/ds/LabelComponent";
 import { Input } from "@/components/ds/InputComponent";
+import { Slider } from "@/components/ds/SliderComponent";
+import { Progress } from "@/components/ds/ProgressComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "@/components/CallToActionGrid";
@@ -55,7 +57,11 @@ export default function WebPConverter() {
     setProgress(null);
   }, []);
 
-  const handleQualityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQualityChange = useCallback((value: number[]) => {
+    setQuality(Math.max(1, Math.min(100, value[0])));
+  }, []);
+
+  const handleQualityInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
     setQuality(Math.max(1, Math.min(100, value)));
   }, []);
@@ -197,14 +203,14 @@ export default function WebPConverter() {
                 <Divider />
 
                 <div className="mb-6">
-                  <Label className="mb-2 block">Quality: {quality}%</Label>
+                  <Label className="mb-3 block text-sm font-medium">Quality: {quality}%</Label>
                   <div className="flex items-center gap-4">
-                    <Input
-                      type="range"
-                      min="1"
-                      max="100"
-                      value={quality}
-                      onChange={handleQualityChange}
+                    <Slider
+                      value={[quality]}
+                      onValueChange={handleQualityChange}
+                      max={100}
+                      min={1}
+                      step={1}
                       className="flex-1"
                     />
                     <Input
@@ -212,11 +218,11 @@ export default function WebPConverter() {
                       min="1"
                       max="100"
                       value={quality}
-                      onChange={handleQualityChange}
+                      onChange={handleQualityInputChange}
                       className="w-20"
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground mt-2">
                     Lower quality = smaller file size, higher quality = better image quality
                   </p>
                 </div>
@@ -247,48 +253,78 @@ export default function WebPConverter() {
 
                 {progress && (
                   <div className="mb-4">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Converting...</span>
-                      <span>{progress.completed}/{progress.total}</span>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="font-medium">Converting images...</span>
+                      <span className="text-muted-foreground">{progress.completed}/{progress.total}</span>
                     </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <div
-                        className="bg-primary h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${(progress.completed / progress.total) * 100}%` }}
-                      />
-                    </div>
+                    <Progress value={(progress.completed / progress.total) * 100} />
                   </div>
                 )}
 
                 {conversionStats && (
                   <>
                     <Divider />
-                    <div className="space-y-2">
-                      <Label>Conversion Results</Label>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Successful:</span>{" "}
-                          <span className="font-medium text-green-600">{conversionStats.successful}</span>
-                        </div>
-                        {conversionStats.failed > 0 && (
-                          <div>
-                            <span className="text-muted-foreground">Failed:</span>{" "}
-                            <span className="font-medium text-red-600">{conversionStats.failed}</span>
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Conversion Results</h3>
+                        
+                        {/* Summary Cards */}
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                          <div className="border border-border rounded-lg p-4 bg-card">
+                            <div className="text-2xl font-bold text-green-600 mb-1">
+                              {conversionStats.successful}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              Successful
+                            </div>
                           </div>
-                        )}
-                        <div>
-                          <span className="text-muted-foreground">Original size:</span>{" "}
-                          <span className="font-medium">{formatFileSize(conversionStats.totalOriginal)}</span>
+                          
+                          {conversionStats.failed > 0 && (
+                            <div className="border border-border rounded-lg p-4 bg-card">
+                              <div className="text-2xl font-bold text-red-600 mb-1">
+                                {conversionStats.failed}
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                Failed
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <div>
-                          <span className="text-muted-foreground">WebP size:</span>{" "}
-                          <span className="font-medium">{formatFileSize(conversionStats.totalWebP)}</span>
-                        </div>
-                        <div className="col-span-2">
-                          <span className="text-muted-foreground">Compression ratio:</span>{" "}
-                          <span className="font-medium text-green-600">
-                            {conversionStats.compressionRatio.toFixed(1)}% reduction
-                          </span>
+
+                        {/* Size Comparison */}
+                        <div className="border border-border rounded-lg p-6 bg-card">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                            <div>
+                              <div className="text-lg font-medium text-muted-foreground mb-2">
+                                Original Size
+                              </div>
+                              <div className="text-2xl font-bold">
+                                {formatFileSize(conversionStats.totalOriginal)}
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center justify-center">
+                              <div className="hidden md:block text-muted-foreground">→</div>
+                            </div>
+                            
+                            <div>
+                              <div className="text-lg font-medium text-muted-foreground mb-2">
+                                WebP Size
+                              </div>
+                              <div className="text-2xl font-bold">
+                                {formatFileSize(conversionStats.totalWebP)}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-6 pt-6 border-t border-border text-center">
+                            <div className="text-lg font-medium text-muted-foreground mb-2">
+                              Compression Ratio
+                            </div>
+                            <div className="text-3xl font-bold text-green-600">
+                              {conversionStats.compressionRatio.toFixed(1)}% reduction
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
