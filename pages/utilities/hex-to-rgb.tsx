@@ -21,6 +21,7 @@ import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { cn } from "@/lib/utils";
 import RgbToHexSEO from "@/components/seo/RgbToHexSEO";
+import { DividerComponent } from "../../components/ds/DividerComponent";
 
 const DEFAULT_RGB: RGBValues = { r: "0", g: "0", b: "0" };
 
@@ -123,7 +124,7 @@ export default function HEXtoRGB(props: HEXtoRGBProps) {
                 </div>
               </div>
 
-              <Divider />
+              <DividerComponent margin="large" />
 
               <div className="grid grid-cols-3 gap-4">
                 {(["r", "g", "b"] as (keyof RGBValues)[]).map((colorKey) => {
@@ -154,7 +155,7 @@ export default function HEXtoRGB(props: HEXtoRGBProps) {
               </div>
             </div>
 
-            <Divider />
+            <DividerComponent margin="large" />
 
             <CodeSnippetRow
               label="CSS"
@@ -188,7 +189,3 @@ export default function HEXtoRGB(props: HEXtoRGBProps) {
     </main>
   );
 }
-
-const Divider = () => {
-  return <div className="h-[1px] bg-muted my-8"></div>;
-};

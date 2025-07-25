@@ -10,6 +10,7 @@ import RegexHighlightText from "@/components/RegexHighlightText";
 import { createRegex } from "@/components/utils/regex-tester.utils";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import GitHubContribution from "@/components/GitHubContribution";
+import { DividerComponent } from "../../components/ds/DividerComponent";
 
 export default function RegexTester() {
   const [pattern, setPattern] = useState("");
@@ -106,7 +107,7 @@ export default function RegexTester() {
                 </div>
                 {matches && (
                   <>
-                    <Divider />
+                    <DividerComponent margin="small" />
                     <RegexHighlightText text={testString} matches={matches} />
                   </>
                 )}
@@ -121,7 +122,3 @@ export default function RegexTester() {
     </main>
   );
 }
-
-const Divider = () => {
-  return <div className="bg-border h-[1px] my-2"></div>;
-};
