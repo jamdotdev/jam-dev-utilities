@@ -28,37 +28,43 @@ const MultiFileUploadComponent = ({
       : `${sizeInMB.toFixed(2)}MB`;
   }, [maxFileSize]);
 
-  const isFileValid = useCallback((file: File): boolean => {
-    // Check file type
-    const typeValid = acceptedTypes.some(type => {
-      if (type.endsWith("/*")) {
-        const baseType = type.replace("/*", "");
-        return file.type.startsWith(baseType);
+  const isFileValid = useCallback(
+    (file: File): boolean => {
+      // Check file type
+      const typeValid = acceptedTypes.some((type) => {
+        if (type.endsWith("/*")) {
+          const baseType = type.replace("/*", "");
+          return file.type.startsWith(baseType);
+        }
+        return file.type === type;
+      });
+
+      // Check file size
+      const sizeValid = file.size <= maxFileSize;
+
+      return typeValid && sizeValid;
+    },
+    [acceptedTypes, maxFileSize]
+  );
+
+  const validateFiles = useCallback(
+    (files: FileList): { valid: File[]; invalid: boolean } => {
+      const validFiles: File[] = [];
+      let hasInvalid = false;
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (isFileValid(file)) {
+          validFiles.push(file);
+        } else {
+          hasInvalid = true;
+        }
       }
-      return file.type === type;
-    });
 
-    // Check file size
-    const sizeValid = file.size <= maxFileSize;
-
-    return typeValid && sizeValid;
-  }, [acceptedTypes, maxFileSize]);
-
-  const validateFiles = useCallback((files: FileList): { valid: File[], invalid: boolean } => {
-    const validFiles: File[] = [];
-    let hasInvalid = false;
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      if (isFileValid(file)) {
-        validFiles.push(file);
-      } else {
-        hasInvalid = true;
-      }
-    }
-
-    return { valid: validFiles, invalid: hasInvalid };
-  }, [isFileValid]);
+      return { valid: validFiles, invalid: hasInvalid };
+    },
+    [isFileValid]
+  );
 
   const handleDrop = useCallback(
     (event: DragEvent<HTMLDivElement>) => {
@@ -71,7 +77,7 @@ const MultiFileUploadComponent = ({
       }
 
       const { valid, invalid } = validateFiles(files);
-      
+
       if (valid.length === 0) {
         setStatus(invalid ? "error" : "unsupported");
         return;
@@ -110,7 +116,7 @@ const MultiFileUploadComponent = ({
     const files = event.target.files;
     if (files && files.length > 0) {
       const { valid, invalid } = validateFiles(files);
-      
+
       if (valid.length === 0) {
         setStatus(invalid ? "error" : "unsupported");
         return;
@@ -166,7 +172,10 @@ const StatusComponent = ({
   </div>
 );
 
-const statusComponents: Record<Status, (maxSize: string, fileType: string, multiple: boolean) => JSX.Element> = {
+const statusComponents: Record<
+  Status,
+  (maxSize: string, fileType: string, multiple: boolean) => JSX.Element
+> = {
   idle: (maxSize, fileType, multiple) => (
     <StatusComponent
       title={`Drag and drop your ${fileType} here, or click to select`}
@@ -175,12 +184,14 @@ const statusComponents: Record<Status, (maxSize: string, fileType: string, multi
   ),
   loading: () => <StatusComponent title="Loading..." />,
   error: (maxSize, fileType, multiple) => (
-    <StatusComponent 
-      title={`Some files are too big or invalid!`} 
-      message={`${maxSize} max per ${fileType.slice(0, -1)}${multiple ? ", valid files will still be processed" : ""}`} 
+    <StatusComponent
+      title={`Some files are too big or invalid!`}
+      message={`${maxSize} max per ${fileType.slice(0, -1)}${multiple ? ", valid files will still be processed" : ""}`}
     />
   ),
-  unsupported: (_, fileType) => <StatusComponent title={`Please provide valid ${fileType}`} />,
+  unsupported: (_, fileType) => (
+    <StatusComponent title={`Please provide valid ${fileType}`} />
+  ),
   hover: () => <StatusComponent title="Drop it like it's hot! 🔥" />,
 };
 

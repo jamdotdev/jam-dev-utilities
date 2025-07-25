@@ -23,7 +23,7 @@ import {
   ConversionResult,
 } from "@/components/utils/webp-converter.utils";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB per file
+const MAX_FILE_SIZE = 40 * 1024 * 1024; // 40MB per file
 
 interface FileItem {
   file: File;
@@ -34,12 +34,17 @@ export default function WebPConverter() {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [quality, setQuality] = useState<number>(80);
   const [isConverting, setIsConverting] = useState(false);
-  const [conversionResults, setConversionResults] = useState<ConversionResult[]>([]);
-  const [progress, setProgress] = useState<{ completed: number; total: number } | null>(null);
+  const [conversionResults, setConversionResults] = useState<
+    ConversionResult[]
+  >([]);
+  const [progress, setProgress] = useState<{
+    completed: number;
+    total: number;
+  } | null>(null);
 
   // Load quality from localStorage on mount
   useEffect(() => {
-    const savedQuality = localStorage.getItem('webp-converter-quality');
+    const savedQuality = localStorage.getItem("webp-converter-quality");
     if (savedQuality) {
       const parsedQuality = parseInt(savedQuality);
       if (parsedQuality >= 1 && parsedQuality <= 100) {
@@ -54,13 +59,13 @@ export default function WebPConverter() {
       file,
       id: `${Date.now()}-${index}`,
     }));
-    
-    setFiles(prev => [...prev, ...newFileItems]);
+
+    setFiles((prev) => [...prev, ...newFileItems]);
     setConversionResults([]); // Clear previous results
   }, []);
 
   const removeFile = useCallback((id: string) => {
-    setFiles(prev => prev.filter(item => item.id !== id));
+    setFiles((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
   const clearAllFiles = useCallback(() => {
@@ -72,15 +77,18 @@ export default function WebPConverter() {
   const handleQualityChange = useCallback((value: number[]) => {
     const newQuality = Math.max(1, Math.min(100, value[0]));
     setQuality(newQuality);
-    localStorage.setItem('webp-converter-quality', newQuality.toString());
+    localStorage.setItem("webp-converter-quality", newQuality.toString());
   }, []);
 
-  const handleQualityInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    const newQuality = Math.max(1, Math.min(100, value));
-    setQuality(newQuality);
-    localStorage.setItem('webp-converter-quality', newQuality.toString());
-  }, []);
+  const handleQualityInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = parseInt(e.target.value);
+      const newQuality = Math.max(1, Math.min(100, value));
+      setQuality(newQuality);
+      localStorage.setItem("webp-converter-quality", newQuality.toString());
+    },
+    []
+  );
 
   const handleConvert = useCallback(async () => {
     if (files.length === 0) return;
@@ -91,7 +99,7 @@ export default function WebPConverter() {
 
     try {
       const result = await batchConvertToWebP(
-        files.map(f => f.file),
+        files.map((f) => f.file),
         { quality },
         (completed, total) => {
           setProgress({ completed, total });
@@ -100,7 +108,7 @@ export default function WebPConverter() {
 
       setConversionResults(result.results);
     } catch (error) {
-      console.error('Conversion failed:', error);
+      console.error("Conversion failed:", error);
     } finally {
       setIsConverting(false);
       setProgress(null);
@@ -109,8 +117,8 @@ export default function WebPConverter() {
 
   const handleDownloadAll = useCallback(async () => {
     if (conversionResults.length === 0) return;
-    
-    const successfulResults = conversionResults.filter(r => r.success);
+
+    const successfulResults = conversionResults.filter((r) => r.success);
     if (successfulResults.length > 0) {
       await downloadWebPZip(successfulResults);
     }
@@ -123,10 +131,16 @@ export default function WebPConverter() {
   const conversionStats = useMemo(() => {
     if (conversionResults.length === 0) return null;
 
-    const successful = conversionResults.filter(r => r.success);
-    const totalOriginal = conversionResults.reduce((sum, r) => sum + r.originalSize, 0);
+    const successful = conversionResults.filter((r) => r.success);
+    const totalOriginal = conversionResults.reduce(
+      (sum, r) => sum + r.originalSize,
+      0
+    );
     const totalWebP = conversionResults.reduce((sum, r) => sum + r.webpSize, 0);
-    const compressionRatio = totalOriginal > 0 ? ((totalOriginal - totalWebP) / totalOriginal) * 100 : 0;
+    const compressionRatio =
+      totalOriginal > 0
+        ? ((totalOriginal - totalWebP) / totalOriginal) * 100
+        : 0;
 
     return {
       successful: successful.length,
@@ -181,9 +195,9 @@ export default function WebPConverter() {
                       Total size: {formatFileSize(totalOriginalSize)}
                     </p>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={clearAllFiles}
                     className="h-9"
                   >
@@ -226,7 +240,9 @@ export default function WebPConverter() {
                 <Divider />
 
                 <div className="mb-6">
-                  <Label className="mb-3 block text-sm font-medium">Quality: {quality}%</Label>
+                  <Label className="mb-3 block text-sm font-medium">
+                    Quality: {quality}%
+                  </Label>
                   <div className="flex items-center gap-4">
                     <Slider
                       value={[quality]}
@@ -246,7 +262,8 @@ export default function WebPConverter() {
                     />
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Lower quality = smaller file size, higher quality = better image quality
+                    Lower quality = smaller file size, higher quality = better
+                    image quality
                   </p>
                 </div>
 
@@ -266,7 +283,9 @@ export default function WebPConverter() {
                       variant="outline"
                       className="flex-1"
                       onClick={handleDownloadAll}
-                      disabled={conversionResults.filter(r => r.success).length === 0}
+                      disabled={
+                        conversionResults.filter((r) => r.success).length === 0
+                      }
                     >
                       <DownloadIcon className="h-4 w-4 mr-2" />
                       Download All
@@ -278,9 +297,13 @@ export default function WebPConverter() {
                   <div className="mb-4">
                     <div className="flex justify-between text-sm mb-2">
                       <span className="font-medium">Converting images...</span>
-                      <span className="text-muted-foreground">{progress.completed}/{progress.total}</span>
+                      <span className="text-muted-foreground">
+                        {progress.completed}/{progress.total}
+                      </span>
                     </div>
-                    <Progress value={(progress.completed / progress.total) * 100} />
+                    <Progress
+                      value={(progress.completed / progress.total) * 100}
+                    />
                   </div>
                 )}
 
@@ -288,21 +311,20 @@ export default function WebPConverter() {
                   <>
                     <Divider />
                     <div className="space-y-6">
-                      {/* Success Message - Outside the main card */}
-                      <div className="text-center">
-                        <p className="text-sm text-muted-foreground">
-                          {conversionStats.successful} {conversionStats.successful === 1 ? 'image' : 'images'} converted successfully
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">
+                          {conversionStats.successful}{" "}
+                          {conversionStats.successful === 1
+                            ? "image"
+                            : "images"}{" "}
+                          converted successfully
                           {conversionStats.failed > 0 && (
                             <span className="text-red-600 ml-1">
                               • {conversionStats.failed} failed
                             </span>
                           )}
-                        </p>
-                      </div>
+                        </h3>
 
-                      <div>
-                        <h3 className="text-lg font-semibold mb-4">Conversion Results</h3>
-                        
                         {/* Results Section - Full Width */}
                         <div className="border border-border rounded-lg p-6 bg-card">
                           {/* Size Comparison */}
@@ -315,11 +337,13 @@ export default function WebPConverter() {
                                 {formatFileSize(conversionStats.totalOriginal)}
                               </div>
                             </div>
-                            
+
                             <div className="flex items-center justify-center">
-                              <div className="text-2xl text-muted-foreground">→</div>
+                              <div className="text-2xl text-muted-foreground">
+                                →
+                              </div>
                             </div>
-                            
+
                             <div>
                               <div className="text-sm font-medium text-muted-foreground mb-1">
                                 WebP Size
@@ -329,15 +353,20 @@ export default function WebPConverter() {
                               </div>
                             </div>
                           </div>
-                          
+
                           {/* Savings Display */}
                           <div className="pt-6 border-t border-border text-center">
                             <div className="space-y-2">
                               <div className="text-3xl font-bold text-green-600">
-                                {conversionStats.compressionRatio.toFixed(1)}% reduction
+                                {conversionStats.compressionRatio.toFixed(1)}%
+                                reduction
                               </div>
                               <div className="text-lg font-medium text-green-600">
-                                {formatFileSize(conversionStats.totalOriginal - conversionStats.totalWebP)} saved
+                                {formatFileSize(
+                                  conversionStats.totalOriginal -
+                                    conversionStats.totalWebP
+                                )}{" "}
+                                saved
                               </div>
                             </div>
                           </div>
@@ -354,7 +383,7 @@ export default function WebPConverter() {
 
       <GitHubContribution username="copilot" />
       <CallToActionGrid />
-      
+
       <section className="container max-w-2xl">
         <WebPConverterSEO />
       </section>

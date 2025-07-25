@@ -1,4 +1,4 @@
-// Note: @squoosh/lib requires Node.js environment. 
+// Note: @squoosh/lib requires Node.js environment.
 // For browser compatibility, we'll use a Canvas-based fallback for demonstration.
 // In production, this would need server-side integration with @squoosh/lib.
 
@@ -34,27 +34,27 @@ async function convertImageToWebP(
     const img = new Image();
     img.onload = () => {
       try {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
         if (!ctx) {
-          reject(new Error('Canvas context not available'));
+          reject(new Error("Canvas context not available"));
           return;
         }
-        
+
         canvas.width = img.width;
         canvas.height = img.height;
-        
+
         ctx.drawImage(img, 0, 0);
-        
+
         // Convert to WebP using Canvas API
         canvas.toBlob(
           (blob) => {
             if (!blob) {
-              reject(new Error('Failed to create WebP blob'));
+              reject(new Error("Failed to create WebP blob"));
               return;
             }
-            
+
             blob.arrayBuffer().then((arrayBuffer) => {
               resolve({
                 webpData: arrayBuffer,
@@ -62,15 +62,15 @@ async function convertImageToWebP(
               });
             });
           },
-          'image/webp',
+          "image/webp",
           quality / 100
         );
       } catch (error) {
         reject(error);
       }
     };
-    
-    img.onerror = () => reject(new Error('Failed to load image'));
+
+    img.onerror = () => reject(new Error("Failed to load image"));
     img.src = URL.createObjectURL(file);
   });
 }
@@ -83,10 +83,13 @@ export async function convertToWebP(
   options: WebPConversionOptions
 ): Promise<ConversionResult> {
   try {
-    const { webpData, webpSize } = await convertImageToWebP(file, options.quality);
-    
+    const { webpData, webpSize } = await convertImageToWebP(
+      file,
+      options.quality
+    );
+
     return {
-      fileName: file.name.replace(/\.[^/.]+$/, '.webp'),
+      fileName: file.name.replace(/\.[^/.]+$/, ".webp"),
       originalSize: file.size,
       webpSize,
       webpData,
@@ -99,7 +102,7 @@ export async function convertToWebP(
       webpSize: 0,
       webpData: new ArrayBuffer(0),
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred',
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
 }
@@ -120,17 +123,19 @@ export async function batchConvertToWebP(
     const file = files[i];
     const result = await convertToWebP(file, options);
     results.push(result);
-    
+
     totalOriginalSize += result.originalSize;
     totalWebpSize += result.webpSize;
-    
+
     if (onProgress) {
       onProgress(i + 1, files.length);
     }
   }
 
-  const compressionRatio = totalOriginalSize > 0 ? 
-    ((totalOriginalSize - totalWebpSize) / totalOriginalSize) * 100 : 0;
+  const compressionRatio =
+    totalOriginalSize > 0
+      ? ((totalOriginalSize - totalWebpSize) / totalOriginalSize) * 100
+      : 0;
 
   return {
     results,
@@ -144,7 +149,7 @@ export async function batchConvertToWebP(
  * Create download URL for WebP data
  */
 export function createWebPDownloadUrl(webpData: ArrayBuffer): string {
-  const blob = new Blob([webpData], { type: 'image/webp' });
+  const blob = new Blob([webpData], { type: "image/webp" });
   return URL.createObjectURL(blob);
 }
 
@@ -153,7 +158,7 @@ export function createWebPDownloadUrl(webpData: ArrayBuffer): string {
  */
 export function downloadWebP(webpData: ArrayBuffer, fileName: string): void {
   const url = createWebPDownloadUrl(webpData);
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
   link.download = fileName;
   link.click();
@@ -163,11 +168,13 @@ export function downloadWebP(webpData: ArrayBuffer, fileName: string): void {
 /**
  * Create and download a ZIP file containing all converted WebP files
  */
-export async function downloadWebPZip(results: ConversionResult[]): Promise<void> {
-  // For now, we'll download files individually since adding zip functionality 
+export async function downloadWebPZip(
+  results: ConversionResult[]
+): Promise<void> {
+  // For now, we'll download files individually since adding zip functionality
   // would require additional dependencies. This can be enhanced later.
-  const successfulResults = results.filter(r => r.success);
-  
+  const successfulResults = results.filter((r) => r.success);
+
   successfulResults.forEach((result, index) => {
     // Add a small delay between downloads to avoid browser blocking
     setTimeout(() => {
@@ -180,12 +187,12 @@ export async function downloadWebPZip(results: ConversionResult[]): Promise<void
  * Format file size for display
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  
+  if (bytes === 0) return "0 B";
+
   const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   const result = bytes / Math.pow(k, i);
   return `${result % 1 === 0 ? result : parseFloat(result.toFixed(1))} ${sizes[i]}`;
 }
@@ -195,15 +202,15 @@ export function formatFileSize(bytes: number): string {
  */
 export function isSupportedImageFormat(file: File): boolean {
   const supportedTypes = [
-    'image/jpeg',
-    'image/jpg', 
-    'image/png',
-    'image/bmp',
-    'image/gif',
-    'image/tiff',
-    'image/webp'
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/bmp",
+    "image/gif",
+    "image/tiff",
+    "image/webp",
   ];
-  
+
   return supportedTypes.includes(file.type.toLowerCase());
 }
 
