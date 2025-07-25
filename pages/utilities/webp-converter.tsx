@@ -54,7 +54,9 @@ export default function WebPConverter() {
       }
     }
 
-    const savedAutoDownload = localStorage.getItem("webp-converter-auto-download");
+    const savedAutoDownload = localStorage.getItem(
+      "webp-converter-auto-download"
+    );
     if (savedAutoDownload) {
       setAutoDownload(savedAutoDownload === "true");
     }
@@ -296,19 +298,16 @@ export default function WebPConverter() {
                     />
                     <Label
                       htmlFor="auto-download"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 m-0"
                     >
                       Automatically download after conversion
                     </Label>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2 ml-6">
-                    Downloads will start immediately when conversion completes
-                  </p>
                 </div>
 
                 <Divider />
 
-                <div className="flex gap-4 mb-6">
+                <div className="flex gap-4">
                   <Button
                     className="flex-1"
                     onClick={handleConvert}
@@ -333,7 +332,7 @@ export default function WebPConverter() {
                 </div>
 
                 {progress && (
-                  <div className="mb-4">
+                  <div className="mb-4 py-4">
                     <div className="flex justify-between text-sm mb-2">
                       <span className="font-medium">Converting images...</span>
                       <span className="text-muted-foreground">
