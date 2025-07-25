@@ -116,7 +116,7 @@ export default function HARFileViewer() {
       return;
     }
 
-    if (!file.name.endsWith(".har")) {
+    if (!file.name.endsWith(".har") && !file.name.endsWith(".json")) {
       setStatus("unsupported");
       return;
     }
@@ -142,7 +142,7 @@ export default function HARFileViewer() {
       setStatus("hover");
 
       const file = event.dataTransfer.files[0];
-      if (!file || !file.name.endsWith(".har")) {
+      if (!file || (!file.name.endsWith(".har") && !file.name.endsWith(".json"))) {
         setStatus("unsupported");
         return;
       }
@@ -187,13 +187,13 @@ export default function HARFileViewer() {
             <input
               type="file"
               data-testid="input"
-              accept=".har"
+              accept=".har,.json"
               onChange={(event) => handleFileUpload(event.target.files?.[0])}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             <UploadIcon />
             <div>
-              {status === "idle" && <p>Drop your .har file here</p>}
+              {status === "idle" && <p>Drop your .har or .json file here</p>}
               {status === "hover" && <p>Drop it like it's hot 🔥</p>}
               {status === "unsupported" && <p>Invalid file format</p>}
             </div>

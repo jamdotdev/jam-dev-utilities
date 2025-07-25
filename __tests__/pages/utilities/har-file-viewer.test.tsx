@@ -53,7 +53,7 @@ describe("HARFileViewer", () => {
   test("should render the component and display the drop zone text", () => {
     render(<HARFileViewer />);
 
-    expect(screen.getByText("Drop your .har file here")).toBeInTheDocument();
+    expect(screen.getByText("Drop your .har or .json file here")).toBeInTheDocument();
   });
 
   test("should list all requests after uploading a har file", async () => {
@@ -97,5 +97,28 @@ describe("HARFileViewer", () => {
     // For the 2nd row, get status code column and verify if its 404
     const row2 = within(rows[1]).getByTestId("column-status-code");
     expect(row2).toHaveTextContent("404");
+  });
+
+  test("should accept and process .json file extension", async () => {
+    const user = userEvent.setup();
+    render(<HARFileViewer />);
+
+    // Create a mock file with .json extension
+    const file = new File([JSON.stringify(mockHarData)], "test.json", {
+      type: "application/json",
+    });
+
+    // Find the file input and upload the file
+    const fileInput = screen.getByTestId("input");
+    await user.upload(fileInput, file);
+
+    // Wait for the requests to be displayed - this verifies the file was accepted
+    await screen.findByText("https://example.com/api/test");
+    await screen.findByText("https://example.com/css/style.css");
+
+    // Verify status codes are displayed correctly
+    const rows = await screen.findAllByTestId("table-row");
+    const row1 = within(rows[0]).getByTestId("column-status-code");
+    expect(row1).toHaveTextContent("200");
   });
 });
