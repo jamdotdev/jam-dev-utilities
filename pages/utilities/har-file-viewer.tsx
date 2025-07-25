@@ -256,7 +256,7 @@ export default function HARFileViewer() {
             </div>
           </section>
 
-          <section className="container max-w-7xl overflow-y-scroll">
+          <section className="container max-w-7xl">
             {viewMode === "table" ? (
               <HarTable
                 entries={harData.log.entries}
