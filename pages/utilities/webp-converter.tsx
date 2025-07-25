@@ -13,6 +13,7 @@ import Meta from "@/components/Meta";
 import { MultiFileUploadComponent } from "@/components/ds/MultiFileUploadComponent";
 import { DownloadIcon, TrashIcon, FileImageIcon } from "lucide-react";
 import GitHubContribution from "@/components/GitHubContribution";
+import WebPConverterSEO from "@/components/seo/WebPConverterSEO";
 import {
   batchConvertToWebP,
   downloadWebPZip,
@@ -36,6 +37,17 @@ export default function WebPConverter() {
   const [conversionResults, setConversionResults] = useState<ConversionResult[]>([]);
   const [progress, setProgress] = useState<{ completed: number; total: number } | null>(null);
 
+  // Load quality from localStorage on mount
+  useEffect(() => {
+    const savedQuality = localStorage.getItem('webp-converter-quality');
+    if (savedQuality) {
+      const parsedQuality = parseInt(savedQuality);
+      if (parsedQuality >= 1 && parsedQuality <= 100) {
+        setQuality(parsedQuality);
+      }
+    }
+  }, []);
+
   const handleFilesSelect = useCallback((selectedFiles: File[]) => {
     const supportedFiles = filterSupportedImages(selectedFiles);
     const newFileItems: FileItem[] = supportedFiles.map((file, index) => ({
@@ -58,12 +70,16 @@ export default function WebPConverter() {
   }, []);
 
   const handleQualityChange = useCallback((value: number[]) => {
-    setQuality(Math.max(1, Math.min(100, value[0])));
+    const newQuality = Math.max(1, Math.min(100, value[0]));
+    setQuality(newQuality);
+    localStorage.setItem('webp-converter-quality', newQuality.toString());
   }, []);
 
   const handleQualityInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
-    setQuality(Math.max(1, Math.min(100, value)));
+    const newQuality = Math.max(1, Math.min(100, value));
+    setQuality(newQuality);
+    localStorage.setItem('webp-converter-quality', newQuality.toString());
   }, []);
 
   const handleConvert = useCallback(async () => {
@@ -272,27 +288,23 @@ export default function WebPConverter() {
                   <>
                     <Divider />
                     <div className="space-y-6">
+                      {/* Success Message - Outside the main card */}
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground">
+                          {conversionStats.successful} {conversionStats.successful === 1 ? 'image' : 'images'} converted successfully
+                          {conversionStats.failed > 0 && (
+                            <span className="text-red-600 ml-1">
+                              • {conversionStats.failed} failed
+                            </span>
+                          )}
+                        </p>
+                      </div>
+
                       <div>
                         <h3 className="text-lg font-semibold mb-4">Conversion Results</h3>
                         
-                        {/* Summary Section - Full Width */}
-                        <div className="border border-border rounded-lg p-6 bg-card mb-6">
-                          <div className="text-center mb-6">
-                            <div className="text-4xl font-bold text-green-600 mb-2">
-                              {conversionStats.successful}
-                            </div>
-                            <div className="text-lg text-muted-foreground">
-                              {conversionStats.successful === 1 ? 'Image' : 'Images'} converted successfully
-                            </div>
-                            {conversionStats.failed > 0 && (
-                              <div className="mt-3">
-                                <span className="text-sm text-red-600 font-medium">
-                                  {conversionStats.failed} failed
-                                </span>
-                              </div>
-                            )}
-                          </div>
-
+                        {/* Results Section - Full Width */}
+                        <div className="border border-border rounded-lg p-6 bg-card">
                           {/* Size Comparison */}
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center mb-6">
                             <div>
@@ -342,6 +354,10 @@ export default function WebPConverter() {
 
       <GitHubContribution username="copilot" />
       <CallToActionGrid />
+      
+      <section className="container max-w-2xl">
+        <WebPConverterSEO />
+      </section>
     </main>
   );
 }
