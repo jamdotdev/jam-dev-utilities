@@ -26,10 +26,14 @@ const nextConfig = {
         asyncWebAssembly: true,
       };
 
-      // Ignore 'fs' module
+      // Ignore Node.js modules for client-side builds
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
+        worker_threads: false,
+        child_process: false,
+        os: false,
+        path: false,
       };
 
       // Copy WebAssembly (WASM) files to the public directory.
