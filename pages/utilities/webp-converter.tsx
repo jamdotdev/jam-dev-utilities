@@ -6,6 +6,7 @@ import { Label } from "@/components/ds/LabelComponent";
 import { Input } from "@/components/ds/InputComponent";
 import { Slider } from "@/components/ds/SliderComponent";
 import { Progress } from "@/components/ds/ProgressComponent";
+import { Checkbox } from "@/components/ds/CheckboxComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "@/components/CallToActionGrid";
@@ -33,6 +34,7 @@ interface FileItem {
 export default function WebPConverter() {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [quality, setQuality] = useState<number>(80);
+  const [autoDownload, setAutoDownload] = useState<boolean>(false);
   const [isConverting, setIsConverting] = useState(false);
   const [conversionResults, setConversionResults] = useState<
     ConversionResult[]
@@ -42,7 +44,7 @@ export default function WebPConverter() {
     total: number;
   } | null>(null);
 
-  // Load quality from localStorage on mount
+  // Load quality and auto-download from localStorage on mount
   useEffect(() => {
     const savedQuality = localStorage.getItem("webp-converter-quality");
     if (savedQuality) {
@@ -50,6 +52,11 @@ export default function WebPConverter() {
       if (parsedQuality >= 1 && parsedQuality <= 100) {
         setQuality(parsedQuality);
       }
+    }
+
+    const savedAutoDownload = localStorage.getItem("webp-converter-auto-download");
+    if (savedAutoDownload) {
+      setAutoDownload(savedAutoDownload === "true");
     }
   }, []);
 
@@ -90,6 +97,11 @@ export default function WebPConverter() {
     []
   );
 
+  const handleAutoDownloadChange = useCallback((checked: boolean) => {
+    setAutoDownload(checked);
+    localStorage.setItem("webp-converter-auto-download", checked.toString());
+  }, []);
+
   const handleConvert = useCallback(async () => {
     if (files.length === 0) return;
 
@@ -107,13 +119,21 @@ export default function WebPConverter() {
       );
 
       setConversionResults(result.results);
+
+      // Auto-download if enabled and we have successful results
+      if (autoDownload) {
+        const successfulResults = result.results.filter((r) => r.success);
+        if (successfulResults.length > 0) {
+          await downloadWebPZip(successfulResults);
+        }
+      }
     } catch (error) {
       console.error("Conversion failed:", error);
     } finally {
       setIsConverting(false);
       setProgress(null);
     }
-  }, [files, quality]);
+  }, [files, quality, autoDownload]);
 
   const handleDownloadAll = useCallback(async () => {
     if (conversionResults.length === 0) return;
@@ -264,6 +284,25 @@ export default function WebPConverter() {
                   <p className="text-xs text-muted-foreground mt-2">
                     Lower quality = smaller file size, higher quality = better
                     image quality
+                  </p>
+                </div>
+
+                <div className="mb-6">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="auto-download"
+                      checked={autoDownload}
+                      onCheckedChange={handleAutoDownloadChange}
+                    />
+                    <Label
+                      htmlFor="auto-download"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Automatically download after conversion
+                    </Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2 ml-6">
+                    Downloads will start immediately when conversion completes
                   </p>
                 </div>
 
