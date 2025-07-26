@@ -110,6 +110,31 @@ export default function HARFileViewer() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [viewMode, setViewMode] = useState<"table" | "waterfall">("table");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Load view mode from localStorage on component mount
+  useEffect(() => {
+    try {
+      const savedViewMode = localStorage.getItem("har-viewer-view-mode");
+      if (savedViewMode === "table" || savedViewMode === "waterfall") {
+        setViewMode(savedViewMode);
+      }
+    } catch (error) {
+      // localStorage not available or error occurred, use default
+    }
+    setIsInitialized(true);
+  }, []);
+
+  // Save view mode to localStorage when it changes (but not on initial load)
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    try {
+      localStorage.setItem("har-viewer-view-mode", viewMode);
+    } catch (error) {
+      // localStorage not available or error occurred
+    }
+  }, [viewMode, isInitialized]);
 
   const handleFileUpload = useCallback((file: File | undefined) => {
     if (!file) {
@@ -142,7 +167,10 @@ export default function HARFileViewer() {
       setStatus("hover");
 
       const file = event.dataTransfer.files[0];
-      if (!file || (!file.name.endsWith(".har") && !file.name.endsWith(".json"))) {
+      if (
+        !file ||
+        (!file.name.endsWith(".har") && !file.name.endsWith(".json"))
+      ) {
         setStatus("unsupported");
         return;
       }

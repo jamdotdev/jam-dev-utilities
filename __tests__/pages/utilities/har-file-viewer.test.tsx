@@ -53,7 +53,9 @@ describe("HARFileViewer", () => {
   test("should render the component and display the drop zone text", () => {
     render(<HARFileViewer />);
 
-    expect(screen.getByText("Drop your .har or .json file here")).toBeInTheDocument();
+    expect(
+      screen.getByText("Drop your .har or .json file here")
+    ).toBeInTheDocument();
   });
 
   test("should list all requests after uploading a har file", async () => {
