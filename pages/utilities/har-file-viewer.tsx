@@ -121,7 +121,6 @@ export default function HARFileViewer() {
       }
     } catch (error) {
       // localStorage not available or error occurred, use default
-      console.warn("Failed to load view mode from localStorage:", error);
     }
     setIsInitialized(true);
   }, []);
@@ -134,7 +133,6 @@ export default function HARFileViewer() {
       localStorage.setItem("har-viewer-view-mode", viewMode);
     } catch (error) {
       // localStorage not available or error occurred
-      console.warn("Failed to save view mode to localStorage:", error);
     }
   }, [viewMode, isInitialized]);
 

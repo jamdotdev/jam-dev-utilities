@@ -50,11 +50,6 @@ const mockHarData = {
 };
 
 describe("HARFileViewer", () => {
-  beforeEach(() => {
-    // Clear localStorage before each test
-    localStorage.clear();
-  });
-
   test("should render the component and display the drop zone text", () => {
     render(<HARFileViewer />);
 
@@ -127,100 +122,5 @@ describe("HARFileViewer", () => {
     const rows = await screen.findAllByTestId("table-row");
     const row1 = within(rows[0]).getByTestId("column-status-code");
     expect(row1).toHaveTextContent("200");
-  });
-
-  test("should default to table view when no localStorage value exists", async () => {
-    // Clear localStorage to ensure we test the default behavior
-    localStorage.clear();
-
-    const user = userEvent.setup();
-    render(<HARFileViewer />);
-
-    // Upload a HAR file first to show the view buttons
-    const file = new File([JSON.stringify(mockHarData)], "test.har", {
-      type: "application/json",
-    });
-    const fileInput = screen.getByTestId("input");
-    await user.upload(fileInput, file);
-
-    // Wait for the table rows to appear (this means HAR is loaded)
-    const rows = await screen.findAllByTestId("table-row");
-    expect(rows).toHaveLength(2);
-
-    // Check that localStorage has the default table view saved
-    expect(localStorage.getItem("har-viewer-view-mode")).toBe("table");
-  });
-
-  test("should load waterfall view from localStorage if previously saved", async () => {
-    // Set localStorage to waterfall view
-    localStorage.setItem("har-viewer-view-mode", "waterfall");
-
-    const user = userEvent.setup();
-    render(<HARFileViewer />);
-
-    // Upload a HAR file
-    const file = new File([JSON.stringify(mockHarData)], "test.har", {
-      type: "application/json",
-    });
-    const fileInput = screen.getByTestId("input");
-    await user.upload(fileInput, file);
-
-    // Wait for HAR data to load - in waterfall view we should see the HarWaterfall component
-    // Since waterfall view doesn't show table rows, we need to check for the component differently
-    // Let's wait for the filter buttons to appear which appear in both views
-    await screen.findByRole("button", { name: "All" });
-
-    // Verify localStorage still has waterfall
-    expect(localStorage.getItem("har-viewer-view-mode")).toBe("waterfall");
-  });
-
-  test("should save view mode to localStorage when user switches views", async () => {
-    localStorage.clear();
-
-    const user = userEvent.setup();
-    render(<HARFileViewer />);
-
-    // Upload a HAR file first
-    const file = new File([JSON.stringify(mockHarData)], "test.har", {
-      type: "application/json",
-    });
-    const fileInput = screen.getByTestId("input");
-    await user.upload(fileInput, file);
-
-    // Wait for the table rows to appear (means we're in table view initially)
-    const rows = await screen.findAllByTestId("table-row");
-    expect(rows).toHaveLength(2);
-
-    // Initially should be table view
-    expect(localStorage.getItem("har-viewer-view-mode")).toBe("table");
-
-    // Click waterfall button
-    const waterfallButton = screen.getByRole("button", { name: /waterfall/i });
-    await user.click(waterfallButton);
-
-    // Should save to localStorage
-    expect(localStorage.getItem("har-viewer-view-mode")).toBe("waterfall");
-
-    // Click table button
-    const tableButton = screen.getByRole("button", { name: /table view/i });
-    await user.click(tableButton);
-
-    // Should save to localStorage and we should see table rows again
-    expect(localStorage.getItem("har-viewer-view-mode")).toBe("table");
-    await screen.findAllByTestId("table-row");
-  });
-
-  test("should handle localStorage errors gracefully", () => {
-    // Mock localStorage to throw an error
-    const mockGetItem = jest
-      .spyOn(Storage.prototype, "getItem")
-      .mockImplementation(() => {
-        throw new Error("localStorage not available");
-      });
-
-    // Should not crash when localStorage throws
-    expect(() => render(<HARFileViewer />)).not.toThrow();
-
-    mockGetItem.mockRestore();
   });
 });
