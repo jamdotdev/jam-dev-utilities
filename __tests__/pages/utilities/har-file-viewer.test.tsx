@@ -58,7 +58,9 @@ describe("HARFileViewer", () => {
   test("should render the component and display the drop zone text", () => {
     render(<HARFileViewer />);
 
-    expect(screen.getByText("Drop your .har or .json file here")).toBeInTheDocument();
+    expect(
+      screen.getByText("Drop your .har or .json file here")
+    ).toBeInTheDocument();
   });
 
   test("should list all requests after uploading a har file", async () => {
@@ -130,10 +132,10 @@ describe("HARFileViewer", () => {
   test("should default to table view when no localStorage value exists", async () => {
     // Clear localStorage to ensure we test the default behavior
     localStorage.clear();
-    
+
     const user = userEvent.setup();
     render(<HARFileViewer />);
-    
+
     // Upload a HAR file first to show the view buttons
     const file = new File([JSON.stringify(mockHarData)], "test.har", {
       type: "application/json",
@@ -144,7 +146,7 @@ describe("HARFileViewer", () => {
     // Wait for the table rows to appear (this means HAR is loaded)
     const rows = await screen.findAllByTestId("table-row");
     expect(rows).toHaveLength(2);
-    
+
     // Check that localStorage has the default table view saved
     expect(localStorage.getItem("har-viewer-view-mode")).toBe("table");
   });
@@ -152,10 +154,10 @@ describe("HARFileViewer", () => {
   test("should load waterfall view from localStorage if previously saved", async () => {
     // Set localStorage to waterfall view
     localStorage.setItem("har-viewer-view-mode", "waterfall");
-    
+
     const user = userEvent.setup();
     render(<HARFileViewer />);
-    
+
     // Upload a HAR file
     const file = new File([JSON.stringify(mockHarData)], "test.har", {
       type: "application/json",
@@ -167,17 +169,17 @@ describe("HARFileViewer", () => {
     // Since waterfall view doesn't show table rows, we need to check for the component differently
     // Let's wait for the filter buttons to appear which appear in both views
     await screen.findByRole("button", { name: "All" });
-    
+
     // Verify localStorage still has waterfall
     expect(localStorage.getItem("har-viewer-view-mode")).toBe("waterfall");
   });
 
   test("should save view mode to localStorage when user switches views", async () => {
     localStorage.clear();
-    
+
     const user = userEvent.setup();
     render(<HARFileViewer />);
-    
+
     // Upload a HAR file first
     const file = new File([JSON.stringify(mockHarData)], "test.har", {
       type: "application/json",
@@ -188,21 +190,21 @@ describe("HARFileViewer", () => {
     // Wait for the table rows to appear (means we're in table view initially)
     const rows = await screen.findAllByTestId("table-row");
     expect(rows).toHaveLength(2);
-    
+
     // Initially should be table view
     expect(localStorage.getItem("har-viewer-view-mode")).toBe("table");
-    
+
     // Click waterfall button
     const waterfallButton = screen.getByRole("button", { name: /waterfall/i });
     await user.click(waterfallButton);
-    
+
     // Should save to localStorage
     expect(localStorage.getItem("har-viewer-view-mode")).toBe("waterfall");
-    
+
     // Click table button
     const tableButton = screen.getByRole("button", { name: /table view/i });
     await user.click(tableButton);
-    
+
     // Should save to localStorage and we should see table rows again
     expect(localStorage.getItem("har-viewer-view-mode")).toBe("table");
     await screen.findAllByTestId("table-row");
@@ -210,13 +212,15 @@ describe("HARFileViewer", () => {
 
   test("should handle localStorage errors gracefully", () => {
     // Mock localStorage to throw an error
-    const mockGetItem = jest.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
-      throw new Error("localStorage not available");
-    });
-    
+    const mockGetItem = jest
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw new Error("localStorage not available");
+      });
+
     // Should not crash when localStorage throws
     expect(() => render(<HARFileViewer />)).not.toThrow();
-    
+
     mockGetItem.mockRestore();
   });
 });

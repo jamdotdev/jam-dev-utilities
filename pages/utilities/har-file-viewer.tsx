@@ -129,7 +129,7 @@ export default function HARFileViewer() {
   // Save view mode to localStorage when it changes (but not on initial load)
   useEffect(() => {
     if (!isInitialized) return;
-    
+
     try {
       localStorage.setItem("har-viewer-view-mode", viewMode);
     } catch (error) {
@@ -169,7 +169,10 @@ export default function HARFileViewer() {
       setStatus("hover");
 
       const file = event.dataTransfer.files[0];
-      if (!file || (!file.name.endsWith(".har") && !file.name.endsWith(".json"))) {
+      if (
+        !file ||
+        (!file.name.endsWith(".har") && !file.name.endsWith(".json"))
+      ) {
         setStatus("unsupported");
         return;
       }
