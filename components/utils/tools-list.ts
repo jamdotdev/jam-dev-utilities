@@ -149,4 +149,10 @@ export const tools = [
       "Minify SQL by removing comments, extra spaces, and formatting for cleaner, optimized queries.",
     link: "/utilities/sql-minifier",
   },
+  {
+    title: "SQL Minifier",
+    description:
+      "Minify SQL by removing comments, extra spaces, and formatting for cleaner, optimized queries.",
+    link: "/utilities/sql-minifier",
+  },
 ];

@@ -10,25 +10,39 @@ import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "../../components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import SQLMinifierSEO from "@/components/seo/SQLMinifierSEO";
+import { minifySQL, validateSQLInput } from "@/components/utils/sql-minifier.utils";
 
 export default function SQLMinifier() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
+  const [error, setError] = useState("");
   const { buttonText, handleCopy } = useCopyToClipboard();
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
       const { value } = event.currentTarget;
       setInput(value);
+      setError("");
+
+      if (value.trim() === "") {
+        setOutput("");
+        return;
+      }
+
+      const validation = validateSQLInput(value);
+      if (!validation.isValid) {
+        setError(validation.error || "Invalid input");
+        setOutput("");
+        return;
+      }
 
       try {
-        let sql = value;
-        sql = sql.replace(/\/\*[\s\S]*?\*\/|--.*$/gm, "");
-        sql = sql.replace(/\s+/g, " ").trim();
-
-        setOutput(sql);
-      } catch {
-        setOutput("Invalid SQL input");
+        const minified = minifySQL(value);
+        setOutput(minified);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Failed to minify SQL";
+        setError(errorMessage);
+        setOutput("");
       }
     },
     []
@@ -62,8 +76,17 @@ export default function SQLMinifier() {
               value={input}
             />
             <Label>Minified SQL</Label>
-            <Textarea value={output} rows={6} readOnly className="mb-4" />
-            <Button variant="outline" onClick={() => handleCopy(output)}>
+            <Textarea 
+              value={error ? `Error: ${error}` : output} 
+              rows={6} 
+              readOnly 
+              className={`mb-4 ${error ? "text-red-500" : ""}`}
+            />
+            <Button 
+              variant="outline" 
+              onClick={() => handleCopy(output)}
+              disabled={!output || !!error}
+            >
               {buttonText}
             </Button>
           </div>
