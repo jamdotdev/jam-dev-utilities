@@ -143,4 +143,10 @@ export const tools = [
       "Convert images to WebP format with batch processing and quality control. Reduce file sizes while maintaining image quality.",
     link: "/utilities/webp-converter",
   },
+  {
+    title: "SQL Minifier",
+    description:
+      "Minify SQL by removing comments, extra spaces, and formatting for cleaner, optimized queries.",
+    link: "/utilities/sql-minifier",
+  },
 ];

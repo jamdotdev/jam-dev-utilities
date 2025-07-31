@@ -47,7 +47,8 @@ Here is the list of all utilities:
 - [UUID Generator](https://jam.dev/utilities/uuid-generator)
 - [SVG Viewer](https://jam.dev/utilities/svg-viewer)
 - [Lorem Ipsum Generator](https://jam.dev/utilities/lorem-ipsum-generator)
-- [WebP converter](https://jam.dev/utilities/webp-converter)
+- [WebP Converter](https://jam.dev/utilities/webp-converter)
+- [SQL Minifer](https://jam.dev/utilities/sql-minifier)
 
 ### Built With
 
