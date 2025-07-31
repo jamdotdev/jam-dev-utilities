@@ -10,7 +10,11 @@ import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "../../components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import SQLMinifierSEO from "@/components/seo/SQLMinifierSEO";
-import { minifySQL, validateSQLInput } from "@/components/utils/sql-minifier.utils";
+import {
+  minifySQL,
+  validateSQLInput,
+} from "@/components/utils/sql-minifier.utils";
+import GitHubContribution from "@/components/GitHubContribution";
 
 export default function SQLMinifier() {
   const [input, setInput] = useState("");
@@ -40,7 +44,8 @@ export default function SQLMinifier() {
         const minified = minifySQL(value);
         setOutput(minified);
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Failed to minify SQL";
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to minify SQL";
         setError(errorMessage);
         setOutput("");
       }
@@ -76,14 +81,14 @@ export default function SQLMinifier() {
               value={input}
             />
             <Label>Minified SQL</Label>
-            <Textarea 
-              value={error ? `Error: ${error}` : output} 
-              rows={6} 
-              readOnly 
+            <Textarea
+              value={error ? `Error: ${error}` : output}
+              rows={6}
+              readOnly
               className={`mb-4 ${error ? "text-red-500" : ""}`}
             />
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => handleCopy(output)}
               disabled={!output || !!error}
             >
@@ -93,6 +98,7 @@ export default function SQLMinifier() {
         </Card>
       </section>
 
+      <GitHubContribution username="prasang-s" />
       <CallToActionGrid />
 
       <section className="container max-w-2xl">
