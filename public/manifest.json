@@ -1,7 +1,7 @@
 {
   "name": "Jam.dev Utilities",
   "short_name": "DevUtilities",
-  "background_color": "#9d7cee",
+  "background_color": "#FFFFFF",
   "categories": ["developer tools", "development", "utilities", "productivity"],
   "description": "Jam exists to make developers lives easier. Here are fast, free, open source, ad-free tools.",
   "display": "standalone",
@@ -14,37 +14,37 @@
       "src": "icons/icon.svg",
       "type": "image/svg+xml",
       "sizes": "512x512",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "icons/512x512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "icons/256x256.png",
       "type": "image/png",
       "sizes": "256x256",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "icons/144x144.png",
       "type": "image/png",
       "sizes": "144x144",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "icons/96x96.png",
       "type": "image/png",
       "sizes": "96x96",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "icons/48x48.png",
       "type": "image/png",
       "sizes": "48x48",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
