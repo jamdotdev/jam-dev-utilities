@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo, ChangeEvent } from "react";
+import { useCallback, useState, useMemo, ChangeEvent, useRef } from "react";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
 import { Button } from "@/components/ds/ButtonComponent";
@@ -8,8 +8,10 @@ import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import {
+  calculateCropDimensions,
   Format,
   handleResizeImage,
+  isPointInCropRect,
   processImageFile,
   updateHeight,
   updateWidth,
@@ -21,6 +23,8 @@ import { ImageUploadComponent } from "@/components/ds/ImageUploadComponent";
 import { cn } from "@/lib/utils";
 import { DownloadIcon } from "lucide-react";
 import GitHubContribution from "@/components/GitHubContribution";
+import { CropOverlayComponent } from "@/components/ds/CropOverlayComponent";
+import { DividerComponent } from "../../components/ds/DividerComponent";
 
 const MAX_DIMENSION = 1024 * 4;
 const MAX_FILE_SIZE = 40 * 1024 * 1024;
@@ -53,20 +57,63 @@ export default function ImageResize() {
   const [resizedImageInfo, setResizedImageInfo] = useState<ResizedImageInfo>(
     {}
   );
+  const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
 
-  function setOutputAndShowAnimation(output: string) {
+  const [isCropping, setIsCropping] = useState(false);
+  const [cropStart, setCropStart] = useState<{ x: number; y: number } | null>(
+    null
+  );
+  const [cropRect, setCropRect] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isMovingCropRect, setIsMovingCropRect] = useState(false);
+  const [moveStartPoint, setMoveStartPoint] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  const setOutputAndShowAnimation = useCallback((output: string) => {
     setOutput(output);
     setShowAnimation(true);
     setTimeout(() => {
       setShowAnimation(false);
     }, 500);
-  }
+  }, []);
+
+  const resetCropStates = useCallback(() => {
+    setIsCropping(false);
+    setCropStart(null);
+    setCropRect(null);
+    setIsDragging(false);
+    setIsMovingCropRect(false);
+    setMoveStartPoint(null);
+  }, []);
+
+  const updateResizedImageInfo = useCallback(
+    (width: number, height: number, format: Format, quality: number) => {
+      setResizedImageInfo({
+        width: Math.round(width),
+        height: Math.round(height),
+        format,
+        quality,
+      });
+    },
+    []
+  );
 
   const handleFileSelect = useCallback(
     (file: File) => {
       setImageFile(file);
       processImageFile({
-        file,
+        source: file,
         format,
         preserveAspectRatio,
         quality,
@@ -82,20 +129,18 @@ export default function ImageResize() {
         setWidth,
       });
     },
-    [format, preserveAspectRatio, quality]
+    [format, preserveAspectRatio, quality, setOutputAndShowAnimation]
   );
 
   const handleAspectRatioChange = useCallback(() => {
     setPreserveAspectRatio((prev) => {
       const newValue = !prev;
-
-      if (newValue && imageFile && width) {
-        updateHeight({ width, file: imageFile, setHeight });
+      if (newValue && output && width) {
+        updateHeight({ source: output, setHeight, width });
       }
-
       return newValue;
     });
-  }, [imageFile, width]);
+  }, [output, width]);
 
   const handleWidthChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -105,11 +150,11 @@ export default function ImageResize() {
       }
       setWidth(newWidth);
 
-      if (preserveAspectRatio && imageFile) {
-        updateHeight({ file: imageFile, setHeight, width: newWidth });
+      if (preserveAspectRatio && output) {
+        updateHeight({ source: output, setHeight, width: newWidth });
       }
     },
-    [preserveAspectRatio, imageFile]
+    [preserveAspectRatio, output]
   );
 
   const handleHeightChange = useCallback(
@@ -120,17 +165,17 @@ export default function ImageResize() {
       }
       setHeight(newHeight);
 
-      if (preserveAspectRatio && imageFile) {
-        updateWidth({ file: imageFile, height: newHeight, setWidth });
+      if (preserveAspectRatio && output) {
+        updateWidth({ source: output, height: newHeight, setWidth });
       }
     },
-    [preserveAspectRatio, imageFile]
+    [preserveAspectRatio, output]
   );
 
   const handleResize = useCallback(() => {
-    if (imageFile) {
+    if (output) {
       handleResizeImage({
-        file: imageFile,
+        source: output,
         format,
         height,
         preserveAspectRatio,
@@ -142,7 +187,15 @@ export default function ImageResize() {
         },
       });
     }
-  }, [imageFile, width, height, format, quality, preserveAspectRatio]);
+  }, [
+    output,
+    width,
+    height,
+    format,
+    quality,
+    preserveAspectRatio,
+    setOutputAndShowAnimation,
+  ]);
 
   const resizedLabel = useMemo(() => {
     const { height, width, format, quality } = resizedImageInfo;
@@ -154,13 +207,38 @@ export default function ImageResize() {
     return "Click 'Resize' to see the dimensions";
   }, [resizedImageInfo]);
 
-  const handleQualityInput = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    let value = parseFloat(e.target.value);
-    if (value > 1) {
-      value = 1;
-    }
-    setQuality(value);
-  }, []);
+  const handleQualityInput = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      let value = parseFloat(e.target.value);
+      if (value > 1) {
+        value = 1;
+      }
+      setQuality(value);
+
+      if (format === "jpeg" && output) {
+        handleResizeImage({
+          source: output,
+          format,
+          height,
+          preserveAspectRatio,
+          quality: value,
+          width,
+          setOutput: (output) => {
+            setOutputAndShowAnimation(output);
+            setResizedImageInfo({ width, height, format, quality: value });
+          },
+        });
+      }
+    },
+    [
+      format,
+      output,
+      height,
+      preserveAspectRatio,
+      width,
+      setOutputAndShowAnimation,
+    ]
+  );
 
   const qualityInput = useMemo(() => {
     if (format === "jpeg") {
@@ -182,6 +260,254 @@ export default function ImageResize() {
     }
     return null;
   }, [format, handleQualityInput, imageFile, quality]);
+
+  const handleCropModeToggle = useCallback(() => {
+    if (isCropping) {
+      resetCropStates();
+    } else {
+      setIsCropping(true);
+      setCropStart(null);
+      setCropRect(null);
+    }
+  }, [isCropping, resetCropStates]);
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!isCropping || !imageRef.current) return;
+
+      const rect = imageRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      if (cropRect && isPointInCropRect(x, y, cropRect)) {
+        startMovingCropRect(x, y, cropRect);
+      } else {
+        startNewCrop(x, y);
+      }
+    },
+    [isCropping, cropRect]
+  );
+
+  const startMovingCropRect = (
+    x: number,
+    y: number,
+    cropRect: { x: number; y: number; width: number; height: number }
+  ) => {
+    setIsMovingCropRect(true);
+    setMoveStartPoint({ x: x - cropRect.x, y: y - cropRect.y });
+  };
+
+  const startNewCrop = (x: number, y: number) => {
+    setCropStart({ x, y });
+    setIsDragging(true);
+    setCropRect(null);
+  };
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!isCropping || !imageRef.current) return;
+
+      const rect = imageRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      setMousePosition({ x: e.clientX, y: e.clientY });
+
+      if (isDragging && cropStart) {
+        updateCropRect(x, y, cropStart);
+      } else if (isMovingCropRect && cropRect && moveStartPoint) {
+        moveCropRect(x, y, rect, cropRect, moveStartPoint);
+      }
+    },
+    [
+      isCropping,
+      isDragging,
+      cropStart,
+      isMovingCropRect,
+      cropRect,
+      moveStartPoint,
+    ]
+  );
+
+  const updateCropRect = (
+    x: number,
+    y: number,
+    cropStart: { x: number; y: number }
+  ) => {
+    const width = x - cropStart.x;
+    const height = y - cropStart.y;
+    setCropRect({
+      x: cropStart.x,
+      y: cropStart.y,
+      width,
+      height,
+    });
+  };
+
+  const moveCropRect = (
+    x: number,
+    y: number,
+    rect: DOMRect,
+    cropRect: { x: number; y: number; width: number; height: number },
+    moveStartPoint: { x: number; y: number }
+  ) => {
+    const newX = x - moveStartPoint.x;
+    const newY = y - moveStartPoint.y;
+
+    const boundedX = Math.max(
+      0,
+      Math.min(newX, rect.width - Math.abs(cropRect.width))
+    );
+    const boundedY = Math.max(
+      0,
+      Math.min(newY, rect.height - Math.abs(cropRect.height))
+    );
+
+    setCropRect({
+      ...cropRect,
+      x: boundedX,
+      y: boundedY,
+    });
+  };
+
+  const handleMouseUp = useCallback(() => {
+    if (isCropping) {
+      if (isDragging) {
+        setIsDragging(false);
+        setCropStart(null);
+      }
+      if (isMovingCropRect) {
+        setIsMovingCropRect(false);
+        setMoveStartPoint(null);
+      }
+    }
+  }, [isCropping, isDragging, isMovingCropRect]);
+
+  const cropSvgImage = useCallback(
+    (
+      img: HTMLImageElement,
+      x: number,
+      y: number,
+      width: number,
+      height: number
+    ) => {
+      const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+        <image href="${img.src}" x="-${x}" y="-${y}" width="${img.width}" height="${img.height}" />
+      </svg>`;
+      const svgBlob = new Blob([svg], { type: "image/svg+xml" });
+      const reader = new FileReader();
+      reader.onload = () => {
+        const croppedDataUrl = reader.result as string;
+        setOutput(croppedDataUrl);
+        updateResizedImageInfo(width, height, format, quality);
+        resetCropStates();
+      };
+      reader.readAsDataURL(svgBlob);
+    },
+    [format, quality, resetCropStates, updateResizedImageInfo]
+  );
+
+  const cropCanvasImage = useCallback(
+    (
+      img: HTMLImageElement,
+      x: number,
+      y: number,
+      width: number,
+      height: number
+    ) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(
+          img,
+          x,
+          y,
+          width,
+          height,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+        const croppedDataUrl = canvas.toDataURL(`image/${format}`, quality);
+        setOutput(croppedDataUrl);
+        updateResizedImageInfo(canvas.width, canvas.height, format, quality);
+        resetCropStates();
+      }
+    },
+    [format, quality, resetCropStates, updateResizedImageInfo]
+  );
+
+  const handleImageDoubleClick = useCallback(() => {
+    if (cropRect && imageRef.current) {
+      const currentImageRef = imageRef.current;
+      const img = new Image();
+      img.src = output;
+      img.onload = () => {
+        const { x, y, width, height } = calculateCropDimensions(
+          img,
+          currentImageRef,
+          cropRect
+        );
+
+        if (format === "svg") {
+          cropSvgImage(img, x, y, width, height);
+        } else {
+          cropCanvasImage(img, x, y, width, height);
+        }
+      };
+    }
+  }, [cropCanvasImage, cropRect, cropSvgImage, format, output]);
+
+  const handleFormatChange = useCallback(
+    (value: string) => {
+      setFormat(value as Format);
+      if (output) {
+        handleResizeImage({
+          source: output,
+          format: value as Format,
+          height,
+          preserveAspectRatio,
+          quality,
+          width,
+          setOutput: (newOutput) => {
+            setOutputAndShowAnimation(newOutput);
+            setResizedImageInfo({
+              width,
+              height,
+              format: value as Format,
+              quality,
+            });
+          },
+        });
+      }
+    },
+    [
+      output,
+      height,
+      preserveAspectRatio,
+      quality,
+      width,
+      setOutputAndShowAnimation,
+    ]
+  );
+
+  const mainActionButton = useMemo(
+    () => (
+      <Button
+        className="flex flex-1"
+        onClick={handleResize}
+        disabled={!imageFile || isCropping}
+      >
+        Resize
+      </Button>
+    ),
+    [handleResize, imageFile, isCropping]
+  );
 
   return (
     <main>
@@ -216,7 +542,7 @@ export default function ImageResize() {
                   onChange={handleWidthChange}
                   value={width ?? ""}
                   className="mb-2"
-                  disabled={!imageFile}
+                  disabled={!imageFile || isCropping}
                 />
               </div>
               <div className="flex-1 ml-2">
@@ -227,7 +553,7 @@ export default function ImageResize() {
                   onChange={handleHeightChange}
                   value={height ?? ""}
                   className="mb-2"
-                  disabled={!imageFile}
+                  disabled={!imageFile || isCropping}
                 />
               </div>
             </div>
@@ -237,7 +563,7 @@ export default function ImageResize() {
                 id="preserve-aspect-ratio"
                 checked={preserveAspectRatio}
                 onCheckedChange={handleAspectRatioChange}
-                disabled={!imageFile}
+                disabled={!imageFile || isCropping}
                 className="mr-1"
               />
               <Label
@@ -248,7 +574,7 @@ export default function ImageResize() {
               </Label>
             </div>
 
-            <Divider />
+            <DividerComponent margin="medium" />
 
             <div className="mb-6 flex w-full gap-4">
               <div className="flex flex-1 flex-col">
@@ -256,23 +582,25 @@ export default function ImageResize() {
                 <Combobox
                   data={formatOptions}
                   value={format}
-                  onSelect={(value) => setFormat(value as Format)}
-                  disabled={!imageFile}
+                  onSelect={handleFormatChange}
+                  disabled={!imageFile || isCropping}
                 />
               </div>
 
               <div className="flex flex-1 flex-col">{qualityInput}</div>
             </div>
 
-            <Divider />
+            <DividerComponent margin="medium" />
 
             <div className={cn(imageFile && "mb-6", "flex w-full gap-4")}>
+              {mainActionButton}
+
               <Button
                 className="flex flex-1"
-                onClick={handleResize}
+                onClick={handleCropModeToggle}
                 disabled={!imageFile}
               >
-                Resize
+                {isCropping ? "Cancel" : "Crop Image"}
               </Button>
 
               <Button
@@ -293,18 +621,37 @@ export default function ImageResize() {
 
             {output && (
               <>
-                <Divider />
+                <DividerComponent margin="medium" />
                 <div>
                   <div className="flex flex-1 justify-between">
                     <Label>Resized Image</Label>
                     <Label>{resizedLabel}</Label>
                   </div>
-                  <div className="flex flex-col flex-1 items-center ring-1 ring-border rounded-lg p-1">
+                  <div
+                    className="relative flex flex-col flex-1 items-center ring-1 ring-border rounded-lg p-1"
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                    style={{ cursor: isCropping ? "crosshair" : "default" }}
+                  >
                     <img
                       src={output}
                       alt="Resized output"
-                      className={`flex w-auto h-auto max-h-[640px] rounded-sm ${showAnimation ? "animate-grow-from-center" : ""}`}
+                      ref={imageRef}
+                      draggable={false}
+                      onDoubleClick={handleImageDoubleClick}
+                      className={`flex w-auto h-auto max-h-[640px] rounded-sm ${
+                        showAnimation ? "animate-grow-from-center" : ""
+                      }`}
                     />
+                    {isCropping && cropRect && (
+                      <CropOverlayComponent
+                        isCropping={isCropping}
+                        cropRect={cropRect}
+                        mousePosition={mousePosition}
+                      />
+                    )}
                   </div>
                 </div>
               </>
@@ -318,7 +665,3 @@ export default function ImageResize() {
     </main>
   );
 }
-
-const Divider = () => {
-  return <div className="h-[1px] bg-muted my-6"></div>;
-};
