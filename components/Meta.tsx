@@ -22,6 +22,7 @@ const Meta = (props: MetaProps) => {
       {props.keywords && <meta name="keywords" content={props.keywords} />}
       {props.author && <meta name="author" content={props.author} />}
       {props.ogUrl && <meta property="og:url" content={props.ogUrl} />}
+      <link rel="manifest" href="../manifest.json" />
     </Head>
   );
 };
