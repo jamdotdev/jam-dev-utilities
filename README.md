@@ -49,6 +49,7 @@ Here is the list of all utilities:
 - [Lorem Ipsum Generator](https://jam.dev/utilities/lorem-ipsum-generator)
 - [WebP Converter](https://jam.dev/utilities/webp-converter)
 - [SQL Minifer](https://jam.dev/utilities/sql-minifier)
+- [QR Code Generator](https://jam.dev/utilities/qr-code-generator)
 
 ### Built With
 
