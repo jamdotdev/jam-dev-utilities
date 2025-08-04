@@ -1,10 +1,16 @@
-import QRCode from "qrcode";
+import * as QRCode from "qrcode";
 
 export type QRCodeFormat = "png" | "svg" | "jpeg" | "webp";
 
 export type QRCodeCornerSquareType = "square" | "extra-rounded" | "dot";
 export type QRCodeCornerDotType = "square" | "dot";
-export type QRCodeDotsType = "square" | "rounded" | "dots" | "classy" | "classy-rounded" | "extra-rounded";
+export type QRCodeDotsType =
+  | "square"
+  | "rounded"
+  | "dots"
+  | "classy"
+  | "classy-rounded"
+  | "extra-rounded";
 
 export type QRCodeErrorCorrectionLevel = "L" | "M" | "Q" | "H";
 
@@ -82,7 +88,7 @@ export class QRCodeGenerator {
     try {
       // Clear previous content
       element.innerHTML = "";
-      
+
       if (!this.options.text) {
         return;
       }
@@ -95,14 +101,19 @@ export class QRCodeGenerator {
           dark: this.options.dotsOptions.color,
           light: this.options.backgroundOptions.color,
         },
-        errorCorrectionLevel: this.options.errorCorrectionLevel.toLowerCase() as 'low' | 'medium' | 'quartile' | 'high',
+        errorCorrectionLevel:
+          this.options.errorCorrectionLevel.toLowerCase() as
+            | "low"
+            | "medium"
+            | "quartile"
+            | "high",
       });
 
       // Create img element and add to container
-      const img = document.createElement('img');
+      const img = document.createElement("img");
       img.src = dataUrl;
-      img.style.maxWidth = '100%';
-      img.style.height = 'auto';
+      img.style.maxWidth = "100%";
+      img.style.height = "auto";
       element.appendChild(img);
 
       // If there's a logo, overlay it
@@ -110,14 +121,17 @@ export class QRCodeGenerator {
         await this.addLogoOverlay(element, dataUrl);
       }
     } catch (error) {
-      console.error('Error generating QR code:', error);
+      console.error("Error generating QR code:", error);
     }
   }
 
-  private async addLogoOverlay(container: HTMLElement, qrDataUrl: string): Promise<void> {
+  private async addLogoOverlay(
+    container: HTMLElement,
+    qrDataUrl: string
+  ): Promise<void> {
     try {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
       canvas.width = this.options.width;
@@ -132,7 +146,9 @@ export class QRCodeGenerator {
         // Load and draw logo
         const logoImg = new Image();
         logoImg.onload = () => {
-          const logoSize = Math.min(canvas.width, canvas.height) * this.options.imageOptions!.imageSize;
+          const logoSize =
+            Math.min(canvas.width, canvas.height) *
+            this.options.imageOptions!.imageSize;
           const logoX = (canvas.width - logoSize) / 2;
           const logoY = (canvas.height - logoSize) / 2;
 
@@ -152,8 +168,8 @@ export class QRCodeGenerator {
           ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
 
           // Replace QR code image with canvas
-          const finalDataUrl = canvas.toDataURL('image/png');
-          const img = container.querySelector('img');
+          const finalDataUrl = canvas.toDataURL("image/png");
+          const img = container.querySelector("img");
           if (img) {
             img.src = finalDataUrl;
           }
@@ -162,7 +178,7 @@ export class QRCodeGenerator {
       };
       qrImg.src = qrDataUrl;
     } catch (error) {
-      console.error('Error adding logo overlay:', error);
+      console.error("Error adding logo overlay:", error);
     }
   }
 
@@ -171,23 +187,28 @@ export class QRCodeGenerator {
       if (!this.options.text) return;
 
       let dataUrl: string;
-      
-      if (format === 'svg') {
+
+      if (format === "svg") {
         dataUrl = await QRCode.toString(this.options.text, {
-          type: 'svg',
+          type: "svg",
           width: this.options.width,
           margin: 2,
           color: {
             dark: this.options.dotsOptions.color,
             light: this.options.backgroundOptions.color,
           },
-          errorCorrectionLevel: this.options.errorCorrectionLevel.toLowerCase() as 'low' | 'medium' | 'quartile' | 'high',
+          errorCorrectionLevel:
+            this.options.errorCorrectionLevel.toLowerCase() as
+              | "low"
+              | "medium"
+              | "quartile"
+              | "high",
         });
-        
+
         // Create blob and download
-        const blob = new Blob([dataUrl], { type: 'image/svg+xml' });
+        const blob = new Blob([dataUrl], { type: "image/svg+xml" });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
         a.download = `qr-code.svg`;
         a.click();
@@ -200,7 +221,12 @@ export class QRCodeGenerator {
             dark: this.options.dotsOptions.color,
             light: this.options.backgroundOptions.color,
           },
-          errorCorrectionLevel: this.options.errorCorrectionLevel.toLowerCase() as 'low' | 'medium' | 'quartile' | 'high',
+          errorCorrectionLevel:
+            this.options.errorCorrectionLevel.toLowerCase() as
+              | "low"
+              | "medium"
+              | "quartile"
+              | "high",
         });
 
         // If there's a logo, create canvas with logo overlay
@@ -209,22 +235,22 @@ export class QRCodeGenerator {
         }
 
         // Download the image
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = dataUrl;
         a.download = `qr-code.${format}`;
         a.click();
       }
     } catch (error) {
-      console.error('Error downloading QR code:', error);
+      console.error("Error downloading QR code:", error);
     }
   }
 
   private async getCanvasWithLogo(qrDataUrl: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
       if (!ctx) {
-        reject(new Error('Canvas not supported'));
+        reject(new Error("Canvas not supported"));
         return;
       }
 
@@ -237,7 +263,9 @@ export class QRCodeGenerator {
 
         const logoImg = new Image();
         logoImg.onload = () => {
-          const logoSize = Math.min(canvas.width, canvas.height) * this.options.imageOptions!.imageSize;
+          const logoSize =
+            Math.min(canvas.width, canvas.height) *
+            this.options.imageOptions!.imageSize;
           const logoX = (canvas.width - logoSize) / 2;
           const logoY = (canvas.height - logoSize) / 2;
 
@@ -253,12 +281,12 @@ export class QRCodeGenerator {
           }
 
           ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
-          resolve(canvas.toDataURL('image/png'));
+          resolve(canvas.toDataURL("image/png"));
         };
-        logoImg.onerror = () => reject(new Error('Failed to load logo'));
+        logoImg.onerror = () => reject(new Error("Failed to load logo"));
         logoImg.src = this.options.image!;
       };
-      qrImg.onerror = () => reject(new Error('Failed to load QR code'));
+      qrImg.onerror = () => reject(new Error("Failed to load QR code"));
       qrImg.src = qrDataUrl;
     });
   }
@@ -267,16 +295,21 @@ export class QRCodeGenerator {
     try {
       if (!this.options.text) throw new Error("No text provided");
 
-      if (format === 'svg') {
+      if (format === "svg") {
         const svgString = await QRCode.toString(this.options.text, {
-          type: 'svg',
+          type: "svg",
           width: this.options.width,
           margin: 2,
           color: {
             dark: this.options.dotsOptions.color,
             light: this.options.backgroundOptions.color,
           },
-          errorCorrectionLevel: this.options.errorCorrectionLevel.toLowerCase() as 'low' | 'medium' | 'quartile' | 'high',
+          errorCorrectionLevel:
+            this.options.errorCorrectionLevel.toLowerCase() as
+              | "low"
+              | "medium"
+              | "quartile"
+              | "high",
         });
         return svgString;
       } else {
@@ -287,7 +320,12 @@ export class QRCodeGenerator {
             dark: this.options.dotsOptions.color,
             light: this.options.backgroundOptions.color,
           },
-          errorCorrectionLevel: this.options.errorCorrectionLevel.toLowerCase() as 'low' | 'medium' | 'quartile' | 'high',
+          errorCorrectionLevel:
+            this.options.errorCorrectionLevel.toLowerCase() as
+              | "low"
+              | "medium"
+              | "quartile"
+              | "high",
         });
 
         // Convert data URL to blob
@@ -301,11 +339,11 @@ export class QRCodeGenerator {
 
   async getDataURL(format: QRCodeFormat = "png"): Promise<string> {
     const rawData = await this.getRawData(format);
-    
+
     if (typeof rawData === "string") {
       return rawData; // SVG returns string
     }
-    
+
     // For other formats, convert Blob to data URL
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -316,7 +354,9 @@ export class QRCodeGenerator {
   }
 }
 
-export const createQRCode = (options: Partial<QRCodeOptions> = {}): QRCodeGenerator => {
+export const createQRCode = (
+  options: Partial<QRCodeOptions> = {}
+): QRCodeGenerator => {
   return new QRCodeGenerator(options);
 };
 
@@ -329,11 +369,11 @@ export const getQRCodeSizeInBytes = async (
   format: QRCodeFormat = "png"
 ): Promise<number> => {
   const rawData = await qrCode.getRawData(format);
-  
+
   if (typeof rawData === "string") {
     return new Blob([rawData]).size;
   }
-  
+
   return rawData.size;
 };
 
@@ -350,17 +390,31 @@ export const imageToBase64 = (file: File): Promise<string> => {
 };
 
 export const validateImageFile = (file: File): boolean => {
-  const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+  const validTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+  ];
   const maxSize = 5 * 1024 * 1024; // 5MB
-  
+
   return validTypes.includes(file.type) && file.size <= maxSize;
 };
 
 export const getErrorCorrectionLevels = () => [
   { value: "L" as const, label: "Low (~7%)", description: "Smallest QR code" },
   { value: "M" as const, label: "Medium (~15%)", description: "Balanced" },
-  { value: "Q" as const, label: "Quartile (~25%)", description: "Good for noisy environments" },
-  { value: "H" as const, label: "High (~30%)", description: "Best for logos and customization" },
+  {
+    value: "Q" as const,
+    label: "Quartile (~25%)",
+    description: "Good for noisy environments",
+  },
+  {
+    value: "H" as const,
+    label: "High (~30%)",
+    description: "Best for logos and customization",
+  },
 ];
 
 export const getDotsTypeOptions = () => [

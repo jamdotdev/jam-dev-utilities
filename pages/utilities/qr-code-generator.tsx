@@ -47,16 +47,21 @@ const formatOptions: FormatOption[] = [
 
 export default function QrCodeGenerator() {
   const [text, setText] = useState("");
-  const [qrCodeInstance, setQrCodeInstance] = useState<QRCodeGenerator | null>(null);
+  const [qrCodeInstance, setQrCodeInstance] = useState<QRCodeGenerator | null>(
+    null
+  );
   const [format, setFormat] = useState<QRCodeFormat>("png");
   const [size, setSize] = useState(300);
-  const [errorCorrectionLevel, setErrorCorrectionLevel] = useState<QRCodeErrorCorrectionLevel>("M");
+  const [errorCorrectionLevel, setErrorCorrectionLevel] =
+    useState<QRCodeErrorCorrectionLevel>("M");
   const [dotsType, setDotsType] = useState<QRCodeDotsType>("square");
   const [dotsColor, setDotsColor] = useState("#000000");
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
-  const [cornerSquareType, setCornerSquareType] = useState<QRCodeCornerSquareType>("square");
+  const [cornerSquareType, setCornerSquareType] =
+    useState<QRCodeCornerSquareType>("square");
   const [cornerSquareColor, setCornerSquareColor] = useState("#000000");
-  const [cornerDotType, setCornerDotType] = useState<QRCodeCornerDotType>("square");
+  const [cornerDotType, setCornerDotType] =
+    useState<QRCodeCornerDotType>("square");
   const [cornerDotColor, setCornerDotColor] = useState("#000000");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoBase64, setLogoBase64] = useState<string>("");
@@ -64,7 +69,7 @@ export default function QrCodeGenerator() {
   const [logoMargin, setLogoMargin] = useState(8);
   const [hideBackgroundDots, setHideBackgroundDots] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
-  
+
   const qrContainerRef = useRef<HTMLDivElement>(null);
 
   // Initialize QR code instance
@@ -127,7 +132,7 @@ export default function QrCodeGenerator() {
     const updateQRCode = async () => {
       if (qrCodeInstance && qrContainerRef.current) {
         setIsGenerating(true);
-        
+
         try {
           qrCodeInstance.update({
             text: text || "https://jam.dev",
@@ -161,9 +166,9 @@ export default function QrCodeGenerator() {
           // Re-render the QR code
           await qrCodeInstance.append(qrContainerRef.current);
         } catch (error) {
-          console.error('Error updating QR code:', error);
+          console.error("Error updating QR code:", error);
         }
-        
+
         setTimeout(() => setIsGenerating(false), 300);
       }
     };
@@ -187,9 +192,12 @@ export default function QrCodeGenerator() {
     hideBackgroundDots,
   ]);
 
-  const handleTextChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
-  }, []);
+  const handleTextChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setText(e.target.value);
+    },
+    []
+  );
 
   const handleFormatSelect = useCallback((value: string) => {
     setFormat(value as QRCodeFormat);
@@ -238,20 +246,38 @@ export default function QrCodeGenerator() {
     setLogoBase64("");
   }, []);
 
-  const handleSizeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newSize = Math.max(100, Math.min(800, parseInt(e.target.value) || 300));
-    setSize(newSize);
-  }, []);
+  const handleSizeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newSize = Math.max(
+        100,
+        Math.min(800, parseInt(e.target.value) || 300)
+      );
+      setSize(newSize);
+    },
+    []
+  );
 
-  const handleLogoSizeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newSize = Math.max(0.1, Math.min(0.8, parseFloat(e.target.value) || 0.4));
-    setLogoSize(newSize);
-  }, []);
+  const handleLogoSizeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newSize = Math.max(
+        0.1,
+        Math.min(0.8, parseFloat(e.target.value) || 0.4)
+      );
+      setLogoSize(newSize);
+    },
+    []
+  );
 
-  const handleLogoMarginChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newMargin = Math.max(0, Math.min(20, parseInt(e.target.value) || 8));
-    setLogoMargin(newMargin);
-  }, []);
+  const handleLogoMarginChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newMargin = Math.max(
+        0,
+        Math.min(20, parseInt(e.target.value) || 8)
+      );
+      setLogoMargin(newMargin);
+    },
+    []
+  );
 
   const isValidText = validateQRCodeText(text);
 
@@ -289,7 +315,9 @@ export default function QrCodeGenerator() {
                   className="min-h-[80px]"
                 />
                 {!isValidText && text && (
-                  <p className="text-sm text-red-500 mt-1">Please enter some text to generate a QR code</p>
+                  <p className="text-sm text-red-500 mt-1">
+                    Please enter some text to generate a QR code
+                  </p>
                 )}
               </div>
 
@@ -492,7 +520,7 @@ export default function QrCodeGenerator() {
                   <RefreshCwIcon className="w-4 h-4 animate-spin text-muted-foreground" />
                 )}
               </div>
-              
+
               <div className="flex justify-center items-center min-h-[300px] bg-gray-50 rounded-lg">
                 <div
                   ref={qrContainerRef}
@@ -516,9 +544,7 @@ export default function QrCodeGenerator() {
                   <p>
                     Size: {size} × {size}px | Format: {format.toUpperCase()}
                   </p>
-                  {logoFile && (
-                    <p>With logo: {logoFile.name}</p>
-                  )}
+                  {logoFile && <p>With logo: {logoFile.name}</p>}
                 </div>
               )}
             </div>
@@ -527,7 +553,7 @@ export default function QrCodeGenerator() {
       </section>
 
       <CallToActionGrid />
-      
+
       <section className="container max-w-4xl">
         <QrCodeSEO />
       </section>

@@ -6,43 +6,44 @@ export default function QrCodeSEO() {
     <div className="content-wrapper">
       <section>
         <p>
-          Create customizable QR codes with our free online generator. Add your logo,
-          choose different styles (dots, squares, rounded corners), and customize colors.
-          Perfect for marketing materials, business cards, and digital campaigns.
-          No sign-up required — generate and download instantly. Made with 💜 by the
-          developers building Jam.
+          Create customizable QR codes with our free online generator. Add your
+          logo, choose different styles (dots, squares, rounded corners), and
+          customize colors. Perfect for marketing materials, business cards, and
+          digital campaigns. No sign-up required — generate and download
+          instantly. Made with 💜 by the developers building Jam.
         </p>
       </section>
 
       <section>
         <h2>How to Use the QR Code Generator:</h2>
         <p>
-          Generate professional QR codes in seconds. Enter your text, URL, or data,
-          customize the appearance with different styles and colors, and optionally
-          add your logo to the center. Perfect for branding and marketing campaigns.
+          Generate professional QR codes in seconds. Enter your text, URL, or
+          data, customize the appearance with different styles and colors, and
+          optionally add your logo to the center. Perfect for branding and
+          marketing campaigns.
         </p>
 
         <p>Use Cases:</p>
         <ul>
           <li>
-            <b>Marketing Campaigns:</b> Create branded QR codes for flyers, posters,
-            and advertisements with your company logo.
+            <b>Marketing Campaigns:</b> Create branded QR codes for flyers,
+            posters, and advertisements with your company logo.
           </li>
           <li>
-            <b>Business Cards:</b> Generate QR codes linking to your contact information,
-            website, or social media profiles.
+            <b>Business Cards:</b> Generate QR codes linking to your contact
+            information, website, or social media profiles.
           </li>
           <li>
-            <b>Digital Menus:</b> Create QR codes for restaurant menus that customers
-            can scan with their phones.
+            <b>Digital Menus:</b> Create QR codes for restaurant menus that
+            customers can scan with their phones.
           </li>
           <li>
-            <b>Event Tickets:</b> Generate unique QR codes for event check-ins and
-            ticket validation.
+            <b>Event Tickets:</b> Generate unique QR codes for event check-ins
+            and ticket validation.
           </li>
           <li>
-            <b>WiFi Sharing:</b> Create QR codes that automatically connect users
-            to your WiFi network.
+            <b>WiFi Sharing:</b> Create QR codes that automatically connect
+            users to your WiFi network.
           </li>
         </ul>
       </section>
@@ -50,29 +51,29 @@ export default function QrCodeSEO() {
       <section>
         <h2>QR Code Customization Options:</h2>
         <p>
-          Our QR code generator offers extensive customization options to match your
-          brand and style preferences:
+          Our QR code generator offers extensive customization options to match
+          your brand and style preferences:
         </p>
         <ul>
           <li>
-            <b>Logo Integration:</b> Upload your company logo or image to embed in
-            the center of the QR code while maintaining scannability.
+            <b>Logo Integration:</b> Upload your company logo or image to embed
+            in the center of the QR code while maintaining scannability.
           </li>
           <li>
             <b>Style Options:</b> Choose from square, rounded, dots, classy, and
             extra-rounded styles for the data modules.
           </li>
           <li>
-            <b>Color Customization:</b> Set custom colors for the foreground, background,
-            and corner elements to match your brand colors.
+            <b>Color Customization:</b> Set custom colors for the foreground,
+            background, and corner elements to match your brand colors.
           </li>
           <li>
-            <b>Error Correction:</b> Adjust error correction levels (L, M, Q, H) to
-            balance QR code size with logo compatibility.
+            <b>Error Correction:</b> Adjust error correction levels (L, M, Q, H)
+            to balance QR code size with logo compatibility.
           </li>
           <li>
-            <b>Multiple Formats:</b> Download your QR code as PNG, SVG, JPEG, or WebP
-            for different use cases.
+            <b>Multiple Formats:</b> Download your QR code as PNG, SVG, JPEG, or
+            WebP for different use cases.
           </li>
         </ul>
       </section>
@@ -80,25 +81,26 @@ export default function QrCodeSEO() {
       <section>
         <h2>Understanding QR Code Error Correction:</h2>
         <p>
-          QR codes include built-in error correction that allows them to be read even
-          when partially damaged or obscured. This feature is particularly important
-          when adding logos:
+          QR codes include built-in error correction that allows them to be read
+          even when partially damaged or obscured. This feature is particularly
+          important when adding logos:
         </p>
         <ul>
           <li>
-            <b>Low (L) ~7%:</b> Smallest QR code size, but less tolerance for logos
-            and damage.
+            <b>Low (L) ~7%:</b> Smallest QR code size, but less tolerance for
+            logos and damage.
           </li>
           <li>
-            <b>Medium (M) ~15%:</b> Good balance between size and error tolerance.
-            Default for most applications.
+            <b>Medium (M) ~15%:</b> Good balance between size and error
+            tolerance. Default for most applications.
           </li>
           <li>
-            <b>Quartile (Q) ~25%:</b> Better for noisy environments and small logos.
+            <b>Quartile (Q) ~25%:</b> Better for noisy environments and small
+            logos.
           </li>
           <li>
-            <b>High (H) ~30%:</b> Best choice when adding logos or expecting damage.
-            Larger file size but maximum customization capability.
+            <b>High (H) ~30%:</b> Best choice when adding logos or expecting
+            damage. Larger file size but maximum customization capability.
           </li>
         </ul>
       </section>
@@ -110,20 +112,21 @@ export default function QrCodeSEO() {
         </p>
         <ul>
           <li>
-            <b>Adequate Size:</b> Ensure your QR code is at least 2 x 2 cm (0.8 x 0.8 inches)
-            when printed to maintain scannability.
+            <b>Adequate Size:</b> Ensure your QR code is at least 2 x 2 cm (0.8
+            x 0.8 inches) when printed to maintain scannability.
           </li>
           <li>
-            <b>High Contrast:</b> Use high contrast between foreground and background
-            colors for better readability.
+            <b>High Contrast:</b> Use high contrast between foreground and
+            background colors for better readability.
           </li>
           <li>
-            <b>Logo Size:</b> Keep logos under 20% of the QR code area to maintain
-            scannability, especially with lower error correction levels.
+            <b>Logo Size:</b> Keep logos under 20% of the QR code area to
+            maintain scannability, especially with lower error correction
+            levels.
           </li>
           <li>
-            <b>Test Scanning:</b> Always test your QR codes with multiple devices
-            and scanning apps before final use.
+            <b>Test Scanning:</b> Always test your QR codes with multiple
+            devices and scanning apps before final use.
           </li>
           <li>
             <b>Clear Instructions:</b> Include clear call-to-action text like
@@ -135,14 +138,15 @@ export default function QrCodeSEO() {
       <section>
         <h2>Working with QR Codes in JavaScript:</h2>
         <p>
-          You can generate and work with QR codes programmatically using JavaScript
-          libraries. Here's an example using a popular QR code library:
+          You can generate and work with QR codes programmatically using
+          JavaScript libraries. Here's an example using a popular QR code
+          library:
         </p>
         <CodeExample>{qrCodeExample}</CodeExample>
         <p>
-          This code demonstrates basic QR code generation. For advanced features like
-          custom styling and logos, consider using specialized libraries like
-          qr-code-styling or similar tools.
+          This code demonstrates basic QR code generation. For advanced features
+          like custom styling and logos, consider using specialized libraries
+          like qr-code-styling or similar tools.
         </p>
       </section>
 
@@ -165,8 +169,8 @@ export default function QrCodeSEO() {
             the browser extension
           </a>{" "}
           helping over 140,000 users debug faster. It captures console logs,
-          network requests, and more with just one click. Perfect for testing
-          QR code landing pages and debugging web applications.
+          network requests, and more with just one click. Perfect for testing QR
+          code landing pages and debugging web applications.
         </p>
       </section>
 
@@ -178,35 +182,36 @@ export default function QrCodeSEO() {
         <h2>FAQs:</h2>
         <ul>
           <li>
-            <b>Can I add a logo to my QR code?</b> <br /> Yes! Our generator allows
-            you to upload and embed logos in the center of your QR code. Use high
-            error correction (H level) for best results with logos.
+            <b>Can I add a logo to my QR code?</b> <br /> Yes! Our generator
+            allows you to upload and embed logos in the center of your QR code.
+            Use high error correction (H level) for best results with logos.
           </li>
           <li>
-            <b>What file formats can I download?</b> <br /> You can download your
-            QR code as PNG, SVG, JPEG, or WebP. SVG is recommended for print materials
-            as it's vector-based and scalable.
+            <b>What file formats can I download?</b> <br /> You can download
+            your QR code as PNG, SVG, JPEG, or WebP. SVG is recommended for
+            print materials as it's vector-based and scalable.
           </li>
           <li>
-            <b>How do I ensure my QR code scans properly?</b> <br /> Use high contrast
-            colors, maintain adequate size (minimum 2x2 cm when printed), test with
-            multiple devices, and avoid making logos too large.
+            <b>How do I ensure my QR code scans properly?</b> <br /> Use high
+            contrast colors, maintain adequate size (minimum 2x2 cm when
+            printed), test with multiple devices, and avoid making logos too
+            large.
           </li>
           <li>
             <b>What's the difference between error correction levels?</b> <br />
-            Higher levels (Q, H) can recover from more damage and allow larger logos
-            but create bigger QR codes. Lower levels (L, M) create smaller codes
-            but are less tolerant of damage.
+            Higher levels (Q, H) can recover from more damage and allow larger
+            logos but create bigger QR codes. Lower levels (L, M) create smaller
+            codes but are less tolerant of damage.
           </li>
           <li>
-            <b>Can I change the shape of QR code elements?</b> <br /> Yes! Choose
-            from squares, dots, rounded corners, and other stylish options to match
-            your brand while maintaining scannability.
+            <b>Can I change the shape of QR code elements?</b> <br /> Yes!
+            Choose from squares, dots, rounded corners, and other stylish
+            options to match your brand while maintaining scannability.
           </li>
           <li>
-            <b>Is this QR code generator free?</b> <br /> Yes, our QR code generator
-            is completely free with no limits on usage. Generate as many customized
-            QR codes as you need.
+            <b>Is this QR code generator free?</b> <br /> Yes, our QR code
+            generator is completely free with no limits on usage. Generate as
+            many customized QR codes as you need.
           </li>
         </ul>
       </section>
