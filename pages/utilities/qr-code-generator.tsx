@@ -101,53 +101,74 @@ export default function QrCodeGenerator() {
 
     setQrCodeInstance(qr);
 
-    // Clean up previous QR code
-    if (qrContainerRef.current) {
-      qrContainerRef.current.innerHTML = "";
-      qr.append(qrContainerRef.current);
-    }
-
     return () => {
       // Cleanup if needed
     };
-  }, []);
+  }, [
+    text,
+    size,
+    format,
+    errorCorrectionLevel,
+    dotsType,
+    dotsColor,
+    backgroundColor,
+    cornerSquareType,
+    cornerSquareColor,
+    cornerDotType,
+    cornerDotColor,
+    logoBase64,
+    logoSize,
+    logoMargin,
+    hideBackgroundDots,
+  ]);
 
   // Update QR code when options change
   useEffect(() => {
-    if (qrCodeInstance && validateQRCodeText(text)) {
-      setIsGenerating(true);
-      
-      qrCodeInstance.update({
-        text,
-        width: size,
-        height: size,
-        errorCorrectionLevel,
-        dotsOptions: {
-          color: dotsColor,
-          type: dotsType,
-        },
-        backgroundOptions: {
-          color: backgroundColor,
-        },
-        cornersSquareOptions: {
-          color: cornerSquareColor,
-          type: cornerSquareType,
-        },
-        cornersDotOptions: {
-          color: cornerDotColor,
-          type: cornerDotType,
-        },
-        image: logoBase64,
-        imageOptions: {
-          hideBackgroundDots,
-          imageSize: logoSize,
-          margin: logoMargin,
-          crossOrigin: "anonymous",
-        },
-      });
-      
-      setTimeout(() => setIsGenerating(false), 300);
-    }
+    const updateQRCode = async () => {
+      if (qrCodeInstance && qrContainerRef.current) {
+        setIsGenerating(true);
+        
+        try {
+          qrCodeInstance.update({
+            text: text || "https://jam.dev",
+            width: size,
+            height: size,
+            errorCorrectionLevel,
+            dotsOptions: {
+              color: dotsColor,
+              type: dotsType,
+            },
+            backgroundOptions: {
+              color: backgroundColor,
+            },
+            cornersSquareOptions: {
+              color: cornerSquareColor,
+              type: cornerSquareType,
+            },
+            cornersDotOptions: {
+              color: cornerDotColor,
+              type: cornerDotType,
+            },
+            image: logoBase64,
+            imageOptions: {
+              hideBackgroundDots,
+              imageSize: logoSize,
+              margin: logoMargin,
+              crossOrigin: "anonymous",
+            },
+          });
+
+          // Re-render the QR code
+          await qrCodeInstance.append(qrContainerRef.current);
+        } catch (error) {
+          console.error('Error updating QR code:', error);
+        }
+        
+        setTimeout(() => setIsGenerating(false), 300);
+      }
+    };
+
+    updateQRCode();
   }, [
     qrCodeInstance,
     text,
@@ -203,14 +224,14 @@ export default function QrCodeGenerator() {
   }, []);
 
   const handleDownload = useCallback(async () => {
-    if (qrCodeInstance && validateQRCodeText(text)) {
+    if (qrCodeInstance) {
       try {
         await qrCodeInstance.download(format);
       } catch (error) {
         console.error("Error downloading QR code:", error);
       }
     }
-  }, [qrCodeInstance, text, format]);
+  }, [qrCodeInstance, format]);
 
   const handleRemoveLogo = useCallback(() => {
     setLogoFile(null);
@@ -473,22 +494,16 @@ export default function QrCodeGenerator() {
               </div>
               
               <div className="flex justify-center items-center min-h-[300px] bg-gray-50 rounded-lg">
-                {isValidText ? (
-                  <div
-                    ref={qrContainerRef}
-                    className="flex justify-center items-center"
-                  />
-                ) : (
-                  <div className="text-center text-muted-foreground">
-                    <p>Enter text above to generate QR code</p>
-                  </div>
-                )}
+                <div
+                  ref={qrContainerRef}
+                  className="flex justify-center items-center"
+                />
               </div>
 
               <div className="flex gap-2">
                 <Button
                   onClick={handleDownload}
-                  disabled={!isValidText || isGenerating}
+                  disabled={!qrCodeInstance || isGenerating}
                   className="flex-1"
                 >
                   <DownloadIcon className="w-4 h-4 mr-2" />
@@ -496,7 +511,7 @@ export default function QrCodeGenerator() {
                 </Button>
               </div>
 
-              {isValidText && (
+              {qrCodeInstance && (
                 <div className="text-sm text-muted-foreground text-center">
                   <p>
                     Size: {size} × {size}px | Format: {format.toUpperCase()}
