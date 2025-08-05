@@ -248,11 +248,18 @@ export default function QrCodeGenerator() {
 
   const handleSizeChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newSize = Math.max(
-        100,
-        Math.min(800, parseInt(e.target.value) || 300)
-      );
-      setSize(newSize);
+      const value = e.target.value;
+      // Allow empty value for editing
+      if (value === "") {
+        setSize(300); // default value
+        return;
+      }
+      
+      const newSize = parseInt(value);
+      if (!isNaN(newSize)) {
+        const clampedSize = Math.max(100, Math.min(800, newSize));
+        setSize(clampedSize);
+      }
     },
     []
   );
@@ -329,9 +336,8 @@ export default function QrCodeGenerator() {
                   </Label>
                   <Input
                     id="size"
-                    type="number"
-                    min="100"
-                    max="800"
+                    type="text"
+                    placeholder="100-800"
                     value={size}
                     onChange={handleSizeChange}
                   />

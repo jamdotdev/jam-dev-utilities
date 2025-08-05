@@ -1,4 +1,12 @@
-import * as QRCode from "qrcode";
+// Dynamic import to handle SSR issues
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let QRCodeStyling: any = null;
+
+if (typeof window !== "undefined") {
+  import("qr-code-styling").then((QRCodeStylingModule) => {
+    QRCodeStyling = QRCodeStylingModule.default;
+  });
+}
 
 export type QRCodeFormat = "png" | "svg" | "jpeg" | "webp";
 
@@ -75,262 +83,138 @@ export const DEFAULT_QR_OPTIONS: QRCodeOptions = {
 
 export class QRCodeGenerator {
   private options: QRCodeOptions;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private qrCodeStyling: any = null;
 
   constructor(options: Partial<QRCodeOptions> = {}) {
     this.options = { ...DEFAULT_QR_OPTIONS, ...options };
   }
 
+  private async initializeQRCodeStyling(): Promise<void> {
+    if (!QRCodeStyling && typeof window !== "undefined") {
+      const QRCodeStylingModule = await import("qr-code-styling");
+      QRCodeStyling = QRCodeStylingModule.default;
+    }
+
+    if (QRCodeStyling && !this.qrCodeStyling) {
+      this.qrCodeStyling = new QRCodeStyling({
+        width: this.options.width,
+        height: this.options.height,
+        type: "svg",
+        data: this.options.text || "https://jam.dev",
+        image: this.options.image,
+        dotsOptions: {
+          color: this.options.dotsOptions.color,
+          type: this.options.dotsOptions.type,
+        },
+        backgroundOptions: {
+          color: this.options.backgroundOptions.color,
+        },
+        cornersSquareOptions: {
+          color: this.options.cornersSquareOptions?.color,
+          type: this.options.cornersSquareOptions?.type,
+        },
+        cornersDotOptions: {
+          color: this.options.cornersDotOptions?.color,
+          type: this.options.cornersDotOptions?.type,
+        },
+        imageOptions: {
+          hideBackgroundDots: this.options.imageOptions?.hideBackgroundDots,
+          imageSize: this.options.imageOptions?.imageSize,
+          margin: this.options.imageOptions?.margin,
+          crossOrigin: this.options.imageOptions?.crossOrigin,
+        },
+        qrOptions: {
+          errorCorrectionLevel: this.options.errorCorrectionLevel,
+        },
+      });
+    }
+  }
+
   update(newOptions: Partial<QRCodeOptions>): void {
     this.options = { ...this.options, ...newOptions };
+    
+    if (this.qrCodeStyling) {
+      this.qrCodeStyling.update({
+        width: this.options.width,
+        height: this.options.height,
+        data: this.options.text || "https://jam.dev",
+        image: this.options.image,
+        dotsOptions: {
+          color: this.options.dotsOptions.color,
+          type: this.options.dotsOptions.type,
+        },
+        backgroundOptions: {
+          color: this.options.backgroundOptions.color,
+        },
+        cornersSquareOptions: {
+          color: this.options.cornersSquareOptions?.color,
+          type: this.options.cornersSquareOptions?.type,
+        },
+        cornersDotOptions: {
+          color: this.options.cornersDotOptions?.color,
+          type: this.options.cornersDotOptions?.type,
+        },
+        imageOptions: {
+          hideBackgroundDots: this.options.imageOptions?.hideBackgroundDots,
+          imageSize: this.options.imageOptions?.imageSize,
+          margin: this.options.imageOptions?.margin,
+          crossOrigin: this.options.imageOptions?.crossOrigin,
+        },
+        qrOptions: {
+          errorCorrectionLevel: this.options.errorCorrectionLevel,
+        },
+      });
+    }
   }
 
   async append(element: HTMLElement): Promise<void> {
     try {
-      // Clear previous content
-      element.innerHTML = "";
+      await this.initializeQRCodeStyling();
+      
+      if (this.qrCodeStyling && element) {
+        // Clear previous content
+        element.innerHTML = "";
+        
+        if (!this.options.text) {
+          return;
+        }
 
-      if (!this.options.text) {
-        return;
-      }
-
-      // Generate QR code as data URL
-      const dataUrl = await QRCode.toDataURL(this.options.text, {
-        width: this.options.width,
-        margin: 2,
-        color: {
-          dark: this.options.dotsOptions.color,
-          light: this.options.backgroundOptions.color,
-        },
-        errorCorrectionLevel:
-          this.options.errorCorrectionLevel.toLowerCase() as
-            | "low"
-            | "medium"
-            | "quartile"
-            | "high",
-      });
-
-      // Create img element and add to container
-      const img = document.createElement("img");
-      img.src = dataUrl;
-      img.style.maxWidth = "100%";
-      img.style.height = "auto";
-      element.appendChild(img);
-
-      // If there's a logo, overlay it
-      if (this.options.image) {
-        await this.addLogoOverlay(element, dataUrl);
+        // Append the QR code to the element
+        this.qrCodeStyling.append(element);
       }
     } catch (error) {
       console.error("Error generating QR code:", error);
     }
   }
 
-  private async addLogoOverlay(
-    container: HTMLElement,
-    qrDataUrl: string
-  ): Promise<void> {
-    try {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      canvas.width = this.options.width;
-      canvas.height = this.options.height;
-
-      // Load QR code image
-      const qrImg = new Image();
-      qrImg.onload = () => {
-        // Draw QR code
-        ctx.drawImage(qrImg, 0, 0, canvas.width, canvas.height);
-
-        // Load and draw logo
-        const logoImg = new Image();
-        logoImg.onload = () => {
-          const logoSize =
-            Math.min(canvas.width, canvas.height) *
-            this.options.imageOptions!.imageSize;
-          const logoX = (canvas.width - logoSize) / 2;
-          const logoY = (canvas.height - logoSize) / 2;
-
-          // Draw white background for logo if hideBackgroundDots is true
-          if (this.options.imageOptions!.hideBackgroundDots) {
-            const margin = this.options.imageOptions!.margin;
-            ctx.fillStyle = this.options.backgroundOptions.color;
-            ctx.fillRect(
-              logoX - margin,
-              logoY - margin,
-              logoSize + 2 * margin,
-              logoSize + 2 * margin
-            );
-          }
-
-          // Draw logo
-          ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
-
-          // Replace QR code image with canvas
-          const finalDataUrl = canvas.toDataURL("image/png");
-          const img = container.querySelector("img");
-          if (img) {
-            img.src = finalDataUrl;
-          }
-        };
-        logoImg.src = this.options.image!;
-      };
-      qrImg.src = qrDataUrl;
-    } catch (error) {
-      console.error("Error adding logo overlay:", error);
-    }
-  }
-
   async download(format: QRCodeFormat = "png"): Promise<void> {
     try {
-      if (!this.options.text) return;
-
-      let dataUrl: string;
-
-      if (format === "svg") {
-        dataUrl = await QRCode.toString(this.options.text, {
-          type: "svg",
-          width: this.options.width,
-          margin: 2,
-          color: {
-            dark: this.options.dotsOptions.color,
-            light: this.options.backgroundOptions.color,
-          },
-          errorCorrectionLevel:
-            this.options.errorCorrectionLevel.toLowerCase() as
-              | "low"
-              | "medium"
-              | "quartile"
-              | "high",
+      await this.initializeQRCodeStyling();
+      
+      if (this.qrCodeStyling) {
+        await this.qrCodeStyling.download({
+          name: "qr-code",
+          extension: format,
         });
-
-        // Create blob and download
-        const blob = new Blob([dataUrl], { type: "image/svg+xml" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `qr-code.svg`;
-        a.click();
-        URL.revokeObjectURL(url);
-      } else {
-        dataUrl = await QRCode.toDataURL(this.options.text, {
-          width: this.options.width,
-          margin: 2,
-          color: {
-            dark: this.options.dotsOptions.color,
-            light: this.options.backgroundOptions.color,
-          },
-          errorCorrectionLevel:
-            this.options.errorCorrectionLevel.toLowerCase() as
-              | "low"
-              | "medium"
-              | "quartile"
-              | "high",
-        });
-
-        // If there's a logo, create canvas with logo overlay
-        if (this.options.image) {
-          dataUrl = await this.getCanvasWithLogo(dataUrl);
-        }
-
-        // Download the image
-        const a = document.createElement("a");
-        a.href = dataUrl;
-        a.download = `qr-code.${format}`;
-        a.click();
       }
     } catch (error) {
       console.error("Error downloading QR code:", error);
     }
   }
 
-  private async getCanvasWithLogo(qrDataUrl: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        reject(new Error("Canvas not supported"));
-        return;
-      }
-
-      canvas.width = this.options.width;
-      canvas.height = this.options.height;
-
-      const qrImg = new Image();
-      qrImg.onload = () => {
-        ctx.drawImage(qrImg, 0, 0, canvas.width, canvas.height);
-
-        const logoImg = new Image();
-        logoImg.onload = () => {
-          const logoSize =
-            Math.min(canvas.width, canvas.height) *
-            this.options.imageOptions!.imageSize;
-          const logoX = (canvas.width - logoSize) / 2;
-          const logoY = (canvas.height - logoSize) / 2;
-
-          if (this.options.imageOptions!.hideBackgroundDots) {
-            const margin = this.options.imageOptions!.margin;
-            ctx.fillStyle = this.options.backgroundOptions.color;
-            ctx.fillRect(
-              logoX - margin,
-              logoY - margin,
-              logoSize + 2 * margin,
-              logoSize + 2 * margin
-            );
-          }
-
-          ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
-          resolve(canvas.toDataURL("image/png"));
-        };
-        logoImg.onerror = () => reject(new Error("Failed to load logo"));
-        logoImg.src = this.options.image!;
-      };
-      qrImg.onerror = () => reject(new Error("Failed to load QR code"));
-      qrImg.src = qrDataUrl;
-    });
-  }
-
   async getRawData(format: QRCodeFormat = "png"): Promise<Blob | string> {
     try {
-      if (!this.options.text) throw new Error("No text provided");
+      await this.initializeQRCodeStyling();
+      
+      if (!this.qrCodeStyling) {
+        throw new Error("QR code styling not initialized");
+      }
 
       if (format === "svg") {
-        const svgString = await QRCode.toString(this.options.text, {
-          type: "svg",
-          width: this.options.width,
-          margin: 2,
-          color: {
-            dark: this.options.dotsOptions.color,
-            light: this.options.backgroundOptions.color,
-          },
-          errorCorrectionLevel:
-            this.options.errorCorrectionLevel.toLowerCase() as
-              | "low"
-              | "medium"
-              | "quartile"
-              | "high",
-        });
-        return svgString;
+        return await this.qrCodeStyling.getRawData("svg");
       } else {
-        const dataUrl = await QRCode.toDataURL(this.options.text, {
-          width: this.options.width,
-          margin: 2,
-          color: {
-            dark: this.options.dotsOptions.color,
-            light: this.options.backgroundOptions.color,
-          },
-          errorCorrectionLevel:
-            this.options.errorCorrectionLevel.toLowerCase() as
-              | "low"
-              | "medium"
-              | "quartile"
-              | "high",
-        });
-
-        // Convert data URL to blob
-        const response = await fetch(dataUrl);
-        return response.blob();
+        return await this.qrCodeStyling.getRawData("png");
       }
     } catch (error) {
       throw new Error(`Failed to generate QR code data: ${error}`);
@@ -396,6 +280,7 @@ export const validateImageFile = (file: File): boolean => {
     "image/png",
     "image/gif",
     "image/webp",
+    "image/svg+xml",
   ];
   const maxSize = 5 * 1024 * 1024; // 5MB
 

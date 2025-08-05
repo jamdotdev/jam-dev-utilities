@@ -10,15 +10,36 @@ import {
   getCornerSquareTypeOptions,
   getCornerDotTypeOptions,
 } from "./qr-code-generator.utils";
-import * as QRCode from "qrcode";
 
-// Mock the qrcode library
-jest.mock("qrcode", () => ({
-  toDataURL: jest.fn().mockResolvedValue("data:image/png;base64,test"),
-  toString: jest.fn().mockResolvedValue("<svg>test</svg>"),
-}));
+// Mock qr-code-styling
+const mockQRCodeStyling = {
+  append: jest.fn(),
+  update: jest.fn(),
+  download: jest.fn(),
+  getRawData: jest.fn(),
+};
 
-const mockedQRCode = QRCode as jest.Mocked<typeof QRCode>;
+jest.mock("qr-code-styling", () => {
+  return jest.fn().mockImplementation(() => mockQRCodeStyling);
+});
+
+// Mock DOM methods
+Object.defineProperty(window, 'Image', {
+  writable: true,
+  value: class Image {
+    onload: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+    src = '';
+    
+    constructor() {
+      setTimeout(() => {
+        if (this.onload) {
+          this.onload();
+        }
+      }, 0);
+    }
+  }
+});
 
 describe("QR Code Generator Utils", () => {
   beforeEach(() => {
@@ -118,16 +139,9 @@ describe("QR Code Generator Utils", () => {
     let mockElement: HTMLElement;
 
     beforeEach(() => {
+      jest.clearAllMocks();
       qrGenerator = new QRCodeGenerator();
       mockElement = document.createElement("div");
-      // Mock Image constructor for tests
-      global.Image = jest.fn().mockImplementation(() => ({
-        onload: null,
-        onerror: null,
-        src: "",
-        width: 0,
-        height: 0,
-      }));
     });
 
     it("should initialize with default options", () => {
@@ -148,46 +162,38 @@ describe("QR Code Generator Utils", () => {
       qrGenerator.update({ text: "test" }); // Add text so QR code is generated
       await qrGenerator.append(mockElement);
 
-      expect(mockedQRCode.toDataURL).toHaveBeenCalled();
-      expect(mockElement.children.length).toBeGreaterThan(0);
+      expect(mockQRCodeStyling.append).toHaveBeenCalledWith(mockElement);
     });
 
     it("should download QR code", async () => {
-      // Mock createElement and click
-      const mockLink = {
-        href: "",
-        download: "",
-        click: jest.fn(),
-      };
-      document.createElement = jest.fn().mockReturnValue(mockLink);
-
       qrGenerator.update({ text: "test" });
       await qrGenerator.download("png");
 
-      expect(mockedQRCode.toDataURL).toHaveBeenCalled();
-      expect(mockLink.click).toHaveBeenCalled();
+      expect(mockQRCodeStyling.download).toHaveBeenCalledWith({
+        name: "qr-code",
+        extension: "png",
+      });
     });
 
     it("should get raw data for PNG format", async () => {
-      // Mock fetch for blob conversion
-      global.fetch = jest.fn().mockResolvedValue({
-        blob: jest
-          .fn()
-          .mockResolvedValue(new Blob(["test"], { type: "image/png" })),
-      });
+      mockQRCodeStyling.getRawData.mockResolvedValue(
+        new Blob(["test"], { type: "image/png" })
+      );
 
       qrGenerator.update({ text: "test" });
       const result = await qrGenerator.getRawData("png");
 
-      expect(mockedQRCode.toDataURL).toHaveBeenCalled();
+      expect(mockQRCodeStyling.getRawData).toHaveBeenCalledWith("png");
       expect(result).toBeInstanceOf(Blob);
     });
 
     it("should get raw data for SVG format", async () => {
+      mockQRCodeStyling.getRawData.mockResolvedValue("<svg>test</svg>");
+
       qrGenerator.update({ text: "test" });
       const result = await qrGenerator.getRawData("svg");
 
-      expect(mockedQRCode.toString).toHaveBeenCalled();
+      expect(mockQRCodeStyling.getRawData).toHaveBeenCalledWith("svg");
       expect(result).toBe("<svg>test</svg>");
     });
 
