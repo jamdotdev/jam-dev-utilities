@@ -14,6 +14,23 @@ import { ImageUploadComponent } from "@/components/ds/ImageUploadComponent";
 import { DownloadIcon, RefreshCwIcon } from "lucide-react";
 import GitHubContribution from "@/components/GitHubContribution";
 import QrCodeSEO from "@/components/seo/QrCodeSEO";
+
+// Custom hook for debouncing values
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 import {
   QRCodeGenerator,
   QRCodeFormat,
@@ -51,7 +68,8 @@ export default function QrCodeGenerator() {
     null
   );
   const [format, setFormat] = useState<QRCodeFormat>("png");
-  const [size, setSize] = useState(300);
+  const [sizeInput, setSizeInput] = useState("300"); // Display value for input
+  const [size, setSize] = useState(300); // Actual size used for QR generation
   const [errorCorrectionLevel, setErrorCorrectionLevel] =
     useState<QRCodeErrorCorrectionLevel>("M");
   const [dotsType, setDotsType] = useState<QRCodeDotsType>("square");
@@ -71,6 +89,24 @@ export default function QrCodeGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const qrContainerRef = useRef<HTMLDivElement>(null);
+
+  // Debounce the size input to avoid constant QR regeneration while typing
+  const debouncedSizeInput = useDebounce(sizeInput, 500);
+
+  // Update actual size when debounced input changes
+  useEffect(() => {
+    if (debouncedSizeInput.trim() === "") {
+      // If input is empty, use default size
+      setSize(300);
+      return;
+    }
+    
+    const newSize = parseInt(debouncedSizeInput);
+    if (!isNaN(newSize)) {
+      const clampedSize = Math.max(100, Math.min(800, newSize));
+      setSize(clampedSize);
+    }
+  }, [debouncedSizeInput]);
 
   // Initialize QR code instance
   useEffect(() => {
@@ -249,17 +285,7 @@ export default function QrCodeGenerator() {
   const handleSizeChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
-      // Allow empty value for editing
-      if (value === "") {
-        setSize(300); // default value
-        return;
-      }
-      
-      const newSize = parseInt(value);
-      if (!isNaN(newSize)) {
-        const clampedSize = Math.max(100, Math.min(800, newSize));
-        setSize(clampedSize);
-      }
+      setSizeInput(value); // Update display value immediately
     },
     []
   );
@@ -338,7 +364,7 @@ export default function QrCodeGenerator() {
                     id="size"
                     type="text"
                     placeholder="100-800"
-                    value={size}
+                    value={sizeInput}
                     onChange={handleSizeChange}
                   />
                 </div>
