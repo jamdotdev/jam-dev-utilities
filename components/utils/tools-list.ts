@@ -108,6 +108,12 @@ export const tools = [
     link: "/utilities/image-resizer",
   },
   {
+    title: "Timezone Converter",
+    description:
+      "Convert timestamps between different timezones with ease. Perfect for scheduling events across regions and analyzing logs.",
+    link: "/utilities/timezone-comparer",
+  },
+  {
     title: "JWT Parser",
     description:
       "Easily decode JWT tokens and view their header, payload, and signature. Perfect for debugging and analyzing JSON Web Tokens.",
