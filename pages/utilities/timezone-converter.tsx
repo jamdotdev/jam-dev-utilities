@@ -9,7 +9,6 @@ import Meta from "@/components/Meta";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import TimestampConverterSEO from "@/components/seo/TimestampConverterSEO";
 
-// Minimal timezone list for demo; replace with a full list or use a package for production
 const timezones = [
   "UTC",
   "America/New_York",
@@ -21,17 +20,22 @@ const timezones = [
   "America/Los_Angeles",
 ];
 
-function convertTime(
-  inputTime: string,
-  fromTz: string,
-  toTz: string
-): string {
+function convertTime(inputTime: string, fromTz: string, toTz: string): string {
   if (!inputTime) return "";
-  // Parse input as "HH:mm"
-  const [hours, minutes] = inputTime.split(":").map(Number);
+  // Expect inputTime as "YYYY:MM:DD HH:MM"
+  const match = inputTime.match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2})$/);
+  if (!match) return "Invalid time format";
+  const [, year, month, day, hours, minutes] = match.map(Number);
   if (
+    isNaN(year) ||
+    isNaN(month) ||
+    isNaN(day) ||
     isNaN(hours) ||
     isNaN(minutes) ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31 ||
     hours < 0 ||
     hours > 23 ||
     minutes < 0 ||
@@ -39,32 +43,52 @@ function convertTime(
   )
     return "Invalid time format";
 
-  // Today's date in UTC
-  const now = new Date();
-  // Create a UTC date at the given time
-  const utcDate = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-    hours,
-    minutes
-  ));
+  // Create a date string in ISO format for the input date and time
+  const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
+    2,
+    "0"
+  )}T${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
 
-  // Use Intl.DateTimeFormat to get the time in the target timezone
+  // Parse the date as if it's in fromTz, then get the equivalent UTC time
+  const utcMillis = Date.parse(
+    new Date(
+      new Intl.DateTimeFormat("en-US", {
+        timeZone: fromTz,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      })
+        .formatToParts(new Date(dateStr))
+        .map((p) => p.value)
+        .join("")
+    ).toISOString()
+  );
+
+  const dateInFromTz = new Date(utcMillis);
+
   const formatter = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
     timeZone: toTz,
   });
-  const parts = formatter.formatToParts(utcDate);
-  const hourPart = parts.find(p => p.type === "hour");
-  const minutePart = parts.find(p => p.type === "minute");
-  if (!hourPart || !minutePart) return "Conversion error";
+  const parts = formatter.formatToParts(dateInFromTz);
+  const yearPart = parts.find((p) => p.type === "year");
+  const monthPart = parts.find((p) => p.type === "month");
+  const dayPart = parts.find((p) => p.type === "day");
+  const hourPart = parts.find((p) => p.type === "hour");
+  const minutePart = parts.find((p) => p.type === "minute");
+  if (!yearPart || !monthPart || !dayPart || !hourPart || !minutePart) return "Conversion error";
   let hourStr = hourPart.value;
-  // handle midnight (24:xx -> 00:xx)
   if (hourStr === "24") hourStr = "00";
-  return `${hourStr}:${minutePart.value}`;
+  return `${yearPart.value}:${monthPart.value}:${dayPart.value} ${hourStr}:${minutePart.value}`;
 }
 
 export default function TimezoneComparer() {
@@ -72,9 +96,21 @@ export default function TimezoneComparer() {
     typeof window !== "undefined"
       ? Intl.DateTimeFormat().resolvedOptions().timeZone
       : "UTC";
+
+  // Get today's date and time in YYYY:MM:DD HH:MM format
+  const getDefaultInputTime = () => {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    const hh = String(now.getHours()).padStart(2, "0");
+    const min = String(now.getMinutes()).padStart(2, "0");
+    return `${yyyy}:${mm}:${dd} ${hh}:${min}`;
+  };
+
   const [fromTz, setFromTz] = useState(userTz);
   const [toTz, setToTz] = useState("UTC");
-  const [inputTime, setInputTime] = useState("");
+  const [inputTime, setInputTime] = useState(getDefaultInputTime());
   const [outputTime, setOutputTime] = useState("");
 
   const handleConvert = () => {
@@ -124,16 +160,17 @@ export default function TimezoneComparer() {
                 </option>
               ))}
             </select>
-            <Label>Time in From Timezone (24-hour format, e.g. 14:30)</Label>
+            <Label>Time in From Timezone (YYYY:MM:DD HH:MM)</Label>
             <input
               className="mb-4 w-full border rounded p-2 font-mono"
               type="text"
-              placeholder="HH:mm"
-              pattern="^([01]\d|2[0-3]):([0-5]\d)$"
+              placeholder="YYYY:MM:DD HH:MM"
+              pattern="^\d{4}:\d{2}:\d{2} \d{2}:\d{2}$"
               value={inputTime}
               onChange={(e) => setInputTime(e.target.value)}
-              maxLength={5}
-            />            <Button variant="outline" onClick={handleConvert}>
+              maxLength={16}
+            />{" "}
+            <Button variant="outline" onClick={handleConvert}>
               Convert
             </Button>
           </div>
@@ -148,11 +185,10 @@ export default function TimezoneComparer() {
           </div>
         </Card>
       </section>
-<section className="container max-w-2xl">
-              <TimestampConverterSEO />
-        </section>
+      <section className="container max-w-2xl">
+        <TimestampConverterSEO />
+      </section>
       <CallToActionGrid />
-      
     </main>
   );
 }
