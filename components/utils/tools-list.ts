@@ -111,7 +111,7 @@ export const tools = [
     title: "Timezone Converter",
     description:
       "Convert timestamps between different timezones with ease. Perfect for scheduling events across regions and analyzing logs.",
-    link: "/utilities/timezone-comparer",
+    link: "/utilities/timezone-converter",
   },
   {
     title: "JWT Parser",
