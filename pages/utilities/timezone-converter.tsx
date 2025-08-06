@@ -124,14 +124,16 @@ export default function TimezoneComparer() {
                 </option>
               ))}
             </select>
-            <Label>Time in From Timezone (24-hour format)</Label>
+            <Label>Time in From Timezone (24-hour format, e.g. 14:30)</Label>
             <input
               className="mb-4 w-full border rounded p-2 font-mono"
-              type="time"
+              type="text"
+              placeholder="HH:mm"
+              pattern="^([01]\d|2[0-3]):([0-5]\d)$"
               value={inputTime}
               onChange={(e) => setInputTime(e.target.value)}
-            />
-            <Button variant="outline" onClick={handleConvert}>
+              maxLength={5}
+            />            <Button variant="outline" onClick={handleConvert}>
               Convert
             </Button>
           </div>
