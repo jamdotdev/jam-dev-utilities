@@ -39,44 +39,32 @@ function convertTime(
   )
     return "Invalid time format";
 
-  // Today's date in fromTz
+  // Today's date in UTC
   const now = new Date();
-  // Create a date in fromTz at the given time
-  const dateInFromTz = new Date(
-    Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate(),
-      hours,
-      minutes
-    )
-  );
-  // Offset between fromTz and UTC at this date
-  const fromOffset = -(
-    new Date(
-      dateInFromTz.toLocaleString("en-US", { timeZone: fromTz })
-    ).getTimezoneOffset()
-  );
-  // Offset between toTz and UTC at this date
-  const toOffset = -(
-    new Date(
-      dateInFromTz.toLocaleString("en-US", { timeZone: toTz })
-    ).getTimezoneOffset()
-  );
-  // Calculate the difference in minutes
-  const diffMinutes = toOffset - fromOffset;
-  // Adjust the date
-  const dateInToTz = new Date(dateInFromTz.getTime() + diffMinutes * 60000);
+  // Create a UTC date at the given time
+  const utcDate = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    hours,
+    minutes
+  ));
 
-  // Format output in toTz
-  return dateInToTz
-    .toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-      timeZone: toTz,
-    })
-    .replace(/^24:/, "00:"); // handle midnight
+  // Use Intl.DateTimeFormat to get the time in the target timezone
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: toTz,
+  });
+  const parts = formatter.formatToParts(utcDate);
+  const hourPart = parts.find(p => p.type === "hour");
+  const minutePart = parts.find(p => p.type === "minute");
+  if (!hourPart || !minutePart) return "Conversion error";
+  let hourStr = hourPart.value;
+  // handle midnight (24:xx -> 00:xx)
+  if (hourStr === "24") hourStr = "00";
+  return `${hourStr}:${minutePart.value}`;
 }
 
 export default function TimezoneComparer() {
@@ -136,7 +124,7 @@ export default function TimezoneComparer() {
                 </option>
               ))}
             </select>
-            <Label>Time in From Timezone (HH:mm AM/PM)</Label>
+            <Label>Time in From Timezone (24-hour format)</Label>
             <input
               className="mb-4 w-full border rounded p-2 font-mono"
               type="time"
@@ -158,7 +146,7 @@ export default function TimezoneComparer() {
           </div>
         </Card>
       </section>
- <section className="container max-w-2xl">
+<section className="container max-w-2xl">
               <TimestampConverterSEO />
         </section>
       <CallToActionGrid />
