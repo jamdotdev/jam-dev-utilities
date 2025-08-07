@@ -192,7 +192,7 @@ export default function WebPConverter() {
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="WebP Converter"
-          description="Convert images to WebP format with batch processing and quality control."
+          description="Convert images to WebP format with batch processing."
         />
       </section>
 
