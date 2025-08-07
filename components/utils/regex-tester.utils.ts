@@ -98,18 +98,28 @@ export const parseRegexPattern = (pattern: string): ParsedRegex => {
   return { pattern: patternBody, flags };
 };
 
-export const formatRegexWithFlags = (pattern: string, flags: RegexFlags): string => {
+export const formatRegexWithFlags = (
+  pattern: string,
+  flags: RegexFlags
+): string => {
   const flagsString = Object.entries(flags)
-    .filter(([_, value]) => value)
+    .filter(([, value]) => value)
     .map(([key]) => {
       switch (key) {
-        case "global": return "g";
-        case "ignoreCase": return "i";
-        case "multiline": return "m";
-        case "dotAll": return "s";
-        case "unicode": return "u";
-        case "sticky": return "y";
-        default: return "";
+        case "global":
+          return "g";
+        case "ignoreCase":
+          return "i";
+        case "multiline":
+          return "m";
+        case "dotAll":
+          return "s";
+        case "unicode":
+          return "u";
+        case "sticky":
+          return "y";
+        default:
+          return "";
       }
     })
     .join("");
@@ -117,19 +127,30 @@ export const formatRegexWithFlags = (pattern: string, flags: RegexFlags): string
   return flagsString ? `/${pattern}/${flagsString}` : pattern;
 };
 
-export const testRegexPattern = (pattern: string, testString: string, flags: RegexFlags): RegexTestResult => {
+export const testRegexPattern = (
+  pattern: string,
+  testString: string,
+  flags: RegexFlags
+): RegexTestResult => {
   try {
     const flagsString = Object.entries(flags)
-      .filter(([_, value]) => value)
+      .filter(([, value]) => value)
       .map(([key]) => {
         switch (key) {
-          case "global": return "g";
-          case "ignoreCase": return "i";
-          case "multiline": return "m";
-          case "dotAll": return "s";
-          case "unicode": return "u";
-          case "sticky": return "y";
-          default: return "";
+          case "global":
+            return "g";
+          case "ignoreCase":
+            return "i";
+          case "multiline":
+            return "m";
+          case "dotAll":
+            return "s";
+          case "unicode":
+            return "u";
+          case "sticky":
+            return "y";
+          default:
+            return "";
         }
       })
       .join("");
@@ -185,41 +206,43 @@ export const commonPatterns = {
   email: {
     pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}",
     description: "Email address",
-    example: "user@example.com"
+    example: "user@example.com",
   },
   phone: {
     pattern: "\\+?[1-9]\\d{1,14}",
     description: "Phone number",
-    example: "+1234567890"
+    example: "+1234567890",
   },
   url: {
-    pattern: "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)",
+    pattern:
+      "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)",
     description: "URL",
-    example: "https://example.com"
+    example: "https://example.com",
   },
   ipv4: {
-    pattern: "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)",
+    pattern:
+      "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)",
     description: "IPv4 address",
-    example: "192.168.1.1"
+    example: "192.168.1.1",
   },
   date: {
     pattern: "\\d{4}-\\d{2}-\\d{2}",
     description: "Date (YYYY-MM-DD)",
-    example: "2023-12-25"
+    example: "2023-12-25",
   },
   time: {
     pattern: "([01]?[0-9]|2[0-3]):[0-5][0-9]",
     description: "Time (HH:MM)",
-    example: "14:30"
+    example: "14:30",
   },
   hexColor: {
     pattern: "#[a-fA-F0-9]{6}",
     description: "Hex color",
-    example: "#FF5733"
+    example: "#FF5733",
   },
   creditCard: {
     pattern: "\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}",
     description: "Credit card number",
-    example: "1234 5678 9012 3456"
-  }
+    example: "1234 5678 9012 3456",
+  },
 };

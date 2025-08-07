@@ -1,4 +1,10 @@
-import { createRegex, parseRegexPattern, formatRegexWithFlags, testRegexPattern, commonPatterns } from "./regex-tester.utils";
+import {
+  createRegex,
+  parseRegexPattern,
+  formatRegexWithFlags,
+  testRegexPattern,
+  commonPatterns,
+} from "./regex-tester.utils";
 
 describe("createRegex", () => {
   test("should create regex from simple pattern without flags and delimiters", () => {
@@ -134,9 +140,16 @@ describe("formatRegexWithFlags", () => {
 
 describe("testRegexPattern", () => {
   test("should find single match", () => {
-    const flags = { global: false, ignoreCase: false, multiline: false, dotAll: false, unicode: false, sticky: false };
+    const flags = {
+      global: false,
+      ignoreCase: false,
+      multiline: false,
+      dotAll: false,
+      unicode: false,
+      sticky: false,
+    };
     const result = testRegexPattern("test", "this is a test string", flags);
-    
+
     expect(result.isValid).toBe(true);
     expect(result.totalMatches).toBe(1);
     expect(result.matches[0].match).toBe("test");
@@ -145,45 +158,80 @@ describe("testRegexPattern", () => {
   });
 
   test("should find multiple matches with global flag", () => {
-    const flags = { global: true, ignoreCase: false, multiline: false, dotAll: false, unicode: false, sticky: false };
+    const flags = {
+      global: true,
+      ignoreCase: false,
+      multiline: false,
+      dotAll: false,
+      unicode: false,
+      sticky: false,
+    };
     const result = testRegexPattern("test", "test test test", flags);
-    
+
     expect(result.isValid).toBe(true);
     expect(result.totalMatches).toBe(3);
     expect(result.matches.length).toBe(3);
   });
 
   test("should handle case insensitive matching", () => {
-    const flags = { global: false, ignoreCase: true, multiline: false, dotAll: false, unicode: false, sticky: false };
+    const flags = {
+      global: false,
+      ignoreCase: true,
+      multiline: false,
+      dotAll: false,
+      unicode: false,
+      sticky: false,
+    };
     const result = testRegexPattern("test", "TEST", flags);
-    
+
     expect(result.isValid).toBe(true);
     expect(result.totalMatches).toBe(1);
     expect(result.matches[0].match).toBe("TEST");
   });
 
   test("should handle capture groups", () => {
-    const flags = { global: false, ignoreCase: false, multiline: false, dotAll: false, unicode: false, sticky: false };
+    const flags = {
+      global: false,
+      ignoreCase: false,
+      multiline: false,
+      dotAll: false,
+      unicode: false,
+      sticky: false,
+    };
     const result = testRegexPattern("(\\w+)@(\\w+)", "user@example", flags);
-    
+
     expect(result.isValid).toBe(true);
     expect(result.totalMatches).toBe(1);
     expect(result.matches[0].groups).toEqual(["user", "example"]);
   });
 
   test("should handle invalid regex pattern", () => {
-    const flags = { global: false, ignoreCase: false, multiline: false, dotAll: false, unicode: false, sticky: false };
+    const flags = {
+      global: false,
+      ignoreCase: false,
+      multiline: false,
+      dotAll: false,
+      unicode: false,
+      sticky: false,
+    };
     const result = testRegexPattern("[invalid", "test string", flags);
-    
+
     expect(result.isValid).toBe(false);
     expect(result.totalMatches).toBe(0);
     expect(result.error).toBeDefined();
   });
 
   test("should handle no matches", () => {
-    const flags = { global: false, ignoreCase: false, multiline: false, dotAll: false, unicode: false, sticky: false };
+    const flags = {
+      global: false,
+      ignoreCase: false,
+      multiline: false,
+      dotAll: false,
+      unicode: false,
+      sticky: false,
+    };
     const result = testRegexPattern("xyz", "test string", flags);
-    
+
     expect(result.isValid).toBe(true);
     expect(result.totalMatches).toBe(0);
     expect(result.matches).toEqual([]);
@@ -209,9 +257,20 @@ describe("commonPatterns", () => {
   });
 
   test("email pattern should work with test function", () => {
-    const flags = { global: false, ignoreCase: false, multiline: false, dotAll: false, unicode: false, sticky: false };
-    const result = testRegexPattern(commonPatterns.email.pattern, "Contact us at support@jam.dev", flags);
-    
+    const flags = {
+      global: false,
+      ignoreCase: false,
+      multiline: false,
+      dotAll: false,
+      unicode: false,
+      sticky: false,
+    };
+    const result = testRegexPattern(
+      commonPatterns.email.pattern,
+      "Contact us at support@jam.dev",
+      flags
+    );
+
     expect(result.isValid).toBe(true);
     expect(result.totalMatches).toBe(1);
     expect(result.matches[0].match).toBe("support@jam.dev");
