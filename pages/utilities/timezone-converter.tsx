@@ -24,7 +24,6 @@ function convertTime(inputTime: string, fromTz: string, toTz: string): string {
   if (!inputTime) return "";
   const match = inputTime.match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2})$/);
   if (!match) return "Invalid time format";
-  // Parse as string, not number, to preserve leading zeros for formatting
   const [, yearStr, monthStr, dayStr, hourStr, minuteStr] = match;
   const year = Number(yearStr);
   const month = Number(monthStr);
@@ -48,16 +47,11 @@ function convertTime(inputTime: string, fromTz: string, toTz: string): string {
   )
     return "Invalid time format";
 
-  // Always treat input as wall time in fromTz, and get the UTC time for that wall time
-  // For UTC, this is a direct UTC date
   let date: Date;
   if (fromTz === "UTC") {
     date = new Date(Date.UTC(year, month - 1, day, hours, minutes, 0));
   } else {
-    // Create a date object for the input wall time in fromTz
-    // Get the UTC offset for fromTz at the given wall time
     const inputIso = `${yearStr}-${monthStr}-${dayStr}T${hourStr}:${minuteStr}:00`;
-    // Get the UTC time for the wall time in fromTz
     const utcMillis = Date.parse(
       new Date(
         new Intl.DateTimeFormat("en-US", {
@@ -78,7 +72,6 @@ function convertTime(inputTime: string, fromTz: string, toTz: string): string {
     date = new Date(utcMillis);
   }
 
-  // Format the date in the target timezone
   const formatter = new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "2-digit",
@@ -94,7 +87,8 @@ function convertTime(inputTime: string, fromTz: string, toTz: string): string {
   const dayPart = parts.find((p) => p.type === "day");
   const hourPart = parts.find((p) => p.type === "hour");
   const minutePart = parts.find((p) => p.type === "minute");
-  if (!yearPart || !monthPart || !dayPart || !hourPart || !minutePart) return "Conversion error";
+  if (!yearPart || !monthPart || !dayPart || !hourPart || !minutePart)
+    return "Conversion error";
   let hourOut = hourPart.value;
   if (hourOut === "24") hourOut = "00";
   return `${yearPart.value}:${monthPart.value}:${dayPart.value} ${hourOut}:${minutePart.value}`;
