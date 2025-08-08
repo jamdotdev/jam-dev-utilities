@@ -1,15 +1,19 @@
-// Minimal test runner for convertTime
 
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import TimezoneComparer from "./timezone-converter";
 
-// Updated convertTime for new input format and output
 function convertTime(inputTime: string, fromTz: string, toTz: string): string {
   if (!inputTime) return "";
   const match = inputTime.match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2})$/);
   if (!match) return "Invalid time format";
-  const [, year, month, day, hours, minutes] = match.map(Number);
+  // Parse as string, not number, to preserve leading zeros for formatting
+  const [, yearStr, monthStr, dayStr, hourStr, minuteStr] = match;
+  const year = Number(yearStr);
+  const month = Number(monthStr);
+  const day = Number(dayStr);
+  const hours = Number(hourStr);
+  const minutes = Number(minuteStr);
   if (
     isNaN(year) ||
     isNaN(month) ||
@@ -26,28 +30,38 @@ function convertTime(inputTime: string, fromTz: string, toTz: string): string {
     minutes > 59
   )
     return "Invalid time format";
-  const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
-    2,
-    "0"
-  )}T${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
-  const utcMillis = Date.parse(
-    new Date(
-      new Intl.DateTimeFormat("en-US", {
-        timeZone: fromTz,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      })
-        .formatToParts(new Date(dateStr))
-        .map((p) => p.value)
-        .join("")
-    ).toISOString()
-  );
-  const dateInFromTz = new Date(utcMillis);
+
+  // Always treat input as wall time in fromTz, and get the UTC time for that wall time
+  // For UTC, this is a direct UTC date
+  let date: Date;
+  if (fromTz === "UTC") {
+    date = new Date(Date.UTC(year, month - 1, day, hours, minutes, 0));
+  } else {
+    // Create a date object for the input wall time in fromTz
+    // Get the UTC offset for fromTz at the given wall time
+    const inputIso = `${yearStr}-${monthStr}-${dayStr}T${hourStr}:${minuteStr}:00`;
+    // Get the UTC time for the wall time in fromTz
+    const utcMillis = Date.parse(
+      new Date(
+        new Intl.DateTimeFormat("en-US", {
+          timeZone: fromTz,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        })
+          .formatToParts(new Date(inputIso))
+          .map((p) => p.value)
+          .join("")
+      ).toISOString()
+    );
+    date = new Date(utcMillis);
+  }
+
+  // Format the date in the target timezone
   const formatter = new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "2-digit",
@@ -57,16 +71,16 @@ function convertTime(inputTime: string, fromTz: string, toTz: string): string {
     hour12: false,
     timeZone: toTz,
   });
-  const parts = formatter.formatToParts(dateInFromTz);
+  const parts = formatter.formatToParts(date);
   const yearPart = parts.find((p) => p.type === "year");
   const monthPart = parts.find((p) => p.type === "month");
   const dayPart = parts.find((p) => p.type === "day");
   const hourPart = parts.find((p) => p.type === "hour");
   const minutePart = parts.find((p) => p.type === "minute");
   if (!yearPart || !monthPart || !dayPart || !hourPart || !minutePart) return "Conversion error";
-  let hourStr = hourPart.value;
-  if (hourStr === "24") hourStr = "00";
-  return `${yearPart.value}:${monthPart.value}:${dayPart.value} ${hourStr}:${minutePart.value}`;
+  let hourOut = hourPart.value;
+  if (hourOut === "24") hourOut = "00";
+  return `${yearPart.value}:${monthPart.value}:${dayPart.value} ${hourOut}:${minutePart.value}`;
 }
 
 describe("convertTime", () => {
