@@ -25,52 +25,58 @@ const SVGUploadComponent = ({
       : `${sizeInMB.toFixed(2)}MB`;
   }, [maxFileSize]);
 
-  const validateSVGFile = useCallback((file: File): boolean => {
-    // Check file extension
-    if (!file.name.toLowerCase().endsWith(".svg")) {
-      return false;
-    }
-
-    // Check file type
-    if (file.type && !file.type.includes("svg")) {
-      return false;
-    }
-
-    // Check file size
-    if (file.size > maxFileSize) {
-      return false;
-    }
-
-    return true;
-  }, [maxFileSize]);
-
-  const readSVGFile = useCallback((file: File) => {
-    const reader = new FileReader();
-    
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string;
-        
-        // Basic SVG content validation
-        if (!content.toLowerCase().includes("<svg")) {
-          setStatus("unsupported");
-          return;
-        }
-
-        onSVGSelect(content);
-        setStatus("idle");
-      } catch (error) {
-        console.error("Error reading SVG file:", error);
-        setStatus("error");
+  const validateSVGFile = useCallback(
+    (file: File): boolean => {
+      // Check file extension
+      if (!file.name.toLowerCase().endsWith(".svg")) {
+        return false;
       }
-    };
 
-    reader.onerror = () => {
-      setStatus("error");
-    };
+      // Check file type
+      if (file.type && !file.type.includes("svg")) {
+        return false;
+      }
 
-    reader.readAsText(file);
-  }, [onSVGSelect]);
+      // Check file size
+      if (file.size > maxFileSize) {
+        return false;
+      }
+
+      return true;
+    },
+    [maxFileSize]
+  );
+
+  const readSVGFile = useCallback(
+    (file: File) => {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          const content = e.target?.result as string;
+
+          // Basic SVG content validation
+          if (!content.toLowerCase().includes("<svg")) {
+            setStatus("unsupported");
+            return;
+          }
+
+          onSVGSelect(content);
+          setStatus("idle");
+        } catch (error) {
+          console.error("Error reading SVG file:", error);
+          setStatus("error");
+        }
+      };
+
+      reader.onerror = () => {
+        setStatus("error");
+      };
+
+      reader.readAsText(file);
+    },
+    [onSVGSelect]
+  );
 
   const handleDrop = useCallback(
     (event: DragEvent<HTMLDivElement>) => {
@@ -167,7 +173,9 @@ const statusComponents: Record<Status, (maxSize: string) => JSX.Element> = {
   error: (maxSize) => (
     <StatusComponent title="SVG file is too big!" message={`${maxSize} max`} />
   ),
-  unsupported: () => <StatusComponent title="Please provide a valid SVG file" />,
+  unsupported: () => (
+    <StatusComponent title="Please provide a valid SVG file" />
+  ),
   hover: () => <StatusComponent title="Drop it like it's hot! 🔥" />,
 };
 

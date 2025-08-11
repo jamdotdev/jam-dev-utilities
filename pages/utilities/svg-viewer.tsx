@@ -9,7 +9,12 @@ import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import GitHubContribution from "@/components/GitHubContribution";
 import { SVGUploadComponent } from "@/components/ds/SVGUploadComponent";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ds/TabsComponent";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ds/TabsComponent";
 
 type Status = "idle" | "invalid" | "error";
 
@@ -104,7 +109,7 @@ export default function SVGViewer() {
               <TabsTrigger value="paste">Paste SVG Code</TabsTrigger>
               <TabsTrigger value="upload">Upload SVG File</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="paste" className="space-y-4">
               <div>
                 <Label>SVG Code</Label>
@@ -117,7 +122,7 @@ export default function SVGViewer() {
                 />
               </div>
             </TabsContent>
-            
+
             <TabsContent value="upload" className="space-y-4">
               <div>
                 <Label>Upload SVG File</Label>

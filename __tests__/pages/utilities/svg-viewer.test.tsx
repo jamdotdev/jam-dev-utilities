@@ -11,15 +11,21 @@ describe("SVGViewer", () => {
   test("should render both paste and upload tabs", () => {
     render(<SVGViewer />);
 
-    expect(screen.getByRole("tab", { name: "Paste SVG Code" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Upload SVG File" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Paste SVG Code" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Upload SVG File" })
+    ).toBeInTheDocument();
   });
 
   test("should display SVG code textarea in paste tab by default", () => {
     render(<SVGViewer />);
 
     expect(screen.getByLabelText("SVG code input")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Paste SVG code here")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Paste SVG code here")
+    ).toBeInTheDocument();
   });
 
   test("should switch to upload tab and show upload component", async () => {
@@ -29,7 +35,9 @@ describe("SVGViewer", () => {
     const uploadTab = screen.getByRole("tab", { name: "Upload SVG File" });
     await user.click(uploadTab);
 
-    expect(screen.getByText("Drag and drop your SVG file here, or click to select")).toBeInTheDocument();
+    expect(
+      screen.getByText("Drag and drop your SVG file here, or click to select")
+    ).toBeInTheDocument();
     expect(screen.getByText("Max size 2MB")).toBeInTheDocument();
   });
 
@@ -47,7 +55,9 @@ describe("SVGViewer", () => {
     });
 
     // Find the hidden file input
-    const fileInput = screen.getByRole("tabpanel", { name: "Upload SVG File" }).querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = screen
+      .getByRole("tabpanel", { name: "Upload SVG File" })
+      .querySelector('input[type="file"]') as HTMLInputElement;
     expect(fileInput).toBeInTheDocument();
 
     // Upload the file
@@ -59,7 +69,9 @@ describe("SVGViewer", () => {
     });
 
     // Check that the SVG content is displayed in the textarea
-    const uploadedTextarea = screen.getByLabelText("Uploaded SVG code") as HTMLTextAreaElement;
+    const uploadedTextarea = screen.getByLabelText(
+      "Uploaded SVG code"
+    ) as HTMLTextAreaElement;
     expect(uploadedTextarea.value).toContain("<svg");
     expect(uploadedTextarea.value).toContain("circle");
   });
@@ -82,7 +94,9 @@ describe("SVGViewer", () => {
     await user.type(textarea, "not an svg");
 
     await waitFor(() => {
-      expect(screen.getByText("Input does not contain an SVG tag")).toBeInTheDocument();
+      expect(
+        screen.getByText("Input does not contain an SVG tag")
+      ).toBeInTheDocument();
     });
   });
 
@@ -98,7 +112,9 @@ describe("SVGViewer", () => {
       type: "image/svg+xml",
     });
 
-    const fileInput = screen.getByRole("tabpanel", { name: "Upload SVG File" }).querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = screen
+      .getByRole("tabpanel", { name: "Upload SVG File" })
+      .querySelector('input[type="file"]') as HTMLInputElement;
     await user.upload(fileInput, file);
 
     // Wait for upload to complete
@@ -111,7 +127,9 @@ describe("SVGViewer", () => {
     await user.click(pasteTab);
 
     // Check that the uploaded content is available in the paste tab
-    const pasteTextarea = screen.getByLabelText("SVG code input") as HTMLTextAreaElement;
+    const pasteTextarea = screen.getByLabelText(
+      "SVG code input"
+    ) as HTMLTextAreaElement;
     expect(pasteTextarea.value).toContain("<svg");
     expect(pasteTextarea.value).toContain("circle");
   });
