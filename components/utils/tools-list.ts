@@ -149,4 +149,10 @@ export const tools = [
       "Minify SQL by removing comments, extra spaces, and formatting for cleaner, optimized queries.",
     link: "/utilities/sql-minifier",
   },
+  {
+    title: "QR Code Generator",
+    description:
+      "Create customizable QR codes with logos, different styles (dots, squares, rounded), and custom colors. Perfect for marketing materials and business cards.",
+    link: "/utilities/qr-code-generator",
+  },
 ];
