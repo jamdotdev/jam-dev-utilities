@@ -150,241 +150,237 @@ export default function RegexTester() {
         />
       </section>
 
+      {/* Clean toolbar for flags */}
       <section className="container max-w-6xl mb-6">
-        {/* Main Interactive Area */}
-        <div className="grid lg:grid-cols-2 gap-6 mb-6">
-          {/* Left Column - Pattern & Configuration */}
-          <div className="space-y-4">
-            {/* Pattern Input - Primary Action */}
-            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-6 hover:shadow-lg transition-all">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <Label className="text-lg font-semibold text-primary">1. Pattern</Label>
-                </div>
-                <Textarea
-                  rows={3}
-                  placeholder="Enter your regex pattern (e.g., (\w+)@([\w.-]+))"
-                  onChange={(event) => handlePatternChange(event.target.value)}
-                  className="font-mono text-base border-primary/30 focus:border-primary focus:ring-primary/20"
-                  value={pattern}
-                />
-
-                {/* Effective Pattern Display */}
-                {pattern && (
-                  <div className="bg-white/60 border border-primary/20 rounded-lg p-3">
-                    <div className="text-sm font-medium text-primary/80 mb-1">Effective Pattern:</div>
-                    <code className="text-primary font-mono font-medium text-base">
-                      {displayPattern}
-                    </code>
-                  </div>
-                )}
-
-                {/* Error Display */}
-                {!result.isValid && result.error && (
-                  <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3">
-                    <div className="text-destructive font-semibold">⚠️ Invalid Pattern</div>
-                    <div className="text-sm text-destructive/80 mt-1">{result.error}</div>
-                  </div>
-                )}
+        <Card className="p-4 border border-gray-200 bg-gray-50/50">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Label className="text-sm font-medium text-gray-700">Regex Flags</Label>
+              <div className="flex gap-2">
+                <Button
+                  variant={flags.global ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => updateFlag("global", !flags.global)}
+                  className="h-8 px-3 text-xs font-mono"
+                >
+                  g
+                </Button>
+                <Button
+                  variant={flags.ignoreCase ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => updateFlag("ignoreCase", !flags.ignoreCase)}
+                  className="h-8 px-3 text-xs font-mono"
+                >
+                  i
+                </Button>
+                <Button
+                  variant={flags.multiline ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => updateFlag("multiline", !flags.multiline)}
+                  className="h-8 px-3 text-xs font-mono"
+                >
+                  m
+                </Button>
+                <Button
+                  variant={flags.dotAll ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => updateFlag("dotAll", !flags.dotAll)}
+                  className="h-8 px-3 text-xs font-mono"
+                >
+                  s
+                </Button>
+                <Button
+                  variant={flags.unicode ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => updateFlag("unicode", !flags.unicode)}
+                  className="h-8 px-3 text-xs font-mono"
+                >
+                  u
+                </Button>
+                <Button
+                  variant={flags.sticky ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => updateFlag("sticky", !flags.sticky)}
+                  className="h-8 px-3 text-xs font-mono"
+                >
+                  y
+                </Button>
               </div>
-            </Card>
-
-            {/* Test String Input - Secondary Action */}
-            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100/50 p-6 hover:shadow-lg transition-all">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <Label className="text-lg font-semibold text-blue-700">2. Test String</Label>
-                </div>
-                <Textarea
-                  rows={4}
-                  placeholder="Enter text to test your pattern against"
-                  onChange={(event) => setTestString(event.target.value)}
-                  className="font-mono text-base border-blue-200 focus:border-blue-400 focus:ring-blue-200"
-                  value={testString}
-                />
+            </div>
+            
+            {/* Common Patterns moved to toolbar */}
+            <div className="flex items-center gap-2">
+              <Label className="text-sm font-medium text-gray-700">Quick patterns:</Label>
+              <div className="flex gap-1">
+                {Object.entries(commonPatterns).slice(0, 4).map(([key, patternInfo]) => (
+                  <Button
+                    key={key}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => insertCommonPattern(patternInfo)}
+                    className="h-8 px-2 text-xs hover:bg-gray-100"
+                  >
+                    {patternInfo.description}
+                  </Button>
+                ))}
               </div>
-            </Card>
+            </div>
           </div>
+        </Card>
+      </section>
 
-          {/* Right Column - Live Results */}
-          <Card className="border-2 border-green-200 bg-gradient-to-br from-green-50 to-green-100/50 p-6 hover:shadow-lg transition-all">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <Label className="text-lg font-semibold text-green-700">3. Live Results</Label>
+      <section className="container max-w-6xl mb-6">
+        {/* Clean main layout */}
+        <div className="space-y-6">
+          {/* Pattern Input */}
+          <Card className="border border-gray-200 bg-white">
+            <div className="p-6">
+              <Label className="text-base font-medium text-gray-900 mb-3 block">Regular Expression Pattern</Label>
+              <Textarea
+                rows={3}
+                placeholder="Enter your regex pattern (e.g., (\w+)@([\w.-]+))"
+                onChange={(event) => handlePatternChange(event.target.value)}
+                className="font-mono text-base resize-none"
+                value={pattern}
+              />
+
+              {/* Effective Pattern Display */}
+              {pattern && (
+                <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div className="text-sm font-medium text-gray-700 mb-1">Effective Pattern:</div>
+                  <code className="text-gray-900 font-mono text-base">
+                    {displayPattern}
+                  </code>
                 </div>
-                {result.isValid && (
-                  <div className="px-3 py-1 bg-green-100 border border-green-300 rounded-full text-sm font-medium text-green-700">
-                    {result.totalMatches} {result.totalMatches === 1 ? "match" : "matches"}
-                  </div>
-                )}
-              </div>
+              )}
 
-              <div className="min-h-[200px] rounded-lg border-2 border-green-200 bg-white/70 px-4 py-3 font-mono text-sm">
-                {!pattern.trim() || !testString.trim() ? (
-                  <div className="text-muted-foreground flex items-center justify-center h-full">
-                    Enter a pattern and test string to see matches
-                  </div>
-                ) : !result.isValid ? (
-                  <div className="text-destructive flex items-center justify-center h-full">
-                    Fix the pattern errors above
-                  </div>
-                ) : result.totalMatches === 0 ? (
-                  <div className="text-orange-600 flex items-center justify-center h-full">
-                    No matches found - try adjusting your pattern
-                  </div>
-                ) : (
-                  <RegexHighlightText
-                    text={testString}
-                    matches={result.matches.map((m) => m.match)}
-                  />
-                )}
-              </div>
-
-              {/* Match Details - Compact */}
-              {result.isValid && result.matches.length > 0 && (
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {result.matches.map((match, index) => (
-                    <div key={index} className="bg-white/60 border border-green-200 rounded-lg p-3 text-xs">
-                      <div className="font-semibold text-green-800 mb-1">
-                        Match {index + 1}: "{match.match}"
-                      </div>
-                      <div className="text-green-600">
-                        Position {match.index}-{match.index + match.length - 1}
-                        {match.groups.length > 0 && (
-                          <span className="ml-2">
-                            Groups: {match.groups.map((group, i) => `$${i + 1}="${group}"`).join(", ")}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+              {/* Error Display */}
+              {!result.isValid && result.error && (
+                <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="text-red-900 font-medium">Invalid Pattern</div>
+                  <div className="text-sm text-red-700 mt-1">{result.error}</div>
                 </div>
               )}
             </div>
           </Card>
-        </div>
 
-        {/* Configuration Panel - Tertiary Actions */}
-        <div className="grid md:grid-cols-2 gap-6 mb-6">
-          {/* Flags */}
-          <Card className="p-4 bg-slate-50 border-slate-200">
-            <Label className="text-base font-semibold mb-3 block text-slate-700">⚙️ Flags</Label>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={flags.global ? "default" : "outline"}
-                size="sm"
-                onClick={() => updateFlag("global", !flags.global)}
-                className={`h-9 transition-all ${flags.global ? 'bg-primary shadow-md scale-105' : 'hover:scale-105'}`}
-              >
-                <code className="mr-1 font-bold">g</code> Global
-              </Button>
-              <Button
-                variant={flags.ignoreCase ? "default" : "outline"}
-                size="sm"
-                onClick={() => updateFlag("ignoreCase", !flags.ignoreCase)}
-                className={`h-9 transition-all ${flags.ignoreCase ? 'bg-primary shadow-md scale-105' : 'hover:scale-105'}`}
-              >
-                <code className="mr-1 font-bold">i</code> Ignore Case
-              </Button>
-              <Button
-                variant={flags.multiline ? "default" : "outline"}
-                size="sm"
-                onClick={() => updateFlag("multiline", !flags.multiline)}
-                className={`h-9 transition-all ${flags.multiline ? 'bg-primary shadow-md scale-105' : 'hover:scale-105'}`}
-              >
-                <code className="mr-1 font-bold">m</code> Multiline
-              </Button>
-              <Button
-                variant={flags.dotAll ? "default" : "outline"}
-                size="sm"
-                onClick={() => updateFlag("dotAll", !flags.dotAll)}
-                className={`h-9 transition-all ${flags.dotAll ? 'bg-primary shadow-md scale-105' : 'hover:scale-105'}`}
-              >
-                <code className="mr-1 font-bold">s</code> Dot All
-              </Button>
-              <Button
-                variant={flags.unicode ? "default" : "outline"}
-                size="sm"
-                onClick={() => updateFlag("unicode", !flags.unicode)}
-                className={`h-9 transition-all ${flags.unicode ? 'bg-primary shadow-md scale-105' : 'hover:scale-105'}`}
-              >
-                <code className="mr-1 font-bold">u</code> Unicode
-              </Button>
-              <Button
-                variant={flags.sticky ? "default" : "outline"}
-                size="sm"
-                onClick={() => updateFlag("sticky", !flags.sticky)}
-                className={`h-9 transition-all ${flags.sticky ? 'bg-primary shadow-md scale-105' : 'hover:scale-105'}`}
-              >
-                <code className="mr-1 font-bold">y</code> Sticky
-              </Button>
-            </div>
-          </Card>
-
-          {/* Common Patterns */}
-          <Card className="p-4 bg-amber-50 border-amber-200">
-            <Label className="text-base font-semibold mb-3 block text-amber-700">🎯 Quick Patterns</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {Object.entries(commonPatterns).map(([key, patternInfo]) => (
-                <Button
-                  key={key}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => insertCommonPattern(patternInfo)}
-                  className="text-left justify-start text-xs hover:bg-amber-100 hover:border-amber-300 transition-all hover:scale-105"
-                >
-                  {patternInfo.description}
-                </Button>
-              ))}
-            </div>
-          </Card>
-        </div>
-
-        {/* Replace Mode - Optional Advanced Feature */}
-        <Card className="p-6 bg-purple-50 border-purple-200">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="flex items-center gap-4 mb-4">
-              <Label className="text-base font-semibold text-purple-700">🔄 Advanced: Replace Mode</Label>
-              <TabsList className="grid w-48 grid-cols-2">
-                <TabsTrigger value="test" className="text-xs">Test</TabsTrigger>
-                <TabsTrigger value="replace" className="text-xs">Replace</TabsTrigger>
-              </TabsList>
-            </div>
-
-            <TabsContent value="test" className="text-sm text-purple-600">
-              Testing mode is active above. Switch to "Replace" to try find-and-replace functionality.
-            </TabsContent>
-
-            <TabsContent value="replace" className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm font-medium text-purple-700">Replace With</Label>
-                  <Textarea
-                    rows={2}
-                    placeholder="Replacement string (use $1, $2 for groups)"
-                    onChange={(event) => setReplaceString(event.target.value)}
-                    className="font-mono text-sm border-purple-200 focus:border-purple-400"
-                    value={replaceString}
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-purple-700">Replace Result</Label>
-                  <div className="h-16 rounded-lg border border-purple-200 bg-white/70 px-3 py-2 text-sm font-mono overflow-auto">
-                    {!pattern.trim() || !testString.trim() ? (
-                      <div className="text-muted-foreground">Enter pattern and test string</div>
-                    ) : (
-                      <div className="whitespace-pre-wrap break-words">{performReplace()}</div>
-                    )}
-                  </div>
-                </div>
+          {/* Test String & Results in a clean grid */}
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Test String Input */}
+            <Card className="border border-gray-200 bg-white">
+              <div className="p-6">
+                <Label className="text-base font-medium text-gray-900 mb-3 block">Test String</Label>
+                <Textarea
+                  rows={8}
+                  placeholder="Enter text to test your pattern against"
+                  onChange={(event) => setTestString(event.target.value)}
+                  className="font-mono text-base resize-none"
+                  value={testString}
+                />
               </div>
-            </TabsContent>
-          </Tabs>
-        </Card>
+            </Card>
+
+            {/* Results */}
+            <Card className="border border-gray-200 bg-white">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-base font-medium text-gray-900">Results</Label>
+                  {result.isValid && (
+                    <div className="px-2 py-1 bg-gray-100 rounded text-sm font-medium text-gray-700">
+                      {result.totalMatches} {result.totalMatches === 1 ? "match" : "matches"}
+                    </div>
+                  )}
+                </div>
+
+                <div className="min-h-[200px] rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 font-mono text-sm">
+                  {!pattern.trim() || !testString.trim() ? (
+                    <div className="text-gray-500 flex items-center justify-center h-full">
+                      Enter a pattern and test string to see matches
+                    </div>
+                  ) : !result.isValid ? (
+                    <div className="text-red-600 flex items-center justify-center h-full">
+                      Fix the pattern errors above
+                    </div>
+                  ) : result.totalMatches === 0 ? (
+                    <div className="text-orange-600 flex items-center justify-center h-full">
+                      No matches found
+                    </div>
+                  ) : (
+                    <RegexHighlightText
+                      text={testString}
+                      matches={result.matches.map((m) => m.match)}
+                    />
+                  )}
+                </div>
+
+                {/* Match Details */}
+                {result.isValid && result.matches.length > 0 && (
+                  <div className="space-y-2 mt-4 max-h-32 overflow-y-auto">
+                    {result.matches.map((match, index) => (
+                      <div key={index} className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-xs">
+                        <div className="font-medium text-gray-900 mb-1">
+                          Match {index + 1}: "{match.match}"
+                        </div>
+                        <div className="text-gray-600">
+                          Position {match.index}-{match.index + match.length - 1}
+                          {match.groups.length > 0 && (
+                            <span className="ml-2">
+                              Groups: {match.groups.map((group, i) => `$${i + 1}="${group}"`).join(", ")}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </Card>
+          </div>
+
+          {/* Replace Mode - Clean and minimal */}
+          <Card className="border border-gray-200 bg-white">
+            <div className="p-6">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <div className="flex items-center gap-4 mb-4">
+                  <Label className="text-base font-medium text-gray-900">Replace Mode</Label>
+                  <TabsList className="grid w-40 grid-cols-2">
+                    <TabsTrigger value="test" className="text-xs">Test</TabsTrigger>
+                    <TabsTrigger value="replace" className="text-xs">Replace</TabsTrigger>
+                  </TabsList>
+                </div>
+
+                <TabsContent value="test" className="text-sm text-gray-600">
+                  Testing mode is active above. Switch to "Replace" to try find-and-replace functionality.
+                </TabsContent>
+
+                <TabsContent value="replace" className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2 block">Replace With</Label>
+                      <Textarea
+                        rows={3}
+                        placeholder="Replacement string (use $1, $2 for groups)"
+                        onChange={(event) => setReplaceString(event.target.value)}
+                        className="font-mono text-sm resize-none"
+                        value={replaceString}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2 block">Replace Result</Label>
+                      <div className="h-20 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm font-mono overflow-auto">
+                        {!pattern.trim() || !testString.trim() ? (
+                          <div className="text-gray-500">Enter pattern and test string</div>
+                        ) : (
+                          <div className="whitespace-pre-wrap break-words">{performReplace()}</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </Card>
+        </div>
       </section>
 
       <GitHubContribution username="shashankshet" />
