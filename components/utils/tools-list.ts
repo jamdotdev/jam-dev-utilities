@@ -1,5 +1,11 @@
 export const tools = [
   {
+    title: "Internet Speed Test",
+    description:
+      "Test your internet connection speed with accurate measurements of download speed, upload speed, latency, and connection quality using Cloudflare's global network.",
+    link: "/utilities/internet-speed-test",
+  },
+  {
     title: "CSV to JSON",
     description:
       "Easily convert CSV data to JSON format with our free tool. Quickest way to turn tabular data into a JSON format for APIs and data processing.",

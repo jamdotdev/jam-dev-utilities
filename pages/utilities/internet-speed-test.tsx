@@ -7,7 +7,6 @@ import Header from "@/components/Header";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { CMDK } from "@/components/CMDK";
-import { Progress } from "@/components/ds/ProgressComponent";
 import {
   createSpeedTest,
   formatSpeed,
@@ -20,22 +19,9 @@ import InternetSpeedTestSEO from "@/components/seo/InternetSpeedTestSEO";
 
 type TestState = "idle" | "running" | "finished" | "error";
 
-interface TestProgress {
-  download: number;
-  upload: number;
-  latency: number;
-  overall: number;
-}
-
 export default function InternetSpeedTest() {
   const [testState, setTestState] = useState<TestState>("idle");
   const [results, setResults] = useState<SpeedTestResult>({});
-  const [progress, setProgress] = useState<TestProgress>({
-    download: 0,
-    upload: 0,
-    latency: 0,
-    overall: 0,
-  });
   const [error, setError] = useState<string>("");
   const speedTestRef = useRef<{ pause: () => void; restart: () => void } | null>(null);
 
@@ -44,49 +30,19 @@ export default function InternetSpeedTest() {
       setTestState("running");
       setError("");
       setResults({});
-      setProgress({ download: 0, upload: 0, latency: 0, overall: 0 });
 
       const speedTest = await createSpeedTest();
       speedTestRef.current = speedTest;
 
-      let downloadComplete = false;
-      let uploadComplete = false;
-      let latencyComplete = false;
-
-      speedTest.onResultsChange = ({ type }) => {
+      speedTest.onResultsChange = () => {
         const currentResults = speedTest.results.getSummary();
         setResults(currentResults);
-
-        // Update progress based on completed measurements
-        if (type === "latency" && currentResults.latency !== undefined) {
-          latencyComplete = true;
-        }
-        if (type === "download" && currentResults.download !== undefined) {
-          downloadComplete = true;
-        }
-        if (type === "upload" && currentResults.upload !== undefined) {
-          uploadComplete = true;
-        }
-
-        const newProgress = {
-          latency: latencyComplete ? 100 : 0,
-          download: downloadComplete ? 100 : currentResults.download ? 50 : 0,
-          upload: uploadComplete ? 100 : currentResults.upload ? 50 : 0,
-          overall: 0,
-        };
-
-        // Calculate overall progress
-        const completedTests = [latencyComplete, downloadComplete, uploadComplete].filter(Boolean).length;
-        newProgress.overall = (completedTests / 3) * 100;
-
-        setProgress(newProgress);
       };
 
       speedTest.onFinish = (finalResults) => {
         const summary = finalResults.getSummary();
         setResults(summary);
         setTestState("finished");
-        setProgress({ download: 100, upload: 100, latency: 100, overall: 100 });
       };
 
       speedTest.onError = (errorMsg) => {
@@ -106,7 +62,6 @@ export default function InternetSpeedTest() {
       speedTestRef.current.pause();
     }
     setTestState("idle");
-    setProgress({ download: 0, upload: 0, latency: 0, overall: 0 });
   }, []);
 
   const resetTest = useCallback(() => {
@@ -115,7 +70,6 @@ export default function InternetSpeedTest() {
     }
     setTestState("idle");
     setResults({});
-    setProgress({ download: 0, upload: 0, latency: 0, overall: 0 });
     setError("");
   }, []);
 
@@ -138,118 +92,153 @@ export default function InternetSpeedTest() {
         />
       </section>
 
-      <section className="container max-w-2xl mb-6">
-        <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
-          <div className="text-center mb-8">
+      <section className="container max-w-4xl mb-6">
+        <Card className="flex flex-col p-8 hover:shadow-none shadow-none rounded-xl">
+          {/* Test Control Section */}
+          <div className="flex items-center justify-center mb-12 min-h-[120px]">
             {testState === "idle" && (
-              <Button onClick={startTest} className="w-full sm:w-auto px-8 py-3 text-lg">
+              <Button onClick={startTest} className="px-12 py-4 text-lg font-medium">
                 Start Speed Test
               </Button>
             )}
 
             {testState === "running" && (
-              <div className="space-y-4">
-                <Button onClick={stopTest} variant="outline" className="w-full sm:w-auto">
+              <div className="text-center space-y-4">
+                <div className="animate-pulse">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-primary rounded-full animate-ping"></div>
+                  </div>
+                </div>
+                <p className="text-lg font-medium">Testing your connection...</p>
+                <Button onClick={stopTest} variant="outline" className="px-8">
                   Stop Test
                 </Button>
-                <div>
-                  <Label className="text-sm text-muted-foreground">Overall Progress</Label>
-                  <Progress value={progress.overall} className="mt-2" />
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Testing your connection...
-                  </p>
-                </div>
               </div>
             )}
 
             {testState === "finished" && (
-              <Button onClick={resetTest} variant="outline" className="w-full sm:w-auto">
+              <Button onClick={resetTest} variant="outline" className="px-8 py-3">
                 Test Again
               </Button>
             )}
 
             {testState === "error" && (
-              <div className="space-y-4">
-                <p className="text-red-600 text-sm">{error}</p>
-                <Button onClick={resetTest} variant="outline" className="w-full sm:w-auto">
+              <div className="text-center space-y-4">
+                <p className="text-red-600 font-medium">{error}</p>
+                <Button onClick={resetTest} variant="outline" className="px-8">
                   Try Again
                 </Button>
               </div>
             )}
           </div>
 
-          {/* Results Display */}
-          {(testState === "running" || testState === "finished") && (
-            <div className="space-y-6">
-              {/* Download Speed */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <Label>Download Speed</Label>
-                  <span className="text-2xl font-bold">
-                    {formatSpeed(results.download)}
-                  </span>
-                </div>
-                <Progress value={progress.download} className="mb-2" />
-                {downloadCategory && testState === "finished" && (
-                  <p className={`text-sm ${downloadCategory.color}`}>
-                    {downloadCategory.category} - {downloadCategory.description}
-                  </p>
-                )}
+          {/* Bento Grid Results */}
+          {(testState === "running" || testState === "finished") && Object.keys(results).length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-fr">
+              {/* Download Speed - Large Card */}
+              <div className="md:col-span-2 md:row-span-2">
+                <Card className="h-full p-6 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 border-blue-200/50 dark:border-blue-800/50">
+                  <div className="h-full flex flex-col justify-center items-center text-center">
+                    <Label className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-2">
+                      Download Speed
+                    </Label>
+                    <div className="text-4xl md:text-5xl font-bold text-blue-900 dark:text-blue-100 mb-3">
+                      {formatSpeed(results.download)}
+                    </div>
+                    {downloadCategory && testState === "finished" && (
+                      <div className="space-y-1">
+                        <p className="text-lg font-semibold text-blue-800 dark:text-blue-200">
+                          {downloadCategory.category}
+                        </p>
+                        <p className="text-sm text-blue-600 dark:text-blue-400 max-w-xs">
+                          {downloadCategory.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </Card>
               </div>
 
-              {/* Upload Speed */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <Label>Upload Speed</Label>
-                  <span className="text-2xl font-bold">
-                    {formatSpeed(results.upload)}
-                  </span>
-                </div>
-                <Progress value={progress.upload} className="mb-2" />
-                {uploadCategory && testState === "finished" && (
-                  <p className={`text-sm ${uploadCategory.color}`}>
-                    {uploadCategory.category} - {uploadCategory.description}
-                  </p>
-                )}
+              {/* Upload Speed - Large Card */}
+              <div className="md:col-span-2 md:row-span-2">
+                <Card className="h-full p-6 bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/50 dark:to-green-900/30 border-green-200/50 dark:border-green-800/50">
+                  <div className="h-full flex flex-col justify-center items-center text-center">
+                    <Label className="text-sm font-medium text-green-700 dark:text-green-300 mb-2">
+                      Upload Speed
+                    </Label>
+                    <div className="text-4xl md:text-5xl font-bold text-green-900 dark:text-green-100 mb-3">
+                      {formatSpeed(results.upload)}
+                    </div>
+                    {uploadCategory && testState === "finished" && (
+                      <div className="space-y-1">
+                        <p className="text-lg font-semibold text-green-800 dark:text-green-200">
+                          {uploadCategory.category}
+                        </p>
+                        <p className="text-sm text-green-600 dark:text-green-400 max-w-xs">
+                          {uploadCategory.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </Card>
               </div>
 
-              {/* Latency and Additional Metrics */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <Label className="text-sm">Latency</Label>
-                  <div className="text-xl font-bold mt-1">
-                    {formatLatency(results.latency)}
+              {/* Latency - Small Card */}
+              <div className="md:col-span-2">
+                <Card className="h-full p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/50 dark:to-purple-900/30 border-purple-200/50 dark:border-purple-800/50">
+                  <div className="h-full flex flex-col justify-center items-center text-center">
+                    <Label className="text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">
+                      Latency
+                    </Label>
+                    <div className="text-2xl md:text-3xl font-bold text-purple-900 dark:text-purple-100">
+                      {formatLatency(results.latency)}
+                    </div>
                   </div>
-                </div>
-                
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <Label className="text-sm">Jitter</Label>
-                  <div className="text-xl font-bold mt-1">
-                    {formatLatency(results.jitter)}
+                </Card>
+              </div>
+
+              {/* Jitter - Small Card */}
+              <div className="md:col-span-2">
+                <Card className="h-full p-4 bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/50 dark:to-orange-900/30 border-orange-200/50 dark:border-orange-800/50">
+                  <div className="h-full flex flex-col justify-center items-center text-center">
+                    <Label className="text-sm font-medium text-orange-700 dark:text-orange-300 mb-2">
+                      Jitter
+                    </Label>
+                    <div className="text-2xl md:text-3xl font-bold text-orange-900 dark:text-orange-100">
+                      {formatLatency(results.jitter)}
+                    </div>
                   </div>
-                </div>
+                </Card>
               </div>
 
               {/* Additional metrics if available */}
-              {(results.packetLoss !== undefined || results.downLoadedLatency !== undefined) && (
-                <div className="grid grid-cols-2 gap-4">
-                  {results.packetLoss !== undefined && (
-                    <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <Label className="text-sm">Packet Loss</Label>
-                      <div className="text-xl font-bold mt-1">
+              {results.packetLoss !== undefined && (
+                <div className="md:col-span-2">
+                  <Card className="h-full p-4 bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-950/50 dark:to-red-900/30 border-red-200/50 dark:border-red-800/50">
+                    <div className="h-full flex flex-col justify-center items-center text-center">
+                      <Label className="text-sm font-medium text-red-700 dark:text-red-300 mb-2">
+                        Packet Loss
+                      </Label>
+                      <div className="text-2xl md:text-3xl font-bold text-red-900 dark:text-red-100">
                         {formatPacketLoss(results.packetLoss)}
                       </div>
                     </div>
-                  )}
-                  
-                  {results.downLoadedLatency !== undefined && (
-                    <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <Label className="text-sm">Loaded Latency</Label>
-                      <div className="text-xl font-bold mt-1">
+                  </Card>
+                </div>
+              )}
+
+              {results.downLoadedLatency !== undefined && (
+                <div className="md:col-span-2">
+                  <Card className="h-full p-4 bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-indigo-950/50 dark:to-indigo-900/30 border-indigo-200/50 dark:border-indigo-800/50">
+                    <div className="h-full flex flex-col justify-center items-center text-center">
+                      <Label className="text-sm font-medium text-indigo-700 dark:text-indigo-300 mb-2">
+                        Loaded Latency
+                      </Label>
+                      <div className="text-2xl md:text-3xl font-bold text-indigo-900 dark:text-indigo-100">
                         {formatLatency(results.downLoadedLatency)}
                       </div>
                     </div>
-                  )}
+                  </Card>
                 </div>
               )}
             </div>
@@ -259,7 +248,7 @@ export default function InternetSpeedTest() {
 
       <CallToActionGrid />
 
-      <section className="container max-w-2xl">
+      <section className="container max-w-4xl">
         <InternetSpeedTestSEO />
       </section>
     </main>

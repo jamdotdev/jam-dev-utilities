@@ -24,6 +24,7 @@ Open-source data conversion utils for devs who don't like ads. Simple, lightweig
 
 Here is the list of all utilities:
 
+- [Internet Speed Test](https://jam.dev/utilities/internet-speed-test)
 - [CSV to JSON](https://jam.dev/utilities/csv-to-json)
 - [Base64 Encode/Decode](https://jam.dev/utilities/base-64-encoder)
 - [JSON Formatter](https://jam.dev/utilities/json-formatter)
