@@ -49,6 +49,7 @@ Here is the list of all utilities:
 - [Lorem Ipsum Generator](https://jam.dev/utilities/lorem-ipsum-generator)
 - [WebP Converter](https://jam.dev/utilities/webp-converter)
 - [SQL Minifer](https://jam.dev/utilities/sql-minifier)
+- [Internet Speed Test]("https://jam.dev/utilities/internet-speed-test")
 
 ### Built With
 

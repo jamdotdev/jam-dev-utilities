@@ -7,6 +7,7 @@ import Meta from "@/components/Meta";
 import SpeedTestEngine from "@cloudflare/speedtest";
 import { Card } from "@/components/ds/CardComponent";
 import { cn } from "@/lib/utils";
+import InternetSpeedTestSEO from "@/components/seo/InternetSpeedTestSEO";
 
 type TestState = {
   status: "idle" | "running" | "finished";
@@ -204,6 +205,10 @@ export default function InternetSpeedTest() {
       </section>
 
       <CallToActionGrid />
+
+      <section className="container max-w-2xl">
+        <InternetSpeedTestSEO />
+      </section>
     </main>
   );
 }
