@@ -149,4 +149,10 @@ export const tools = [
       "Minify SQL by removing comments, extra spaces, and formatting for cleaner, optimized queries.",
     link: "/utilities/sql-minifier",
   },
+  {
+    title: "Internet Speed Test",
+    description:
+      "Test your internet connection speed with accurate measurements by using Cloudflare's global network.",
+    link: "/utilities/internet-speed-test",
+  },
 ];
