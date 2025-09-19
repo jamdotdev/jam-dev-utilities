@@ -1,5 +1,4 @@
 import {
-  initWebGPU,
   isWebGPUAvailable,
   resizeImageWithWebGPU,
   WebGPUImageResizeOptions,

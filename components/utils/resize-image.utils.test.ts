@@ -33,35 +33,36 @@ describe("Image Processing Functions", () => {
     jest.spyOn(document, "createElement").mockReturnValue(canvasMock);
     jest.spyOn(canvasMock, "getContext").mockReturnValue(ctxMock);
 
-    // Mock FileReader for all tests
-    jest.spyOn(window, "FileReader").mockImplementation(
-      () =>
-        ({
-          readAsDataURL: jest.fn(function (blob) {
-            // Handle different file types based on the blob type
-            setTimeout(() => {
-              if (this.onload) {
-                const isForSvgBlob = blob && blob.type === "image/svg+xml";
-                const result = isForSvgBlob 
-                  ? "data:image/svg+xml;base64,MOCK_SVG_DATA" 
-                  : "data:image/png;base64,MOCK_DATA";
-                
-                this.onload({
-                  target: { result },
-                } as ProgressEvent<FileReader>);
-              }
-            }, 0);
-          }),
-          result: null,
-          onload: null,
-        }) as unknown as FileReader
-    );
+    // Simple FileReader mock that works synchronously for tests
+    const FileReaderMock = jest.fn().mockImplementation(() => {
+      const instance = {
+        readAsDataURL: jest.fn(function (blob: Blob) {
+          // Determine result based on blob type
+          const result = blob && blob.type === "image/svg+xml" 
+            ? "data:image/svg+xml;base64,MOCK_SVG_DATA"
+            : "data:image/png;base64,MOCK_DATA";
+          
+          // Set result property immediately (synchronous for tests)
+          this.result = result;
+          
+          // Call onload immediately for tests
+          if (this.onload) {
+            this.onload({ target: { result } } as ProgressEvent<FileReader>);
+          }
+        }),
+        onload: null,
+        result: null,
+      };
+      return instance;
+    });
+    
+    (global as unknown as { FileReader: jest.MockedClass<typeof FileReader> }).FileReader = FileReaderMock;
 
-    // Mock Blob for SVG handling
-    global.Blob = jest.fn().mockImplementation((content, options) => ({
+    // Mock Blob
+    (global as unknown as { Blob: jest.MockedClass<typeof Blob> }).Blob = jest.fn().mockImplementation((content, options) => ({
       type: options?.type || 'application/octet-stream',
       content,
-    })) as any;
+    })) as jest.MockedClass<typeof Blob>;
 
     imgMock = {
       width: 1000,
@@ -146,7 +147,7 @@ describe("Image Processing Functions", () => {
     });
   });
 
-  it("should update the width based on the provided height and image aspect ratio", (done) => {
+  it("should update the width based on the provided height and image aspect ratio", async () => {
     const mockFile = new File(["dummy content"], "example.png", {
       type: "image/png",
     });
@@ -154,13 +155,13 @@ describe("Image Processing Functions", () => {
 
     updateWidth({ file: mockFile, height: 200, setWidth });
 
-    setTimeout(() => {
-      expect(setWidth).toHaveBeenCalledWith(400);
-      done();
-    }, 0);
+    // Wait for the async operation
+    await new Promise(resolve => setTimeout(resolve, 0));
+    
+    expect(setWidth).toHaveBeenCalledWith(400);
   });
 
-  it("should update the height based on the provided width and image aspect ratio", (done) => {
+  it("should update the height based on the provided width and image aspect ratio", async () => {
     const mockFile = new File(["dummy content"], "example.png", {
       type: "image/png",
     });
@@ -168,10 +169,10 @@ describe("Image Processing Functions", () => {
 
     updateHeight({ file: mockFile, width: 300, setHeight });
 
-    setTimeout(() => {
-      expect(setHeight).toHaveBeenCalledWith(150);
-      done();
-    }, 0);
+    // Wait for the async operation
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(setHeight).toHaveBeenCalledWith(150);
   });
 
   it("should resize the image and set the output", async () => {
@@ -241,6 +242,7 @@ describe("Image Processing Functions", () => {
       useWebGPU: false,
     });
 
+    expect(typeof result).toBe('string');
     expect(result).toMatch(/^data:image\/svg\+xml;base64,/);
   });
 });

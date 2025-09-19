@@ -1,6 +1,198 @@
 // WebGPU-based image resizing utilities
 // Provides high-performance image processing using GPU acceleration
 
+// WebGPU type declarations for environments where they might not be available
+declare global {
+  interface GPUDevice {
+    createTexture(descriptor: GPUTextureDescriptor): GPUTexture;
+    createShaderModule(descriptor: GPUShaderModuleDescriptor): GPUShaderModule;
+    createSampler(descriptor: GPUSamplerDescriptor): GPUSampler;
+    createBindGroupLayout(descriptor: GPUBindGroupLayoutDescriptor): GPUBindGroupLayout;
+    createBindGroup(descriptor: GPUBindGroupDescriptor): GPUBindGroup;
+    createRenderPipeline(descriptor: GPURenderPipelineDescriptor): GPURenderPipeline;
+    createPipelineLayout(descriptor: GPUPipelineLayoutDescriptor): GPUPipelineLayout;
+    createCommandEncoder(): GPUCommandEncoder;
+    queue: GPUQueue;
+    destroy(): void;
+    features: GPUSupportedFeatures;
+  }
+  
+  interface GPUAdapter {
+    requestDevice(): Promise<GPUDevice>;
+  }
+  
+  interface GPUCanvasContext {
+    configure(configuration: GPUCanvasConfiguration): void;
+    getCurrentTexture(): GPUTexture;
+  }
+  
+  interface GPUTexture {
+    destroy(): void;
+    createView(): GPUTextureView;
+  }
+  
+  interface GPUTextureView {}
+  interface GPUShaderModule {}
+  interface GPUSampler {}
+  interface GPUBindGroupLayout {}
+  interface GPUBindGroup {}
+  interface GPURenderPipeline {}
+  interface GPUPipelineLayout {}
+  interface GPUCommandEncoder {
+    beginRenderPass(descriptor: GPURenderPassDescriptor): GPURenderPassEncoder;
+    finish(): GPUCommandBuffer;
+  }
+  interface GPURenderPassEncoder {
+    setPipeline(pipeline: GPURenderPipeline): void;
+    setBindGroup(index: number, bindGroup: GPUBindGroup): void;
+    draw(vertexCount: number): void;
+    end(): void;
+  }
+  interface GPUCommandBuffer {}
+  interface GPUQueue {
+    submit(commandBuffers: GPUCommandBuffer[]): void;
+    onSubmittedWorkDone(): Promise<undefined>;
+    copyExternalImageToTexture(source: GPUImageCopyExternalImage, destination: GPUImageCopyTextureTagged, copySize: GPUExtent3D): void;
+  }
+  interface GPUSupportedFeatures {
+    has(feature: string): boolean;
+  }
+  
+  // Additional type interfaces for WebGPU
+  interface GPUTextureDescriptor {
+    size: GPUExtent3D;
+    format: string;
+    usage: number;
+  }
+  
+  interface GPUShaderModuleDescriptor {
+    code: string;
+  }
+  
+  interface GPUSamplerDescriptor {
+    magFilter?: string;
+    minFilter?: string;
+  }
+  
+  interface GPUBindGroupLayoutDescriptor {
+    entries: GPUBindGroupLayoutEntry[];
+  }
+  
+  interface GPUBindGroupLayoutEntry {
+    binding: number;
+    visibility: number;
+    texture?: GPUTextureBindingLayout;
+    sampler?: GPUSamplerBindingLayout;
+  }
+  
+  interface GPUTextureBindingLayout {
+    sampleType?: string;
+  }
+  
+  interface GPUSamplerBindingLayout {}
+  
+  interface GPUBindGroupDescriptor {
+    layout: GPUBindGroupLayout;
+    entries: GPUBindGroupEntry[];
+  }
+  
+  interface GPUBindGroupEntry {
+    binding: number;
+    resource: GPUTextureView | GPUSampler;
+  }
+  
+  interface GPURenderPipelineDescriptor {
+    layout: GPUPipelineLayout;
+    vertex: GPUVertexState;
+    fragment?: GPUFragmentState;
+    primitive?: GPUPrimitiveState;
+  }
+  
+  interface GPUPipelineLayoutDescriptor {
+    bindGroupLayouts: GPUBindGroupLayout[];
+  }
+  
+  interface GPUVertexState {
+    module: GPUShaderModule;
+    entryPoint: string;
+  }
+  
+  interface GPUFragmentState {
+    module: GPUShaderModule;
+    entryPoint: string;
+    targets: GPUColorTargetState[];
+  }
+  
+  interface GPUColorTargetState {
+    format: string;
+  }
+  
+  interface GPUPrimitiveState {
+    topology: string;
+  }
+  
+  interface GPURenderPassDescriptor {
+    colorAttachments: (GPURenderPassColorAttachment | null)[];
+  }
+  
+  interface GPURenderPassColorAttachment {
+    view: GPUTextureView;
+    clearValue: GPUColor;
+    loadOp: string;
+    storeOp: string;
+  }
+  
+  interface GPUColor {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+  }
+  
+  interface GPUExtent3D {
+    width: number;
+    height: number;
+  }
+  
+  interface GPUImageCopyExternalImage {
+    source: ImageBitmap;
+  }
+  
+  interface GPUImageCopyTextureTagged {
+    texture: GPUTexture;
+  }
+  
+  interface GPUCanvasConfiguration {
+    device: GPUDevice;
+    format: string;
+  }
+  
+  interface Navigator {
+    gpu?: {
+      requestAdapter(options?: GPURequestAdapterOptions): Promise<GPUAdapter | null>;
+      getPreferredCanvasFormat(): string;
+    };
+  }
+  
+  interface GPURequestAdapterOptions {
+    powerPreference?: string;
+  }
+  
+  const GPUTextureUsage: {
+    TEXTURE_BINDING: number;
+    COPY_DST: number;
+    RENDER_ATTACHMENT: number;
+  };
+  
+  const GPUShaderStage: {
+    VERTEX: number;
+    FRAGMENT: number;
+    COMPUTE: number;
+  };
+  
+  function createImageBitmap(image: HTMLImageElement | HTMLCanvasElement): Promise<ImageBitmap>;
+}
+
 export interface WebGPUImageResizeOptions {
   width?: number;
   height?: number;
@@ -69,7 +261,7 @@ export async function initWebGPU(): Promise<WebGPUContext | null> {
     const device = await adapter.requestDevice();
     
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('webgpu');
+    const context = canvas.getContext('webgpu') as unknown as GPUCanvasContext;
     
     if (!context) {
       console.warn('Failed to get WebGPU canvas context');
@@ -234,7 +426,7 @@ export async function resizeImageWithWebGPU(
         entryPoint: 'fs_main',
         targets: [
           {
-            format: navigator.gpu.getPreferredCanvasFormat(),
+            format: navigator.gpu!.getPreferredCanvasFormat(),
           },
         ],
       },

@@ -182,11 +182,9 @@ async function runImageSizeBenchmark(
 
   // Benchmark WebGPU
   const webgpuTimes: number[] = [];
-  let webgpuMemoryUsage = 0;
   for (let i = 0; i < iterations; i++) {
     const result = await measureWebGPUResizePerformance(img, targetWidth, targetHeight);
     webgpuTimes.push(result.processingTime);
-    webgpuMemoryUsage = result.memoryUsage;
     
     if (i === 0) { // Only add one result per method to avoid clutter
       results.push({
