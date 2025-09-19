@@ -6,6 +6,16 @@ import {
   updateWidth,
 } from "./resize-image.utils";
 
+// Mock WebGPU utilities
+jest.mock('./webgpu-image-resize.utils', () => ({
+  initWebGPU: jest.fn().mockResolvedValue(null),
+  isWebGPUAvailable: jest.fn().mockReturnValue(false),
+  resizeImageWithWebGPU: jest.fn(),
+  measureWebGPUPerformance: jest.fn(),
+  batchResizeImagesWithWebGPU: jest.fn(),
+  cleanupWebGPU: jest.fn(),
+}));
+
 describe("Image Processing Functions", () => {
   let canvasMock: HTMLCanvasElement;
   let ctxMock: CanvasRenderingContext2D;
@@ -16,21 +26,42 @@ describe("Image Processing Functions", () => {
     ctxMock = {
       drawImage: jest.fn(),
       toDataURL: jest.fn().mockReturnValue("data:image/png;base64,MOCK_DATA"),
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high',
     } as unknown as CanvasRenderingContext2D;
 
     jest.spyOn(document, "createElement").mockReturnValue(canvasMock);
     jest.spyOn(canvasMock, "getContext").mockReturnValue(ctxMock);
 
+    // Mock FileReader for all tests
     jest.spyOn(window, "FileReader").mockImplementation(
       () =>
         ({
-          readAsDataURL: jest.fn(function () {
-            this.onload?.({
-              target: { result: "data:image/png;base64,MOCK_DATA" },
-            } as ProgressEvent<FileReader>);
+          readAsDataURL: jest.fn(function (blob) {
+            // Handle different file types based on the blob type
+            setTimeout(() => {
+              if (this.onload) {
+                const isForSvgBlob = blob && blob.type === "image/svg+xml";
+                const result = isForSvgBlob 
+                  ? "data:image/svg+xml;base64,MOCK_SVG_DATA" 
+                  : "data:image/png;base64,MOCK_DATA";
+                
+                this.onload({
+                  target: { result },
+                } as ProgressEvent<FileReader>);
+              }
+            }, 0);
           }),
+          result: null,
+          onload: null,
         }) as unknown as FileReader
     );
+
+    // Mock Blob for SVG handling
+    global.Blob = jest.fn().mockImplementation((content, options) => ({
+      type: options?.type || 'application/octet-stream',
+      content,
+    })) as any;
 
     imgMock = {
       width: 1000,
@@ -143,13 +174,13 @@ describe("Image Processing Functions", () => {
     }, 0);
   });
 
-  it("should resize the image and set the output", (done) => {
+  it("should resize the image and set the output", async () => {
     const mockFile = new File(["dummy content"], "example.png", {
       type: "image/png",
     });
     const setOutput = jest.fn();
 
-    handleResizeImage({
+    await handleResizeImage({
       file: mockFile,
       format: "jpeg",
       height: 400,
@@ -159,11 +190,57 @@ describe("Image Processing Functions", () => {
       setOutput,
     });
 
-    setTimeout(() => {
-      expect(setOutput).toHaveBeenCalledWith(
-        expect.stringMatching(/^data:image\/jpeg;base64,/)
-      );
-      done();
-    }, 0);
+    // Wait for async operations
+    await new Promise(resolve => setTimeout(resolve, 10));
+    
+    expect(setOutput).toHaveBeenCalledWith(
+      expect.stringMatching(/^data:image\/jpeg;base64,/)
+    );
+  });
+
+  it("should process image file with WebGPU disabled", async () => {
+    const mockFile = new File(["dummy content"], "example.png", {
+      type: "image/png",
+    });
+    const setWidth = jest.fn();
+    const setHeight = jest.fn();
+    const setOutput = jest.fn();
+    const done = jest.fn();
+
+    await processImageFile({
+      file: mockFile,
+      format: "png",
+      preserveAspectRatio: false,
+      quality: 1,
+      setWidth,
+      setHeight,
+      setOutput,
+      done,
+      useWebGPU: false,
+    });
+
+    // Wait for async operations
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(setWidth).toHaveBeenCalledWith(1000);
+    expect(setHeight).toHaveBeenCalledWith(500);
+    expect(setOutput).toHaveBeenCalledWith(
+      expect.stringMatching(/^data:image\/png;base64,/)
+    );
+    expect(done).toHaveBeenCalled();
+  });
+
+  it("should handle SVG format correctly", async () => {
+    const img = { width: 1000, height: 500, src: "test.svg" } as HTMLImageElement;
+
+    const result = await resizeImage({
+      img,
+      width: 500,
+      height: 250,
+      format: "svg",
+      useWebGPU: false,
+    });
+
+    expect(result).toMatch(/^data:image\/svg\+xml;base64,/);
   });
 });

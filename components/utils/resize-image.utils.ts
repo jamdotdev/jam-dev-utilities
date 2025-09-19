@@ -1,4 +1,12 @@
+import {
+  initWebGPU,
+  isWebGPUAvailable,
+  resizeImageWithWebGPU,
+  WebGPUImageResizeOptions,
+} from './webgpu-image-resize.utils';
+
 export type Format = "png" | "jpeg" | "svg";
+
 interface ResizeImageOptions {
   img: HTMLImageElement;
   width?: number;
@@ -6,18 +14,21 @@ interface ResizeImageOptions {
   format?: Format;
   quality?: number;
   preserveAspectRatio?: boolean;
+  useWebGPU?: boolean; // New option to control WebGPU usage
 }
 
-export function resizeImage({
+export async function resizeImage({
   img,
   format,
   height,
   preserveAspectRatio,
   quality,
   width,
+  useWebGPU = true, // Default to WebGPU if available
 }: ResizeImageOptions): Promise<string> {
-  return new Promise((resolve, reject) => {
-    if (format === "svg") {
+  // Handle SVG format (no WebGPU needed)
+  if (format === "svg") {
+    return new Promise((resolve) => {
       const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="${width || img.width}" height="${height || img.height}" viewBox="0 0 ${img.width} ${img.height}">
           <image href="${img.src}" width="${img.width}" height="${img.height}" />
@@ -26,9 +37,29 @@ export function resizeImage({
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
       reader.readAsDataURL(svgBlob);
-      return;
-    }
+    });
+  }
 
+  // Try WebGPU first if available and requested
+  if (useWebGPU && isWebGPUAvailable() && (format === 'png' || format === 'jpeg')) {
+    try {
+      const webgpuOptions: WebGPUImageResizeOptions = {
+        width,
+        height,
+        preserveAspectRatio,
+        quality,
+        format: format as 'png' | 'jpeg',
+      };
+      
+      return await resizeImageWithWebGPU(img, webgpuOptions);
+    } catch (error) {
+      console.warn('WebGPU resize failed, falling back to Canvas 2D:', error);
+      // Fall through to Canvas 2D implementation
+    }
+  }
+
+  // Fallback to Canvas 2D implementation
+  return new Promise((resolve, reject) => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
@@ -80,9 +111,10 @@ interface ProcessImageFileOptions {
   quality: number;
   preserveAspectRatio: boolean;
   done?: () => void;
+  useWebGPU?: boolean;
 }
 
-export const processImageFile = ({
+export const processImageFile = async ({
   file,
   format,
   preserveAspectRatio,
@@ -91,29 +123,33 @@ export const processImageFile = ({
   setOutput,
   setWidth,
   done,
+  useWebGPU = true,
 }: ProcessImageFileOptions) => {
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     const img = new Image();
     img.src = e.target?.result as string;
-    img.onload = () => {
+    img.onload = async () => {
       setWidth(img.width);
       setHeight(img.height);
-      resizeImage({
-        img,
-        width: img.width,
-        height: img.height,
-        format,
-        quality,
-        preserveAspectRatio,
-      })
-        .then(setOutput)
-        .catch((error) => console.error(error))
-        .finally(() => {
-          if (done) {
-            done();
-          }
+      try {
+        const output = await resizeImage({
+          img,
+          width: img.width,
+          height: img.height,
+          format,
+          quality,
+          preserveAspectRatio,
+          useWebGPU,
         });
+        setOutput(output);
+      } catch (error) {
+        console.error('Image processing failed:', error);
+      } finally {
+        if (done) {
+          done();
+        }
+      }
     };
   };
   reader.readAsDataURL(file);
@@ -165,9 +201,10 @@ interface HandleResizeImage {
   quality: number;
   preserveAspectRatio: boolean;
   setOutput: (output: string) => void;
+  useWebGPU?: boolean;
 }
 
-export const handleResizeImage = ({
+export const handleResizeImage = async ({
   file,
   format,
   height,
@@ -175,20 +212,27 @@ export const handleResizeImage = ({
   quality,
   setOutput,
   width,
+  useWebGPU = true,
 }: HandleResizeImage) => {
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     const img = new Image();
     img.src = e.target?.result as string;
-    img.onload = () => {
-      resizeImage({
-        img,
-        width,
-        height,
-        format,
-        quality,
-        preserveAspectRatio,
-      }).then(setOutput);
+    img.onload = async () => {
+      try {
+        const output = await resizeImage({
+          img,
+          width,
+          height,
+          format,
+          quality,
+          preserveAspectRatio,
+          useWebGPU,
+        });
+        setOutput(output);
+      } catch (error) {
+        console.error('Image resize failed:', error);
+      }
     };
   };
   reader.readAsDataURL(file);
