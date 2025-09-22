@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useState, useRef, useMemo } from "react";
 import { Textarea } from "@/components/ds/TextareaComponent";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
@@ -36,7 +36,7 @@ export default function PasswordGenerator() {
     setPassword(builder.Build());
   }, [includeLowercase, includeUppercase, includeNumbers, includeSymbols, length]);
 
-  const strengthInfo = useCallback(() => {
+  const strengthInfo = useMemo(() => {
     const types = [includeLowercase, includeUppercase, includeNumbers, includeSymbols].filter(Boolean).length;
 
     if (length >= 20 && types >= 3) {
@@ -107,7 +107,7 @@ export default function PasswordGenerator() {
                 onChange={(e) => setLength(Number(e.target.value))}
                 className='w-24'
               />
-              <div className="ml-auto text-sm">Strength: <strong className={strengthInfo().className}>{strengthInfo().label}</strong></div>
+              <div className="ml-auto text-sm">Strength: <strong className={strengthInfo.className}>{strengthInfo.label}</strong></div>
             </div>
 
             <div>
