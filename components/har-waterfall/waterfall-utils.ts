@@ -18,8 +18,17 @@ const TIMING_COLORS = {
   receive: "#50e3c2", // Teal
 } as const;
 
-export function getTimingColor(type: keyof typeof TIMING_COLORS): string {
-  return TIMING_COLORS[type];
+// Dark mode compatible timing colors
+const TIMING_COLORS_DARK = {
+  dns: "#3b82f6", // Blue
+  connect: "#8b5cf6", // Purple
+  ssl: "#ec4899", // Pink
+  wait: "#f59e0b", // Orange
+  receive: "#10b981", // Emerald
+} as const;
+
+export function getTimingColor(type: keyof typeof TIMING_COLORS, isDark = false): string {
+  return isDark ? TIMING_COLORS_DARK[type] : TIMING_COLORS[type];
 }
 
 export function calculateTimings(entries: HarEntry[]): WaterfallTiming[] {

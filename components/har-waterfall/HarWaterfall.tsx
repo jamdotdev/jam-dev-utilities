@@ -1,10 +1,8 @@
 import React, { useRef, useState, useCallback, useMemo } from "react";
 import { HarEntry, FilterType, getFilterType } from "../utils/har-utils";
-import { WaterfallCanvas } from "./WaterfallCanvas";
-import { WaterfallTooltip } from "./WaterfallTooltip";
+import { WaterfallSvgView } from "./WaterfallSvgView";
 import { WaterfallLegend } from "./WaterfallLegend";
 import { WaterfallRequestDetails } from "./WaterfallRequestDetails";
-import { WaterfallUrlTooltip } from "./WaterfallUrlTooltip";
 import { calculateTimings, WaterfallTiming } from "./waterfall-utils";
 
 interface HarWaterfallProps {
@@ -19,22 +17,11 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
   className = "",
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [hoveredEntry, setHoveredEntry] = useState<{
-    entry: HarEntry;
-    timing: WaterfallTiming;
-    x: number;
-    y: number;
-  } | null>(null);
-  const [hoveredUrl, setHoveredUrl] = useState<{
-    url: string;
-    x: number;
-    y: number;
-  } | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number>(-1);
   const [selectedEntry, setSelectedEntry] = useState<{
     entry: HarEntry;
     timing: WaterfallTiming;
   } | null>(null);
-  const [scrollOffset, setScrollOffset] = useState({ x: 0, y: 0 });
 
   // Filter entries based on active filter
   const filteredEntries = useMemo(() => {
@@ -47,121 +34,40 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
     return calculateTimings(filteredEntries);
   }, [filteredEntries]);
 
-  // Handle mouse move for hover detection
-  const handleMouseMove = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (!containerRef.current) return;
+  // Handle row interactions
+  const handleRowClick = useCallback((index: number) => {
+    if (index >= 0 && index < filteredEntries.length) {
+      setSelectedEntry({
+        entry: filteredEntries[index],
+        timing: timings[index],
+      });
+    }
+  }, [filteredEntries, timings]);
 
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top + scrollOffset.y;
-
-      // Find which entry is being hovered (accounting for header)
-      const rowHeight = 30;
-      const headerHeight = 40;
-      const adjustedY = y - headerHeight;
-      const entryIndex = Math.floor(adjustedY / rowHeight);
-
-      if (entryIndex >= 0 && entryIndex < filteredEntries.length) {
-        setHoveredEntry({
-          entry: filteredEntries[entryIndex],
-          timing: timings[entryIndex],
-          x: event.clientX,
-          y: event.clientY,
-        });
-
-        // Check if hovering over URL area (left portion)
-        if (x < 300) {
-          setHoveredUrl({
-            url: filteredEntries[entryIndex].request.url,
-            x: event.clientX,
-            y: event.clientY,
-          });
-        } else {
-          setHoveredUrl(null);
-        }
-      } else {
-        setHoveredEntry(null);
-        setHoveredUrl(null);
-      }
-    },
-    [filteredEntries, timings, scrollOffset]
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    setHoveredEntry(null);
-    setHoveredUrl(null);
+  const handleRowHover = useCallback((index: number) => {
+    setHoveredIndex(index);
   }, []);
 
-  // Handle click on request
-  const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (!containerRef.current) return;
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const y = event.clientY - rect.top + scrollOffset.y;
-
-      // Find which entry was clicked
-      const rowHeight = 30;
-      const headerHeight = 40;
-      const adjustedY = y - headerHeight;
-      const entryIndex = Math.floor(adjustedY / rowHeight);
-
-      if (entryIndex >= 0 && entryIndex < filteredEntries.length) {
-        setSelectedEntry({
-          entry: filteredEntries[entryIndex],
-          timing: timings[entryIndex],
-        });
-      }
-    },
-    [filteredEntries, timings, scrollOffset]
-  );
+  const handleRowLeave = useCallback(() => {
+    setHoveredIndex(-1);
+  }, []);
 
   return (
     <div className={`relative ${className}`}>
       <WaterfallLegend />
 
-      <div
-        ref={containerRef}
-        className="relative overflow-auto bg-background border border-border rounded-lg cursor-pointer"
-        style={{ height: "600px" }}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        onClick={handleClick}
-        onScroll={(e) => {
-          const target = e.target as HTMLDivElement;
-          setScrollOffset({ x: target.scrollLeft, y: target.scrollTop });
-        }}
-      >
-        <WaterfallCanvas
-          entries={filteredEntries}
-          timings={timings}
-          zoomLevel={1}
-          width={containerRef.current?.clientWidth || 1200}
-          height={Math.max(600, filteredEntries.length * 30 + 40)}
-          scrollOffset={scrollOffset}
-          hoveredIndex={
-            hoveredEntry ? filteredEntries.indexOf(hoveredEntry.entry) : -1
-          }
-        />
-      </div>
-
-      {hoveredUrl && (
-        <WaterfallUrlTooltip
-          url={hoveredUrl.url}
-          x={hoveredUrl.x}
-          y={hoveredUrl.y}
-        />
-      )}
-
-      {hoveredEntry && !hoveredUrl && (
-        <WaterfallTooltip
-          entry={hoveredEntry.entry}
-          timing={hoveredEntry.timing}
-          x={hoveredEntry.x}
-          y={hoveredEntry.y}
-        />
-      )}
+      <WaterfallSvgView
+        entries={filteredEntries}
+        timings={timings}
+        zoomLevel={1}
+        width={containerRef.current?.clientWidth || 1200}
+        height={600}
+        scrollOffset={{ x: 0, y: 0 }}
+        hoveredIndex={hoveredIndex}
+        onRowClick={handleRowClick}
+        onRowHover={handleRowHover}
+        onRowLeave={handleRowLeave}
+      />
 
       {selectedEntry && (
         <WaterfallRequestDetails
