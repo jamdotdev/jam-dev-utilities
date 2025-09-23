@@ -15,7 +15,7 @@ interface WaterfallSvgRowProps {
   rowHeight: number;
   isHovered: boolean;
   onClick: () => void;
-  onMouseEnter: () => void;
+  onMouseEnter: (x: number, y: number, isUrlHover?: boolean) => void;
   onMouseLeave: () => void;
 }
 
@@ -45,6 +45,18 @@ const WaterfallSvgRowComponent: React.FC<WaterfallSvgRowProps> = ({
 
   const textColor = entry.response.status >= 400 ? "text-destructive" : "text-foreground";
 
+  // Handle mouse move for tooltip positioning
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    const relativeX = e.clientX - rect.left;
+    
+    // Check if hovering over URL area (left section)
+    const isUrlHover = relativeX < leftPadding;
+    onMouseEnter(x, y, isUrlHover);
+  };
+
   return (
     <div
       className={`
@@ -57,7 +69,7 @@ const WaterfallSvgRowComponent: React.FC<WaterfallSvgRowProps> = ({
       `}
       style={{ height: rowHeight }}
       onClick={onClick}
-      onMouseEnter={onMouseEnter}
+      onMouseMove={handleMouseMove}
       onMouseLeave={onMouseLeave}
       role="row"
       tabIndex={0}
@@ -65,12 +77,12 @@ const WaterfallSvgRowComponent: React.FC<WaterfallSvgRowProps> = ({
     >
       {/* Left section with status, time, and URL */}
       <div 
-        className="flex items-center gap-3 px-4 min-w-0"
+        className="flex items-center gap-2 px-3 min-w-0 overflow-hidden"
         style={{ width: leftPadding }}
       >
         {/* Status indicator dot */}
         <div
-          className={`w-2 h-2 rounded-full ${
+          className={`w-2 h-2 rounded-full flex-shrink-0 ${
             entry.response.status >= 400 
               ? 'bg-destructive' 
               : 'bg-green-500'
@@ -79,18 +91,18 @@ const WaterfallSvgRowComponent: React.FC<WaterfallSvgRowProps> = ({
         />
         
         {/* Status code */}
-        <span className={`text-sm font-mono min-w-[3ch] ${textColor}`}>
+        <span className={`text-xs font-mono flex-shrink-0 min-w-[2.5ch] ${textColor}`}>
           {entry.response.status}
         </span>
         
         {/* Timestamp */}
-        <span className="text-xs text-muted-foreground font-mono min-w-[5.5ch]">
+        <span className="text-xs text-muted-foreground font-mono flex-shrink-0 min-w-[5ch]">
           {timestamp}
         </span>
         
         {/* URL */}
         <span 
-          className={`text-sm truncate ${textColor}`}
+          className={`text-xs truncate flex-1 min-w-0 ${textColor}`}
           title={entry.request.url}
         >
           {displayText}
@@ -116,10 +128,10 @@ const WaterfallSvgRowComponent: React.FC<WaterfallSvgRowProps> = ({
 
       {/* Right section with duration */}
       <div 
-        className="flex items-center justify-end px-4"
+        className="flex items-center justify-end px-3 flex-shrink-0"
         style={{ width: rightPadding }}
       >
-        <span className="text-sm text-muted-foreground font-mono">
+        <span className="text-xs text-muted-foreground font-mono">
           {formatDuration(timing.totalTime)}
         </span>
       </div>

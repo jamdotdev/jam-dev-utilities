@@ -13,7 +13,7 @@ interface WaterfallSvgViewProps {
   scrollOffset: { x: number; y: number };
   hoveredIndex: number;
   onRowClick: (index: number) => void;
-  onRowHover: (index: number) => void;
+  onRowHover: (index: number, x: number, y: number, isUrlHover?: boolean) => void;
   onRowLeave: () => void;
 }
 
@@ -93,7 +93,7 @@ export const WaterfallSvgView: React.FC<WaterfallSvgViewProps> = ({
               rowHeight={rowHeight}
               isHovered={index === hoveredIndex}
               onClick={() => onRowClick(index)}
-              onMouseEnter={() => onRowHover(index)}
+              onMouseEnter={(x, y, isUrlHover) => onRowHover(index, x, y, isUrlHover)}
               onMouseLeave={onRowLeave}
             />
           );
