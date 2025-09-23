@@ -32,15 +32,29 @@ export default function PasswordGenerator() {
       includeNumbers,
       includeSymbols,
       length
-    )
+    );
     setPassword(builder.Build());
-  }, [includeLowercase, includeUppercase, includeNumbers, includeSymbols, length]);
+  }, [
+    includeLowercase,
+    includeUppercase,
+    includeNumbers,
+    includeSymbols,
+    length,
+  ]);
 
   const strengthInfo = useMemo(() => {
-    const types = [includeLowercase, includeUppercase, includeNumbers, includeSymbols].filter(Boolean).length;
+    const types = [
+      includeLowercase,
+      includeUppercase,
+      includeNumbers,
+      includeSymbols,
+    ].filter(Boolean).length;
 
     if (length >= 20 && types >= 3) {
-      return { label: "Very Strong", className: "text-green-600 font-semibold" };
+      return {
+        label: "Very Strong",
+        className: "text-green-600 font-semibold",
+      };
     }
     if (length >= 12 && types >= 3) {
       return { label: "Strong", className: "text-green-500" };
@@ -49,7 +63,13 @@ export default function PasswordGenerator() {
       return { label: "Medium", className: "text-yellow-500" };
     }
     return { label: "Weak", className: "text-red-500" };
-  }, [length, includeLowercase, includeUppercase, includeNumbers, includeSymbols]);
+  }, [
+    length,
+    includeLowercase,
+    includeUppercase,
+    includeNumbers,
+    includeSymbols,
+  ]);
 
   return (
     <main>
@@ -72,27 +92,41 @@ export default function PasswordGenerator() {
           <div className="grid gap-4">
             <div className="flex items-center justify-between">
               <Label className="mb-0">Options</Label>
-              <div className="text-xs text-muted-foreground">Select the desired options</div>
+              <div className="text-xs text-muted-foreground">
+                Select the desired options
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <label className="flex items-center gap-2">
-                <Checkbox checked={includeLowercase} onCheckedChange={() => setIncludeLowercase(v => !v)} />
+                <Checkbox
+                  checked={includeLowercase}
+                  onCheckedChange={() => setIncludeLowercase((v) => !v)}
+                />
                 <span className="text-sm">Lowercase letters</span>
               </label>
 
               <label className="flex items-center gap-2">
-                <Checkbox checked={includeUppercase} onCheckedChange={() => setIncludeUppercase(v => !v)} />
+                <Checkbox
+                  checked={includeUppercase}
+                  onCheckedChange={() => setIncludeUppercase((v) => !v)}
+                />
                 <span className="text-sm">Uppercase letters</span>
               </label>
 
               <label className="flex items-center gap-2">
-                <Checkbox checked={includeNumbers} onCheckedChange={() => setIncludeNumbers(v => !v)} />
+                <Checkbox
+                  checked={includeNumbers}
+                  onCheckedChange={() => setIncludeNumbers((v) => !v)}
+                />
                 <span className="text-sm">Numbers</span>
               </label>
 
               <label className="flex items-center gap-2">
-                <Checkbox checked={includeSymbols} onCheckedChange={() => setIncludeSymbols(v => !v)} />
+                <Checkbox
+                  checked={includeSymbols}
+                  onCheckedChange={() => setIncludeSymbols((v) => !v)}
+                />
                 <span className="text-sm">Special Characteres</span>
               </label>
             </div>
@@ -105,16 +139,27 @@ export default function PasswordGenerator() {
                 max={128}
                 value={length}
                 onChange={(e) => setLength(Number(e.target.value))}
-                className='w-24'
+                className="w-24"
               />
-              <div className="ml-auto text-sm">Strength: <strong className={strengthInfo.className}>{strengthInfo.label}</strong></div>
+              <div className="ml-auto text-sm">
+                Strength:{" "}
+                <strong className={strengthInfo.className}>
+                  {strengthInfo.label}
+                </strong>
+              </div>
             </div>
 
             <div>
               <div className="mb-2 flex justify-between items-center">
                 <Label className="mb-0">Password</Label>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={generatePassword}>Generate</Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={generatePassword}
+                  >
+                    Generate
+                  </Button>
                 </div>
               </div>
 
@@ -128,8 +173,12 @@ export default function PasswordGenerator() {
               />
 
               <div className="flex gap-2 justify-between">
-                <Button variant="outline" onClick={() => handleCopy(password)}>{buttonText}</Button>
-                <Button variant="outline" onClick={() => setPassword("")}>Clear</Button>
+                <Button variant="outline" onClick={() => handleCopy(password)}>
+                  {buttonText}
+                </Button>
+                <Button variant="outline" onClick={() => setPassword("")}>
+                  Clear
+                </Button>
               </div>
             </div>
           </div>
