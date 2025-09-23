@@ -14,6 +14,7 @@ import { Input } from "@/components/ds/InputComponent";
 import { PasswordBuilder } from "@/components/utils/password-generator.utils";
 import PasswordGeneratorSEO from "@/components/seo/PasswordGeneratorSEO";
 import GitHubContribution from "@/components/GitHubContribution";
+import { cn } from "@/lib/utils";
 
 export default function PasswordGenerator() {
   const [password, setPassword] = useState("");
@@ -53,16 +54,16 @@ export default function PasswordGenerator() {
     if (length >= 20 && types >= 3) {
       return {
         label: "Very Strong",
-        className: "text-green-600 font-semibold",
+        className: "bg-green-600",
       };
     }
     if (length >= 12 && types >= 3) {
-      return { label: "Strong", className: "text-green-500" };
+      return { label: "Strong", className: "bg-green-500" };
     }
     if (length >= 10 && types >= 2) {
-      return { label: "Medium", className: "text-yellow-500" };
+      return { label: "Medium", className: "bg-yellow-500" };
     }
-    return { label: "Weak", className: "text-red-500" };
+    return { label: "Weak", className: "bg-red-500" };
   }, [
     length,
     includeLowercase,
@@ -91,14 +92,13 @@ export default function PasswordGenerator() {
         <Card className="flex flex-col p-6 rounded-xl">
           <div className="grid gap-4">
             <div className="flex items-center justify-between">
-              <Label className="mb-0">Options</Label>
-              <div className="text-xs text-muted-foreground">
-                Select the desired options
-              </div>
+              <Label className="mb-0">Select desired options:</Label>
             </div>
 
+            <div className="h-[1px] bg-border"></div>
+
             <div className="grid grid-cols-2 gap-3">
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <Checkbox
                   checked={includeLowercase}
                   onCheckedChange={() => setIncludeLowercase((v) => !v)}
@@ -106,15 +106,15 @@ export default function PasswordGenerator() {
                 <span className="text-sm">Lowercase letters</span>
               </label>
 
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <Checkbox
                   checked={includeUppercase}
                   onCheckedChange={() => setIncludeUppercase((v) => !v)}
                 />
-                <span className="text-sm">Uppercase letters</span>
+                <span className="text-sm ">Uppercase letters</span>
               </label>
 
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <Checkbox
                   checked={includeNumbers}
                   onCheckedChange={() => setIncludeNumbers((v) => !v)}
@@ -122,7 +122,7 @@ export default function PasswordGenerator() {
                 <span className="text-sm">Numbers</span>
               </label>
 
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <Checkbox
                   checked={includeSymbols}
                   onCheckedChange={() => setIncludeSymbols((v) => !v)}
@@ -131,36 +131,47 @@ export default function PasswordGenerator() {
               </label>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Label className="mb-0">Length</Label>
-              <Input
-                type="number"
-                min={4}
-                max={128}
-                value={length}
-                onChange={(e) => setLength(Number(e.target.value))}
-                className="w-24"
-              />
-              <div className="ml-auto text-sm">
-                Strength:{" "}
-                <strong className={strengthInfo.className}>
+            <div className="h-[1px] flex bg-muted"></div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col">
+                <Label className="mb-2">Length:</Label>
+                <Input
+                  type="number"
+                  min={4}
+                  max={128}
+                  value={length}
+                  onChange={(e) => setLength(Number(e.target.value))}
+                  className="h-8 w-full"
+                />
+              </div>
+
+              <div className="text-sm">
+                <Label className="mb-2">Password strength:</Label>
+
+                <div className="bg-muted text-foreground h-8 rounded-md items-center flex px-3 font-medium gap-1.5">
+                  <div
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full",
+                      strengthInfo.className
+                    )}
+                  />
                   {strengthInfo.label}
-                </strong>
+                </div>
               </div>
             </div>
+
+            <div className="h-[1px] bg-border"></div>
+
+            <div className="flex flex-col">
+              <Button onClick={generatePassword}>Generate</Button>
+            </div>
+
+            <div className="h-[1px] bg-border"></div>
 
             <div>
               <div className="mb-2 flex justify-between items-center">
                 <Label className="mb-0">Password</Label>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={generatePassword}
-                  >
-                    Generate
-                  </Button>
-                </div>
               </div>
 
               <Textarea
