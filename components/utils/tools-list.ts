@@ -30,9 +30,9 @@ export const tools = [
     link: "/utilities/url-encoder",
   },
   {
-    title: "Timestamp to Date Converter",
+    title: "Epoch Converter",
     description:
-      "Paste Unix timestamps and get a human readable dates. Perfect for developers working with time-based data.",
+      "Convert between Unix timestamps and human-readable dates bidirectionally. Supports seconds, milliseconds, and ISO date formats.",
     link: "/utilities/timestamp-to-date",
   },
   {

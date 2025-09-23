@@ -32,7 +32,7 @@ export default function TimestampToDate() {
         setOutput(output);
       } catch {
         setOutput(
-          "Invalid timestamp format.\nPlease use milliseconds (11-13 digits) or seconds (1-10 digits)."
+          "Invalid input format.\nPlease enter a Unix timestamp (seconds/milliseconds) or ISO date string.\n\nExamples:\n• Unix timestamp: 1234567890\n• Unix timestamp (ms): 1234567890123\n• ISO date: 2009-02-13T23:31:30.123Z\n• Human readable: February 13, 2009 23:31:30 GMT"
         );
       }
     },
@@ -42,31 +42,31 @@ export default function TimestampToDate() {
   return (
     <main>
       <Meta
-        title="Timestamp to Date Converter | Free, Open Source & Ad-free"
-        description="Convert Unix timestamps to human-readable dates quickly and easily with Jam's free online Timestamp to Date converter. Perfect for developers, data analysts, and anyone working with time data."
+        title="Epoch Converter | Unix Timestamp & Date Converter | Free, Open Source & Ad-free"
+        description="Convert between Unix timestamps and human-readable dates bidirectionally. Supports seconds, milliseconds, and ISO date strings. Perfect for developers and data analysts."
       />
       <Header />
       <CMDK />
 
       <section className="container max-w-2xl mb-12">
         <PageHeader
-          title="Timestamp to Date Converter"
-          description="Free, Open Source & Ad-free"
+          title="Epoch Converter"
+          description="Convert between Unix timestamps and dates"
         />
       </section>
 
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
-            <Label>Timestamp (milliseconds or seconds)</Label>
+            <Label>Input (Unix timestamp or date string)</Label>
             <Textarea
               rows={6}
-              placeholder="Paste here"
+              placeholder="Examples:&#10;• Unix timestamp (seconds): 1234567890&#10;• Unix timestamp (ms): 1234567890123&#10;• ISO date: 2009-02-13T23:31:30.123Z&#10;• Human readable: February 13, 2009 23:31:30 GMT"
               onChange={handleChange}
               className="mb-6"
               value={input}
             />
-            <Label>Date</Label>
+            <Label>Output</Label>
             <Textarea
               value={output}
               rows={6}

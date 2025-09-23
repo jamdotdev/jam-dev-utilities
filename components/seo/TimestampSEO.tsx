@@ -5,8 +5,8 @@ export default function TimestampSEO() {
     <div className="content-wrapper">
       <section>
         <p>
-          You can easily convert Unix timestamps into human-readable dates with
-          this free tool. Whether you&apos;re{" "}
+          Convert between Unix timestamps and human-readable dates bidirectionally with
+          this free epoch converter tool. Whether you&apos;re{" "}
           <a
             href="https://jam.dev/tracing"
             target="_blank"
@@ -14,8 +14,8 @@ export default function TimestampSEO() {
           >
             debugging logs
           </a>
-          , analyzing datasets, or working on web development projects, an epoch
-          Unix timestamp converter often comes in handy.
+          , analyzing datasets, or working on web development projects, this comprehensive epoch
+          converter handles both timestamp-to-date and date-to-timestamp conversions seamlessly.
         </p>
       </section>
 
@@ -23,8 +23,16 @@ export default function TimestampSEO() {
         <h2>Features:</h2>
         <ul>
           <li>
+            <b>Bidirectional Conversion:</b> <br /> Convert Unix timestamps to dates or 
+            dates to Unix timestamps - both directions supported.
+          </li>
+          <li>
+            <b>Multiple Formats:</b> <br /> Supports Unix seconds, milliseconds, ISO 8601 dates,
+            and human-readable date strings.
+          </li>
+          <li>
             <b>Instant Conversion:</b> <br /> No need to click any buttons—just
-            enter the timestamp and get the result.
+            enter your input and get the result instantly.
           </li>
           <li>
             <b>Accurate Results:</b> <br /> Provides precise conversion for both
@@ -38,21 +46,27 @@ export default function TimestampSEO() {
       </section>
 
       <section>
-        <h2>How to use Jam&apos;s Online Timestamp Converter:</h2>
+        <h2>How to use Jam&apos;s Online Epoch Converter:</h2>
         <p>
-          Convert Unix timestamps to time and date in seconds. Using our epoch
-          to date converter is straightforward:
+          Convert between Unix timestamps and dates in both directions. Using our bidirectional epoch
+          converter is straightforward:
         </p>
         <ul>
           <li>
-            <b>Step 1:</b> <br /> Input the timestamp.
+            <b>Timestamp to Date:</b> <br /> Enter a Unix timestamp (seconds or milliseconds)
+            to get human-readable date formats.
           </li>
           <li>
-            <b>Step 2:</b> <br /> Just kidding, there&apos;s no step 2.
+            <b>Date to Timestamp:</b> <br /> Enter an ISO date string or human-readable date
+            to get Unix timestamps in both seconds and milliseconds.
+          </li>
+          <li>
+            <b>Auto-detection:</b> <br /> The tool automatically detects your input format
+            and converts accordingly.
           </li>
         </ul>
         <p>
-          Your unix time stamp is now in human readable format and ready to be
+          Your converted result is displayed instantly and ready to be
           copied to your clipboard.
         </p>
       </section>
