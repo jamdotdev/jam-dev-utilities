@@ -11,14 +11,6 @@ export default function PasswordGeneratorSEO() {
       </section>
 
       <section>
-        <p>
-          Just select your preferences(lowercase letters, uppercase letters,
-          numbers, and special characters) and click &quot;Generate&quot;. Built
-          with 💜 by the developers at Jam, completely open-source and ad-free.
-        </p>
-      </section>
-
-      <section>
         <h2>How to Use Jam&apos;s Password Generator</h2>
         <p>
           Quickly create a strong password tailored to your needs. Follow these
@@ -73,8 +65,10 @@ export default function PasswordGeneratorSEO() {
             open-source, and ad-free.
           </li>
           <li>
-            <b>Are the generated passwords stored?</b> <br /> No. Passwords are
-            generated in your browser and never sent to our servers.
+            <b>Are the generated passwords stored?</b> <br />
+            No. All jam.dev/utilities are local-only browser tools that work
+            entirely without any backend. Your passwords are generated in your
+            browser and never leave your device.
           </li>
           <li>
             <b>How long should my password be?</b> <br /> For strong security,

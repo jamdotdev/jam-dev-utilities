@@ -158,7 +158,7 @@ export const tools = [
   {
     title: "Password Generator",
     description:
-      "Generate strong and secure passwords instantly with Jam's free online Password Generator. Choose your preferences or use all options by default (uppercase letters, lowercase letters, numbers, and special characters) and get a reliable password in one click!",
+      "Mix uppercase, lowercase, numbers, and symbols to generate bulletproof passwords that will keep your accounts safe.",
     link: "/utilities/password-generator",
   },
 ];
