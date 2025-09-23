@@ -156,9 +156,9 @@ export const tools = [
     link: "/utilities/internet-speed-test",
   },
   {
-    title: "Password Generator",
+    title: "Random String Generator",
     description:
-      "Mix uppercase, lowercase, numbers, and symbols to generate bulletproof passwords that will keep your accounts safe.",
+      "Generate cryptographically secure random strings with configurable character sets. Perfect for API keys, tokens, passwords, and secure identifiers.",
     link: "/utilities/password-generator",
   },
 ];

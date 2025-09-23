@@ -12,12 +12,12 @@ import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { Input } from "@/components/ds/InputComponent";
 import { PasswordBuilder } from "@/components/utils/password-generator.utils";
-import PasswordGeneratorSEO from "@/components/seo/PasswordGeneratorSEO";
+import RandomStringGeneratorSEO from "@/components/seo/RandomStringGeneratorSEO";
 import GitHubContribution from "@/components/GitHubContribution";
 import { cn } from "@/lib/utils";
 
 export default function PasswordGenerator() {
-  const [password, setPassword] = useState("");
+  const [generatedString, setGeneratedString] = useState("");
   const [length, setLength] = useState<number>(16);
   const [includeLowercase, setIncludeLowercase] = useState<boolean>(true);
   const [includeUppercase, setIncludeUppercase] = useState<boolean>(true);
@@ -26,7 +26,7 @@ export default function PasswordGenerator() {
   const { buttonText, handleCopy } = useCopyToClipboard();
   const outputRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const generatePassword = useCallback(() => {
+  const generateRandomString = useCallback(() => {
     const builder = new PasswordBuilder(
       includeLowercase,
       includeUppercase,
@@ -34,7 +34,7 @@ export default function PasswordGenerator() {
       includeSymbols,
       length
     );
-    setPassword(builder.Build());
+    setGeneratedString(builder.Build());
   }, [
     includeLowercase,
     includeUppercase,
@@ -75,15 +75,15 @@ export default function PasswordGenerator() {
   return (
     <main>
       <Meta
-        title="Password Generator | Free, Open Source & Ad-free"
-        description="Generate strong and secure passwords instantly with Jam's free online Password Generator. Choose your preferences or use all options by default — uppercase letters, lowercase letters, numbers, and special characters — and get a reliable password in one click. That's it."
+        title="Random String Generator | Free, Open Source & Ad-free"
+        description="Generate cryptographically strong random strings with password-like structure instantly with Jam's free online Random String Generator. Choose your preferences or use all options by default — uppercase letters, lowercase letters, numbers, and special characters — and get a reliable random string in one click. That's it."
       />
       <Header />
       <CMDK />
 
       <section className="container max-w-2xl mb-12">
         <PageHeader
-          title="Password Generator"
+          title="Random String Generator"
           description="Fast, free, open source, ad-free tools."
         />
       </section>
@@ -147,7 +147,7 @@ export default function PasswordGenerator() {
               </div>
 
               <div className="text-sm">
-                <Label className="mb-2">Password strength:</Label>
+                <Label className="mb-2">String complexity:</Label>
 
                 <div className="bg-muted text-foreground h-8 rounded-md items-center flex px-3 font-medium gap-1.5">
                   <div
@@ -164,30 +164,36 @@ export default function PasswordGenerator() {
             <div className="h-[1px] bg-border"></div>
 
             <div className="flex flex-col">
-              <Button onClick={generatePassword}>Generate</Button>
+              <Button onClick={generateRandomString}>Generate</Button>
             </div>
 
             <div className="h-[1px] bg-border"></div>
 
             <div>
               <div className="mb-2 flex justify-between items-center">
-                <Label className="mb-0">Password</Label>
+                <Label className="mb-0">Generated String</Label>
               </div>
 
               <Textarea
-                value={password}
+                value={generatedString}
                 readOnly
                 rows={2}
                 ref={outputRef}
                 className="mb-4"
-                placeholder="Click 'Generate' to create a secure password."
+                placeholder="Click 'Generate' to create a cryptographically strong random string."
               />
 
               <div className="flex gap-2 justify-between">
-                <Button variant="outline" onClick={() => handleCopy(password)}>
+                <Button
+                  variant="outline"
+                  onClick={() => handleCopy(generatedString)}
+                >
                   {buttonText}
                 </Button>
-                <Button variant="outline" onClick={() => setPassword("")}>
+                <Button
+                  variant="outline"
+                  onClick={() => setGeneratedString("")}
+                >
                   Clear
                 </Button>
               </div>
@@ -200,7 +206,7 @@ export default function PasswordGenerator() {
       <CallToActionGrid />
 
       <section className="container max-w-2xl">
-        <PasswordGeneratorSEO />
+        <RandomStringGeneratorSEO />
       </section>
     </main>
   );
