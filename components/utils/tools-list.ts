@@ -155,4 +155,10 @@ export const tools = [
       "Test your internet connection speed with accurate measurements by using Cloudflare's global network.",
     link: "/utilities/internet-speed-test",
   },
+  {
+    title: "Password Generator",
+    description:
+      "Mix uppercase, lowercase, numbers, and symbols to generate bulletproof passwords that will keep your accounts safe.",
+    link: "/utilities/password-generator",
+  },
 ];

@@ -50,6 +50,7 @@ Here is the list of all utilities:
 - [WebP Converter](https://jam.dev/utilities/webp-converter)
 - [SQL Minifer](https://jam.dev/utilities/sql-minifier)
 - [Internet Speed Test](https://jam.dev/utilities/internet-speed-test)
+- [Password Generator](https://jam.dev/utilities/password-generator)
 
 ### Built With
 
