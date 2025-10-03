@@ -33,7 +33,10 @@ export const WaterfallSvgView: React.FC<WaterfallSvgViewProps> = ({
   const headerHeight = 40;
   const leftPadding = 300;
   const rightPadding = 100;
-  const chartWidth = (width - leftPadding - rightPadding) * zoomLevel;
+  
+  // Ensure chartWidth doesn't cause overflow
+  const availableWidth = width - leftPadding - rightPadding;
+  const chartWidth = Math.max(availableWidth * zoomLevel, availableWidth);
 
   // Calculate time range for all timings
   const { minTime, timeRange } = useMemo(() => {
@@ -54,7 +57,7 @@ export const WaterfallSvgView: React.FC<WaterfallSvgViewProps> = ({
   return (
     <div 
       className="relative overflow-auto bg-background border border-border rounded-lg"
-      style={{ height, width }}
+      style={{ height, width, overflowX: 'hidden' }}
     >
       {/* Header */}
       <WaterfallSvgHeader
@@ -71,7 +74,8 @@ export const WaterfallSvgView: React.FC<WaterfallSvgViewProps> = ({
         className="relative"
         style={{ 
           height: contentHeight - headerHeight,
-          marginTop: 0
+          marginTop: 0,
+          width: '100%'
         }}
       >
         {/* Rows */}

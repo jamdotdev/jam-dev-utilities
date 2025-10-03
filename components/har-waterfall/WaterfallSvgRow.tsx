@@ -45,8 +45,8 @@ const WaterfallSvgRowComponent: React.FC<WaterfallSvgRowProps> = ({
 
   const textColor = entry.response.status >= 400 ? "text-destructive" : "text-foreground";
 
-  // Handle mouse move for tooltip positioning
-  const handleMouseMove = (e: React.MouseEvent) => {
+  // Handle mouse enter for tooltip positioning - only on enter, not move
+  const handleMouseEnter = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX;
     const y = e.clientY;
@@ -57,52 +57,61 @@ const WaterfallSvgRowComponent: React.FC<WaterfallSvgRowProps> = ({
     onMouseEnter(x, y, isUrlHover);
   };
 
+  // Fixed column widths for pixel-perfect alignment
+  const statusWidth = 32; // Dot (8px) + status code (24px)
+  const timeWidth = 64; // Timestamp width
+  const urlWidth = leftPadding - statusWidth - timeWidth - 24; // Remaining space (minus padding)
+
   return (
     <div
       className={`
         flex items-center
         border-b border-border/30 
         cursor-pointer 
-        transition-colors duration-200
+        transition-colors duration-100
         ${isHovered ? 'bg-accent/50' : index % 2 === 0 ? 'bg-muted/20' : 'bg-background'}
         hover:bg-accent/30
       `}
       style={{ height: rowHeight }}
       onClick={onClick}
-      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={onMouseLeave}
       role="row"
       tabIndex={0}
       aria-label={`Request to ${entry.request.url}, status ${entry.response.status}, duration ${formatDuration(timing.totalTime)}`}
     >
-      {/* Left section with status, time, and URL */}
+      {/* Left section with status, time, and URL - using fixed column widths */}
       <div 
-        className="flex items-center gap-2 px-3 min-w-0 overflow-hidden"
+        className="flex items-center px-3 shrink-0"
         style={{ width: leftPadding }}
       >
-        {/* Status indicator dot */}
-        <div
-          className={`w-2 h-2 rounded-full flex-shrink-0 ${
-            entry.response.status >= 400 
-              ? 'bg-destructive' 
-              : 'bg-green-500'
-          }`}
-          aria-hidden="true"
-        />
+        {/* Status column */}
+        <div className="flex items-center gap-1.5 shrink-0" style={{ width: statusWidth }}>
+          <div
+            className={`w-2 h-2 rounded-full ${
+              entry.response.status >= 400 
+                ? 'bg-destructive' 
+                : 'bg-green-500'
+            }`}
+            aria-hidden="true"
+          />
+          <span className={`text-xs font-mono ${textColor}`}>
+            {entry.response.status}
+          </span>
+        </div>
         
-        {/* Status code */}
-        <span className={`text-xs font-mono flex-shrink-0 min-w-[2.5ch] ${textColor}`}>
-          {entry.response.status}
-        </span>
-        
-        {/* Timestamp */}
-        <span className="text-xs text-muted-foreground font-mono flex-shrink-0 min-w-[5ch]">
+        {/* Time column */}
+        <span 
+          className="text-xs text-muted-foreground font-mono shrink-0 ml-2" 
+          style={{ width: timeWidth }}
+        >
           {timestamp}
         </span>
         
-        {/* URL */}
+        {/* URL column */}
         <span 
-          className={`text-xs truncate flex-1 min-w-0 ${textColor}`}
+          className={`text-xs truncate ml-2 min-w-0 ${textColor}`}
+          style={{ width: urlWidth }}
           title={entry.request.url}
         >
           {displayText}
@@ -110,10 +119,10 @@ const WaterfallSvgRowComponent: React.FC<WaterfallSvgRowProps> = ({
       </div>
 
       {/* Timing chart section */}
-      <div className="flex-1 relative flex items-center">
+      <div className="flex-1 relative flex items-center overflow-hidden">
         <div 
           className="absolute left-0 top-1/2 transform -translate-y-1/2"
-          style={{ width: chartWidth }}
+          style={{ width: chartWidth, maxWidth: '100%' }}
         >
           <WaterfallSvgTimingChart
             timing={timing}
@@ -128,7 +137,7 @@ const WaterfallSvgRowComponent: React.FC<WaterfallSvgRowProps> = ({
 
       {/* Right section with duration */}
       <div 
-        className="flex items-center justify-end px-3 flex-shrink-0"
+        className="flex items-center justify-end px-3 shrink-0"
         style={{ width: rightPadding }}
       >
         <span className="text-xs text-muted-foreground font-mono">

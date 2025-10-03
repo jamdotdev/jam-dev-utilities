@@ -24,6 +24,11 @@ export const WaterfallSvgHeader: React.FC<WaterfallSvgHeaderProps> = ({
 
   const timeStep = timeRange / 10;
 
+  // Fixed column widths matching the row layout
+  const statusWidth = 32; // Dot (8px) + status code (24px)
+  const timeWidth = 64; // Timestamp width
+  const urlWidth = leftPadding - statusWidth - timeWidth - 24; // Remaining space (minus padding)
+
   return (
     <div 
       className="sticky top-0 z-10 bg-muted border-b border-border"
@@ -32,12 +37,12 @@ export const WaterfallSvgHeader: React.FC<WaterfallSvgHeaderProps> = ({
       {/* Header Background */}
       <div className="absolute inset-0 bg-muted" />
       
-      {/* Header Labels */}
-      <div className="relative flex items-center h-full text-muted-foreground text-sm">
-        <div className="absolute left-4 flex items-center gap-8">
-          <span>Status</span>
-          <span>Time</span>
-          <span>Path</span>
+      {/* Header Labels - pixel-perfect alignment with rows */}
+      <div className="relative flex items-center h-full text-muted-foreground text-xs font-medium">
+        <div className="flex items-center px-3" style={{ width: leftPadding }}>
+          <span style={{ width: statusWidth }}>Status</span>
+          <span className="ml-2" style={{ width: timeWidth }}>Time</span>
+          <span className="ml-2" style={{ width: urlWidth }}>Path</span>
         </div>
       </div>
 
