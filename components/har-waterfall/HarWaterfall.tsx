@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useMemo } from "react";
-import { HarEntry, FilterType, getFilterType } from "../utils/har-utils";
+import { HarEntry, FilterType, getFilterType, isBase64 } from "../utils/har-utils";
 import { WaterfallCanvas } from "./WaterfallCanvas";
 import { WaterfallTooltip } from "./WaterfallTooltip";
 import { WaterfallLegend } from "./WaterfallLegend";
@@ -11,12 +11,14 @@ interface HarWaterfallProps {
   entries: HarEntry[];
   activeFilter: FilterType;
   className?: string;
+  searchQuery?: string;
 }
 
 export const HarWaterfall: React.FC<HarWaterfallProps> = ({
   entries,
   activeFilter,
   className = "",
+  searchQuery = "",
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredEntry, setHoveredEntry] = useState<{
@@ -36,11 +38,64 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
   } | null>(null);
   const [scrollOffset, setScrollOffset] = useState({ x: 0, y: 0 });
 
-  // Filter entries based on active filter
+  // Filter entries based on active filter and search query
   const filteredEntries = useMemo(() => {
-    if (activeFilter === "All") return entries;
-    return entries.filter((entry) => getFilterType(entry) === activeFilter);
-  }, [entries, activeFilter]);
+    let result = entries;
+
+    // Apply content type filter
+    if (activeFilter !== "All") {
+      result = result.filter((entry) => getFilterType(entry) === activeFilter);
+    }
+
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((entry) => {
+        // Search in URL
+        if (entry.request.url.toLowerCase().includes(query)) return true;
+
+        // Search in request headers
+        const requestHeaderMatch = entry.request.headers.some(
+          (header) =>
+            header.name.toLowerCase().includes(query) ||
+            header.value.toLowerCase().includes(query)
+        );
+        if (requestHeaderMatch) return true;
+
+        // Search in response headers
+        const responseHeaderMatch = entry.response.headers.some(
+          (header) =>
+            header.name.toLowerCase().includes(query) ||
+            header.value.toLowerCase().includes(query)
+        );
+        if (responseHeaderMatch) return true;
+
+        // Search in request payload
+        if (entry.request.postData?.text) {
+          if (entry.request.postData.text.toLowerCase().includes(query))
+            return true;
+        }
+
+        // Search in response content
+        if (entry.response.content.text) {
+          // For base64 content, try to decode and search
+          let contentToSearch = entry.response.content.text;
+          if (isBase64(contentToSearch)) {
+            try {
+              contentToSearch = atob(contentToSearch);
+            } catch (e) {
+              // If decode fails, search in original
+            }
+          }
+          if (contentToSearch.toLowerCase().includes(query)) return true;
+        }
+
+        return false;
+      });
+    }
+
+    return result;
+  }, [entries, activeFilter, searchQuery]);
 
   // Calculate timings for all entries
   const timings = useMemo(() => {

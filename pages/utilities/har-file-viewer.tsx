@@ -21,12 +21,13 @@ import PageHeader from "@/components/PageHeader";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import HarFileViewerSEO from "@/components/seo/HarFileViewerSEO";
 import { HarWaterfall } from "@/components/har-waterfall";
-import { Table, BarChart3, Filter } from "lucide-react";
+import { Table, BarChart3, Filter, Search, X } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ds/PopoverComponent";
+import { Input } from "@/components/ds/InputComponent";
 import {
   Command,
   CommandEmpty,
@@ -111,6 +112,8 @@ export default function HARFileViewer() {
   const [viewMode, setViewMode] = useState<"table" | "waterfall">("table");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
   // Load view mode from localStorage on component mount
   useEffect(() => {
@@ -135,6 +138,15 @@ export default function HARFileViewer() {
       // localStorage not available or error occurred
     }
   }, [viewMode, isInitialized]);
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const handleFileUpload = useCallback((file: File | undefined) => {
     if (!file) {
@@ -189,6 +201,73 @@ export default function HARFileViewer() {
     []
   );
 
+  // Calculate filtered results count
+  const getFilteredCount = useCallback(() => {
+    if (!harData) return 0;
+
+    let result = harData.log.entries;
+
+    // Apply content type filter
+    if (activeFilter !== "All") {
+      result = result.filter((entry) => getFilterType(entry) === activeFilter);
+    }
+
+    // Apply status code filter
+    if (statusFilter.length > 0) {
+      result = result.filter((entry) =>
+        statusFilter.includes(entry.response.status.toString())
+      );
+    }
+
+    // Apply search filter
+    if (debouncedSearchQuery) {
+      const query = debouncedSearchQuery.toLowerCase();
+      result = result.filter((entry) => {
+        // Search in URL
+        if (entry.request.url.toLowerCase().includes(query)) return true;
+
+        // Search in request headers
+        const requestHeaderMatch = entry.request.headers.some(
+          (header) =>
+            header.name.toLowerCase().includes(query) ||
+            header.value.toLowerCase().includes(query)
+        );
+        if (requestHeaderMatch) return true;
+
+        // Search in response headers
+        const responseHeaderMatch = entry.response.headers.some(
+          (header) =>
+            header.name.toLowerCase().includes(query) ||
+            header.value.toLowerCase().includes(query)
+        );
+        if (responseHeaderMatch) return true;
+
+        // Search in request payload
+        if (entry.request.postData?.text) {
+          if (entry.request.postData.text.toLowerCase().includes(query))
+            return true;
+        }
+
+        // Search in response content
+        if (entry.response.content.text) {
+          let contentToSearch = entry.response.content.text;
+          if (isBase64(contentToSearch)) {
+            try {
+              contentToSearch = atob(contentToSearch);
+            } catch (e) {
+              // If decode fails, search in original
+            }
+          }
+          if (contentToSearch.toLowerCase().includes(query)) return true;
+        }
+
+        return false;
+      });
+    }
+
+    return result.length;
+  }, [harData, activeFilter, statusFilter, debouncedSearchQuery]);
+
   return (
     <main>
       <Meta
@@ -232,54 +311,88 @@ export default function HARFileViewer() {
       {harData && (
         <>
           <section className="container max-w-7xl mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex space-x-2">
-                {(
-                  [
-                    "All",
-                    "XHR",
-                    "JS",
-                    "CSS",
-                    "Img",
-                    "Media",
-                    "Other",
-                    "Errors",
-                  ] as FilterType[]
-                ).map((type) => (
-                  <Button
-                    key={type}
-                    variant="outline"
-                    className={cn(
-                      activeFilter === type && "bg-border hover:bg-border"
-                    )}
-                    onClick={() => setActiveFilter(type)}
-                  >
-                    {type}
-                  </Button>
-                ))}
+            <div className="flex flex-col gap-4 mb-4">
+              {/* Search Input */}
+              <div className="flex flex-col gap-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Search in URLs, headers, requests, and responses..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 pr-10"
+                  />
+                  {searchQuery && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                      title="Clear search"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                {/* Results count */}
+                {(debouncedSearchQuery || activeFilter !== "All" || statusFilter.length > 0) && (
+                  <p className="text-sm text-muted-foreground">
+                    Showing {getFilteredCount()} of {harData.log.entries.length} requests
+                  </p>
+                )}
               </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant={viewMode === "waterfall" ? "default" : "outline"}
-                  onClick={() => setViewMode("waterfall")}
-                  className="h-8 relative"
-                >
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Waterfall
-                  <span className="ml-2 inline-flex items-center rounded-full bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-600 dark:text-green-400">
-                    New
-                  </span>
-                </Button>
-                <Button
-                  size="sm"
-                  variant={viewMode === "table" ? "default" : "outline"}
-                  onClick={() => setViewMode("table")}
-                  className="h-8"
-                >
-                  <Table className="h-4 w-4 mr-2" />
-                  Table view
-                </Button>
+
+              {/* Filters and View Mode */}
+              <div className="flex items-center justify-between">
+                <div className="flex space-x-2">
+                  {(
+                    [
+                      "All",
+                      "XHR",
+                      "JS",
+                      "CSS",
+                      "Img",
+                      "Media",
+                      "Other",
+                      "Errors",
+                    ] as FilterType[]
+                  ).map((type) => (
+                    <Button
+                      key={type}
+                      variant="outline"
+                      className={cn(
+                        activeFilter === type && "bg-border hover:bg-border"
+                      )}
+                      onClick={() => setActiveFilter(type)}
+                    >
+                      {type}
+                    </Button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant={viewMode === "waterfall" ? "default" : "outline"}
+                    onClick={() => setViewMode("waterfall")}
+                    className="h-8 relative"
+                  >
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Waterfall
+                    <span className="ml-2 inline-flex items-center rounded-full bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-600 dark:text-green-400">
+                      New
+                    </span>
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={viewMode === "table" ? "default" : "outline"}
+                    onClick={() => setViewMode("table")}
+                    className="h-8"
+                  >
+                    <Table className="h-4 w-4 mr-2" />
+                    Table view
+                  </Button>
+                </div>
               </div>
             </div>
           </section>
@@ -291,11 +404,13 @@ export default function HARFileViewer() {
                 activeFilter={activeFilter}
                 statusFilter={statusFilter}
                 onStatusFilterChange={setStatusFilter}
+                searchQuery={debouncedSearchQuery}
               />
             ) : (
               <HarWaterfall
                 entries={harData.log.entries}
                 activeFilter={activeFilter}
+                searchQuery={debouncedSearchQuery}
                 className="mb-6"
               />
             )}
@@ -318,6 +433,7 @@ interface HarTableComponentProps extends HarTableProps {
   activeFilter: FilterType;
   statusFilter: string[];
   onStatusFilterChange: (statusCodes: string[]) => void;
+  searchQuery: string;
 }
 
 const HarTable = ({
@@ -325,6 +441,7 @@ const HarTable = ({
   activeFilter,
   statusFilter,
   onStatusFilterChange,
+  searchQuery,
 }: HarTableComponentProps) => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [sortField, setSortField] = useState<SortField | null>(null);
@@ -332,7 +449,7 @@ const HarTable = ({
 
   useEffect(() => {
     setExpandedRow(null);
-  }, [activeFilter]);
+  }, [activeFilter, searchQuery]);
 
   // Helper function to get status text
   const getStatusText = (statusCode: number): string => {
@@ -389,6 +506,53 @@ const HarTable = ({
       );
     }
 
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((entry) => {
+        // Search in URL
+        if (entry.request.url.toLowerCase().includes(query)) return true;
+
+        // Search in request headers
+        const requestHeaderMatch = entry.request.headers.some(
+          (header) =>
+            header.name.toLowerCase().includes(query) ||
+            header.value.toLowerCase().includes(query)
+        );
+        if (requestHeaderMatch) return true;
+
+        // Search in response headers
+        const responseHeaderMatch = entry.response.headers.some(
+          (header) =>
+            header.name.toLowerCase().includes(query) ||
+            header.value.toLowerCase().includes(query)
+        );
+        if (responseHeaderMatch) return true;
+
+        // Search in request payload
+        if (entry.request.postData?.text) {
+          if (entry.request.postData.text.toLowerCase().includes(query))
+            return true;
+        }
+
+        // Search in response content
+        if (entry.response.content.text) {
+          // For base64 content, try to decode and search
+          let contentToSearch = entry.response.content.text;
+          if (isBase64(contentToSearch)) {
+            try {
+              contentToSearch = atob(contentToSearch);
+            } catch (e) {
+              // If decode fails, search in original
+            }
+          }
+          if (contentToSearch.toLowerCase().includes(query)) return true;
+        }
+
+        return false;
+      });
+    }
+
     // Apply sorting
     if (sortField) {
       result.sort((a, b) => {
@@ -405,7 +569,7 @@ const HarTable = ({
     }
 
     return result;
-  }, [entries, activeFilter, statusFilter, sortField, sortOrder]);
+  }, [entries, activeFilter, statusFilter, searchQuery, sortField, sortOrder]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {

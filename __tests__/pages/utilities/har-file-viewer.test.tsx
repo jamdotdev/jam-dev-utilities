@@ -123,4 +123,73 @@ describe("HARFileViewer", () => {
     const row1 = within(rows[0]).getByTestId("column-status-code");
     expect(row1).toHaveTextContent("200");
   });
+
+  test("should filter requests based on search query", async () => {
+    const user = userEvent.setup();
+    render(<HARFileViewer />);
+
+    // Upload a HAR file
+    const file = new File([JSON.stringify(mockHarData)], "test.har", {
+      type: "application/json",
+    });
+    const fileInput = screen.getByTestId("input");
+    await user.upload(fileInput, file);
+
+    // Wait for all requests to be displayed
+    await screen.findByText("https://example.com/api/test");
+    await screen.findByText("https://example.com/css/style.css");
+
+    // Find the search input
+    const searchInput = screen.getByPlaceholderText(
+      "Search in URLs, headers, requests, and responses..."
+    );
+
+    // Search for "api" - should only show the first request
+    await user.type(searchInput, "api");
+
+    // Wait for debounce (300ms) + rendering time
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Should still see the api request
+    expect(screen.getByText("https://example.com/api/test")).toBeInTheDocument();
+
+    // Should not see the css request (it should be filtered out)
+    const rows = screen.queryAllByTestId("table-row");
+    expect(rows.length).toBe(1);
+  });
+
+  test("should clear search query when clear button is clicked", async () => {
+    const user = userEvent.setup();
+    render(<HARFileViewer />);
+
+    // Upload a HAR file
+    const file = new File([JSON.stringify(mockHarData)], "test.har", {
+      type: "application/json",
+    });
+    const fileInput = screen.getByTestId("input");
+    await user.upload(fileInput, file);
+
+    // Wait for requests to be displayed
+    await screen.findByText("https://example.com/api/test");
+
+    // Find and use the search input
+    const searchInput = screen.getByPlaceholderText(
+      "Search in URLs, headers, requests, and responses..."
+    );
+    await user.type(searchInput, "api");
+
+    // Wait for debounce
+    await new Promise((resolve) => setTimeout(resolve, 400));
+
+    // Find the clear button (it should appear when there's text)
+    const clearButton = screen.getByTitle("Clear search");
+    await user.click(clearButton);
+
+    // Search input should be empty
+    expect(searchInput).toHaveValue("");
+
+    // Both requests should be visible again
+    await screen.findByText("https://example.com/api/test");
+    await screen.findByText("https://example.com/css/style.css");
+  });
 });
