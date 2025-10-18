@@ -1,5 +1,10 @@
 import React, { useRef, useState, useCallback, useMemo } from "react";
-import { HarEntry, FilterType, getFilterType, isBase64 } from "../utils/har-utils";
+import {
+  HarEntry,
+  FilterType,
+  getFilterType,
+  isBase64,
+} from "../utils/har-utils";
 import { WaterfallCanvas } from "./WaterfallCanvas";
 import { WaterfallTooltip } from "./WaterfallTooltip";
 import { WaterfallLegend } from "./WaterfallLegend";

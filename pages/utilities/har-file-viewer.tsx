@@ -336,9 +336,12 @@ export default function HARFileViewer() {
                   )}
                 </div>
                 {/* Results count */}
-                {(debouncedSearchQuery || activeFilter !== "All" || statusFilter.length > 0) && (
+                {(debouncedSearchQuery ||
+                  activeFilter !== "All" ||
+                  statusFilter.length > 0) && (
                   <p className="text-sm text-muted-foreground">
-                    Showing {getFilteredCount()} of {harData.log.entries.length} requests
+                    Showing {getFilteredCount()} of {harData.log.entries.length}{" "}
+                    requests
                   </p>
                 )}
               </div>

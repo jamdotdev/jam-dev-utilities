@@ -151,7 +151,9 @@ describe("HARFileViewer", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // Should still see the api request
-    expect(screen.getByText("https://example.com/api/test")).toBeInTheDocument();
+    expect(
+      screen.getByText("https://example.com/api/test")
+    ).toBeInTheDocument();
 
     // Should not see the css request (it should be filtered out)
     const rows = screen.queryAllByTestId("table-row");
