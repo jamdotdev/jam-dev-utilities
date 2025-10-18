@@ -40,11 +40,11 @@ export default function SearchHighlightText({
         key={`match-${currentIndex}`}
         className="bg-yellow-300 dark:bg-yellow-600 dark:text-black rounded px-0.5"
       >
-        {text.slice(currentIndex, currentIndex + searchQuery.length)}
+        {text.slice(currentIndex, currentIndex + lowerQuery.length)}
       </mark>
     );
 
-    lastIndex = currentIndex + searchQuery.length;
+    lastIndex = currentIndex + lowerQuery.length;
   }
 
   // Add remaining text

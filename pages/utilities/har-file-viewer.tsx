@@ -608,8 +608,8 @@ const HarTable = ({
       <table className="w-full border-collapse table-fixed">
         <thead>
           <tr>
-            {searchQuery && <th className={`${tableHeaderStyles} w-[40px]`}></th>}
-            <th className={`${tableHeaderStyles} ${searchQuery ? 'w-[38%]' : 'w-[40%]'}`}>Name</th>
+            {searchQuery && <th className={`${tableHeaderStyles} w-[50px]`}></th>}
+            <th className={`${tableHeaderStyles} ${searchQuery ? 'w-[35%]' : 'w-[40%]'}`}>Name</th>
             <th className={`${tableHeaderStyles} w-[12%]`}>
               <div className="flex items-center justify-between">
                 <span>Status</span>
@@ -622,8 +622,8 @@ const HarTable = ({
                 </div>
               </div>
             </th>
-            <th className={`${tableHeaderStyles} w-[15%]`}>Type</th>
-            <th className={`${tableHeaderStyles} w-[15%]`}>Started at</th>
+            <th className={`${tableHeaderStyles} ${searchQuery ? 'w-[13%]' : 'w-[15%]'}`}>Type</th>
+            <th className={`${tableHeaderStyles} ${searchQuery ? 'w-[13%]' : 'w-[15%]'}`}>Started at</th>
             <th
               className={`${tableHeaderSortableStyles} w-[8%]`}
               onClick={() => handleSort("size")}
@@ -631,7 +631,7 @@ const HarTable = ({
               Size {sortField === "size" && (sortOrder === "asc" ? " ▲" : " ▼")}
             </th>
             <th
-              className={`${tableHeaderSortableStyles} w-[10%]`}
+              className={`${tableHeaderSortableStyles} ${searchQuery ? 'w-[9%]' : 'w-[10%]'}`}
               onClick={() => handleSort("time")}
             >
               Time {sortField === "time" && (sortOrder === "asc" ? " ▲" : " ▼")}
