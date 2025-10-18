@@ -9,6 +9,7 @@ import {
   HarTableProps,
   isBase64,
   tryParseJSON,
+  getMatchCategories,
 } from "@/components/utils/har-utils";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ds/ButtonComponent";
@@ -37,6 +38,9 @@ import {
   CommandList,
 } from "@/components/ds/CommandMenu";
 import { Checkbox } from "@/components/ds/CheckboxComponent";
+import SearchHighlightText from "@/components/SearchHighlightText";
+import MatchIndicators from "@/components/MatchIndicators";
+import MatchSummaryPills from "@/components/MatchSummaryPills";
 
 interface MultiSelectComboboxProps {
   data: { value: string; label: string }[];
@@ -335,6 +339,15 @@ export default function HARFileViewer() {
                     </Button>
                   )}
                 </div>
+                
+                {/* Match Summary Pills */}
+                {debouncedSearchQuery && (
+                  <MatchSummaryPills
+                    entries={harData.log.entries}
+                    searchQuery={debouncedSearchQuery}
+                  />
+                )}
+                
                 {/* Results count */}
                 {(debouncedSearchQuery ||
                   activeFilter !== "All" ||
@@ -595,7 +608,8 @@ const HarTable = ({
       <table className="w-full border-collapse table-fixed">
         <thead>
           <tr>
-            <th className={`${tableHeaderStyles} w-[40%]`}>Name</th>
+            {searchQuery && <th className={`${tableHeaderStyles} w-[40px]`}></th>}
+            <th className={`${tableHeaderStyles} ${searchQuery ? 'w-[38%]' : 'w-[40%]'}`}>Name</th>
             <th className={`${tableHeaderStyles} w-[12%]`}>
               <div className="flex items-center justify-between">
                 <span>Status</span>
@@ -626,74 +640,92 @@ const HarTable = ({
         </thead>
 
         <tbody>
-          {filteredAndSortedEntries.map((entry, index) => (
-            <Fragment key={index}>
-              <tr
-                data-testid="table-row"
-                className={cn(
-                  tableRowStyles,
-                  index % 2 === 0 && tableRowOddStyles,
-                  entry.response.status >= 400 && tableRowErrorStyles
-                )}
-                onClick={() => {
-                  setExpandedRow(expandedRow === index ? null : index);
-                }}
-              >
-                <td
+          {filteredAndSortedEntries.map((entry, index) => {
+            const matchInfo = searchQuery
+              ? getMatchCategories(entry, searchQuery)
+              : { categories: [], hasMatch: false };
+            
+            return (
+              <Fragment key={index}>
+                <tr
+                  data-testid="table-row"
                   className={cn(
-                    tableCellStyles,
-                    "max-w-xs cursor-pointer truncate"
+                    tableRowStyles,
+                    index % 2 === 0 && tableRowOddStyles,
+                    entry.response.status >= 400 && tableRowErrorStyles
                   )}
+                  onClick={() => {
+                    setExpandedRow(expandedRow === index ? null : index);
+                  }}
                 >
-                  {entry.request.url}
-                </td>
-                <td
-                  data-testid="column-status-code"
-                  className={cn(tableCellStyles, "cursor-pointer")}
-                >
-                  {entry.response.status}
-                </td>
-                <td className={cn(tableCellStyles, "cursor-pointer")}>
-                  {entry.response.content.mimeType}
-                </td>
-                <td className={cn(tableCellStyles, "cursor-pointer")}>
-                  {new Date(entry.startedDateTime).toLocaleTimeString()}
-                </td>
-                <td className={cn(tableCellStyles, "cursor-pointer")}>
-                  {(entry.response.content.size / 1024).toFixed(1) + "kB"}
-                </td>
-                <td className={tableCellStyles}>
-                  <div className="relative mb-1 h-2">
-                    <div
-                      className={cn(
-                        "absolute h-[3px] rounded-xl",
-                        getColorForTime(entry.time)
-                      )}
-                      style={{
-                        width: (entry.time / maxTime) * 100 + "%",
-                      }}
-                    />
-                  </div>
-                  {entry.time.toFixed(0) + "ms"}
-                </td>
-              </tr>
-
-              {expandedRow === index && (
-                <tr className={cn(index % 2 === 0 && tableRowOddStyles)}>
-                  <td colSpan={6} className={tableCellStyles}>
-                    <ExpandedDetails entry={entry} />
+                  {searchQuery && (
+                    <td className={cn(tableCellStyles, "cursor-pointer text-center")}>
+                      <MatchIndicators categories={matchInfo.categories} />
+                    </td>
+                  )}
+                  <td
+                    className={cn(
+                      tableCellStyles,
+                      "max-w-xs cursor-pointer truncate"
+                    )}
+                  >
+                    {searchQuery ? (
+                      <SearchHighlightText
+                        text={entry.request.url}
+                        searchQuery={searchQuery}
+                      />
+                    ) : (
+                      entry.request.url
+                    )}
+                  </td>
+                  <td
+                    data-testid="column-status-code"
+                    className={cn(tableCellStyles, "cursor-pointer")}
+                  >
+                    {entry.response.status}
+                  </td>
+                  <td className={cn(tableCellStyles, "cursor-pointer")}>
+                    {entry.response.content.mimeType}
+                  </td>
+                  <td className={cn(tableCellStyles, "cursor-pointer")}>
+                    {new Date(entry.startedDateTime).toLocaleTimeString()}
+                  </td>
+                  <td className={cn(tableCellStyles, "cursor-pointer")}>
+                    {(entry.response.content.size / 1024).toFixed(1) + "kB"}
+                  </td>
+                  <td className={tableCellStyles}>
+                    <div className="relative mb-1 h-2">
+                      <div
+                        className={cn(
+                          "absolute h-[3px] rounded-xl",
+                          getColorForTime(entry.time)
+                        )}
+                        style={{
+                          width: (entry.time / maxTime) * 100 + "%",
+                        }}
+                      />
+                    </div>
+                    {entry.time.toFixed(0) + "ms"}
                   </td>
                 </tr>
-              )}
-            </Fragment>
-          ))}
+
+                {expandedRow === index && (
+                  <tr className={cn(index % 2 === 0 && tableRowOddStyles)}>
+                    <td colSpan={searchQuery ? 7 : 6} className={tableCellStyles}>
+                      <ExpandedDetails entry={entry} searchQuery={searchQuery} />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
 };
 
-const ExpandedDetails = ({ entry }: { entry: HarEntry }) => {
+const ExpandedDetails = ({ entry, searchQuery }: { entry: HarEntry; searchQuery: string }) => {
   const [activeTab, setActiveTab] = useState("headers");
 
   const decodeContent = useCallback((content: string) => {
@@ -788,9 +820,26 @@ const ExpandedDetails = ({ entry }: { entry: HarEntry }) => {
             {entry.response.headers.map((header, index) => (
               <div key={index} className="flex break-all text-[13px]">
                 <span className="flex min-w-[260px] font-medium">
-                  {header.name}:{" "}
+                  {searchQuery ? (
+                    <SearchHighlightText
+                      text={header.name}
+                      searchQuery={searchQuery}
+                    />
+                  ) : (
+                    header.name
+                  )}
+                  :{" "}
                 </span>
-                <span className="flex">{header.value}</span>
+                <span className="flex">
+                  {searchQuery ? (
+                    <SearchHighlightText
+                      text={header.value}
+                      searchQuery={searchQuery}
+                    />
+                  ) : (
+                    header.value
+                  )}
+                </span>
               </div>
             ))}
 
@@ -798,9 +847,26 @@ const ExpandedDetails = ({ entry }: { entry: HarEntry }) => {
             {entry.request.headers.map((header, index) => (
               <div key={index} className="flex break-all text-[13px]">
                 <span className="flex min-w-[260px] font-medium">
-                  {header.name}:{" "}
+                  {searchQuery ? (
+                    <SearchHighlightText
+                      text={header.name}
+                      searchQuery={searchQuery}
+                    />
+                  ) : (
+                    header.name
+                  )}
+                  :{" "}
                 </span>
-                <span className="flex">{header.value}</span>
+                <span className="flex">
+                  {searchQuery ? (
+                    <SearchHighlightText
+                      text={header.value}
+                      searchQuery={searchQuery}
+                    />
+                  ) : (
+                    header.value
+                  )}
+                </span>
               </div>
             ))}
           </div>
