@@ -10,6 +10,7 @@ import {
   isBase64,
   tryParseJSON,
   getMatchCategories,
+  MatchCategory,
 } from "@/components/utils/har-utils";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ds/ButtonComponent";
@@ -608,7 +609,7 @@ const HarTable = ({
       <table className="w-full border-collapse table-fixed">
         <thead>
           <tr>
-            {searchQuery && <th className={`${tableHeaderStyles} w-[50px]`}></th>}
+            {searchQuery && <th className={`${tableHeaderStyles} w-[50px]`} title="Search match indicators">Search</th>}
             <th className={`${tableHeaderStyles} ${searchQuery ? 'w-[35%]' : 'w-[40%]'}`}>Name</th>
             <th className={`${tableHeaderStyles} w-[12%]`}>
               <div className="flex items-center justify-between">
@@ -712,7 +713,11 @@ const HarTable = ({
                 {expandedRow === index && (
                   <tr className={cn(index % 2 === 0 && tableRowOddStyles)}>
                     <td colSpan={searchQuery ? 7 : 6} className={tableCellStyles}>
-                      <ExpandedDetails entry={entry} searchQuery={searchQuery} />
+                      <ExpandedDetails 
+                        entry={entry} 
+                        searchQuery={searchQuery}
+                        matchInfo={matchInfo}
+                      />
                     </td>
                   </tr>
                 )}
@@ -725,7 +730,15 @@ const HarTable = ({
   );
 };
 
-const ExpandedDetails = ({ entry, searchQuery }: { entry: HarEntry; searchQuery: string }) => {
+const ExpandedDetails = ({ 
+  entry, 
+  searchQuery,
+  matchInfo 
+}: { 
+  entry: HarEntry; 
+  searchQuery: string;
+  matchInfo: { categories: MatchCategory[]; hasMatch: boolean };
+}) => {
   const [activeTab, setActiveTab] = useState("headers");
 
   const decodeContent = useCallback((content: string) => {
@@ -788,17 +801,32 @@ const ExpandedDetails = ({ entry, searchQuery }: { entry: HarEntry; searchQuery:
     );
   };
 
-  const TabHeader = ({ id, label }: { id: string; label: string }) => {
+  const TabHeader = ({ 
+    id, 
+    label, 
+    hasMatch 
+  }: { 
+    id: string; 
+    label: string;
+    hasMatch?: boolean;
+  }) => {
     return (
       <Button
         size="sm"
         variant="outline"
         className={cn(
+          "relative",
           activeTab === id && "bg-border border hover:bg-border/80"
         )}
         onClick={() => setActiveTab(id)}
       >
         {label}
+        {hasMatch && searchQuery && (
+          <span 
+            className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green-500"
+            title="Match found in this section"
+          />
+        )}
       </Button>
     );
   };
@@ -806,10 +834,24 @@ const ExpandedDetails = ({ entry, searchQuery }: { entry: HarEntry; searchQuery:
   return (
     <div>
       <div className="mb-3 flex gap-1 px-4 py-2">
-        <TabHeader id="headers" label="Headers" />
-        {entry.request.postData && <TabHeader id="payload" label="Payload" />}
+        <TabHeader 
+          id="headers" 
+          label="Headers"
+          hasMatch={matchInfo.categories.includes("headers")}
+        />
+        {entry.request.postData && (
+          <TabHeader 
+            id="payload" 
+            label="Payload"
+            hasMatch={matchInfo.categories.includes("request")}
+          />
+        )}
         {entry.response.content.text && (
-          <TabHeader id="response" label="Response" />
+          <TabHeader 
+            id="response" 
+            label="Response"
+            hasMatch={matchInfo.categories.includes("response")}
+          />
         )}
       </div>
 
