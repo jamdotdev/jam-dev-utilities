@@ -8,7 +8,7 @@ interface MatchIndicatorsProps {
 /**
  * Displays colored dots to indicate which parts of an entry matched the search.
  * Similar to iOS notification indicators.
- * 
+ *
  * Color scheme:
  * - Blue: URL match
  * - Purple: Headers match

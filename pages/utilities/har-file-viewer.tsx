@@ -340,24 +340,22 @@ export default function HARFileViewer() {
                     </Button>
                   )}
                 </div>
-                
-                {/* Match Summary Pills */}
-                {debouncedSearchQuery && (
-                  <MatchSummaryPills
-                    entries={harData.log.entries}
-                    searchQuery={debouncedSearchQuery}
-                  />
-                )}
-                
-                {/* Results count */}
-                {(debouncedSearchQuery ||
-                  activeFilter !== "All" ||
-                  statusFilter.length > 0) && (
+
+                <div className="flex items-center min-h-[32px] gap-4">
+                  {/* Match Summary Pills */}
+                  {debouncedSearchQuery && (
+                    <MatchSummaryPills
+                      entries={harData.log.entries}
+                      searchQuery={debouncedSearchQuery}
+                    />
+                  )}
+
+                  {/* Results count */}
                   <p className="text-sm text-muted-foreground">
                     Showing {getFilteredCount()} of {harData.log.entries.length}{" "}
                     requests
                   </p>
-                )}
+                </div>
               </div>
 
               {/* Filters and View Mode */}
@@ -609,8 +607,19 @@ const HarTable = ({
       <table className="w-full border-collapse table-fixed">
         <thead>
           <tr>
-            {searchQuery && <th className={`${tableHeaderStyles} w-[50px]`} title="Search match indicators">Search</th>}
-            <th className={`${tableHeaderStyles} ${searchQuery ? 'w-[35%]' : 'w-[40%]'}`}>Name</th>
+            {searchQuery && (
+              <th
+                className={`${tableHeaderStyles} w-[50px]`}
+                title="Search match indicators"
+              >
+                Search
+              </th>
+            )}
+            <th
+              className={`${tableHeaderStyles} ${searchQuery ? "w-[35%]" : "w-[40%]"}`}
+            >
+              Name
+            </th>
             <th className={`${tableHeaderStyles} w-[12%]`}>
               <div className="flex items-center justify-between">
                 <span>Status</span>
@@ -623,8 +632,16 @@ const HarTable = ({
                 </div>
               </div>
             </th>
-            <th className={`${tableHeaderStyles} ${searchQuery ? 'w-[13%]' : 'w-[15%]'}`}>Type</th>
-            <th className={`${tableHeaderStyles} ${searchQuery ? 'w-[13%]' : 'w-[15%]'}`}>Started at</th>
+            <th
+              className={`${tableHeaderStyles} ${searchQuery ? "w-[13%]" : "w-[15%]"}`}
+            >
+              Type
+            </th>
+            <th
+              className={`${tableHeaderStyles} ${searchQuery ? "w-[13%]" : "w-[15%]"}`}
+            >
+              Started at
+            </th>
             <th
               className={`${tableHeaderSortableStyles} w-[8%]`}
               onClick={() => handleSort("size")}
@@ -632,7 +649,7 @@ const HarTable = ({
               Size {sortField === "size" && (sortOrder === "asc" ? " ▲" : " ▼")}
             </th>
             <th
-              className={`${tableHeaderSortableStyles} ${searchQuery ? 'w-[9%]' : 'w-[10%]'}`}
+              className={`${tableHeaderSortableStyles} ${searchQuery ? "w-[9%]" : "w-[10%]"}`}
               onClick={() => handleSort("time")}
             >
               Time {sortField === "time" && (sortOrder === "asc" ? " ▲" : " ▼")}
@@ -645,7 +662,7 @@ const HarTable = ({
             const matchInfo = searchQuery
               ? getMatchCategories(entry, searchQuery)
               : { categories: [], hasMatch: false };
-            
+
             return (
               <Fragment key={index}>
                 <tr
@@ -660,7 +677,12 @@ const HarTable = ({
                   }}
                 >
                   {searchQuery && (
-                    <td className={cn(tableCellStyles, "cursor-pointer text-center")}>
+                    <td
+                      className={cn(
+                        tableCellStyles,
+                        "cursor-pointer text-center"
+                      )}
+                    >
                       <MatchIndicators categories={matchInfo.categories} />
                     </td>
                   )}
@@ -712,9 +734,12 @@ const HarTable = ({
 
                 {expandedRow === index && (
                   <tr className={cn(index % 2 === 0 && tableRowOddStyles)}>
-                    <td colSpan={searchQuery ? 7 : 6} className={tableCellStyles}>
-                      <ExpandedDetails 
-                        entry={entry} 
+                    <td
+                      colSpan={searchQuery ? 7 : 6}
+                      className={tableCellStyles}
+                    >
+                      <ExpandedDetails
+                        entry={entry}
                         searchQuery={searchQuery}
                         matchInfo={matchInfo}
                       />
@@ -730,12 +755,12 @@ const HarTable = ({
   );
 };
 
-const ExpandedDetails = ({ 
-  entry, 
+const ExpandedDetails = ({
+  entry,
   searchQuery,
-  matchInfo 
-}: { 
-  entry: HarEntry; 
+  matchInfo,
+}: {
+  entry: HarEntry;
   searchQuery: string;
   matchInfo: { categories: MatchCategory[]; hasMatch: boolean };
 }) => {
@@ -801,12 +826,12 @@ const ExpandedDetails = ({
     );
   };
 
-  const TabHeader = ({ 
-    id, 
-    label, 
-    hasMatch 
-  }: { 
-    id: string; 
+  const TabHeader = ({
+    id,
+    label,
+    hasMatch,
+  }: {
+    id: string;
     label: string;
     hasMatch?: boolean;
   }) => {
@@ -822,8 +847,8 @@ const ExpandedDetails = ({
       >
         {label}
         {hasMatch && searchQuery && (
-          <span 
-            className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green-500"
+          <span
+            className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-yellow-500"
             title="Match found in this section"
           />
         )}
@@ -834,21 +859,21 @@ const ExpandedDetails = ({
   return (
     <div>
       <div className="mb-3 flex gap-1 px-4 py-2">
-        <TabHeader 
-          id="headers" 
+        <TabHeader
+          id="headers"
           label="Headers"
           hasMatch={matchInfo.categories.includes("headers")}
         />
         {entry.request.postData && (
-          <TabHeader 
-            id="payload" 
+          <TabHeader
+            id="payload"
             label="Payload"
             hasMatch={matchInfo.categories.includes("request")}
           />
         )}
         {entry.response.content.text && (
-          <TabHeader 
-            id="response" 
+          <TabHeader
+            id="response"
             label="Response"
             hasMatch={matchInfo.categories.includes("response")}
           />

@@ -20,7 +20,7 @@ export default function SearchHighlightText({
   const parts: JSX.Element[] = [];
   const lowerText = text.toLowerCase();
   const lowerQuery = searchQuery.toLowerCase();
-  
+
   let lastIndex = 0;
   let currentIndex = 0;
 
@@ -49,9 +49,7 @@ export default function SearchHighlightText({
 
   // Add remaining text
   if (lastIndex < text.length) {
-    parts.push(
-      <span key={`text-${lastIndex}`}>{text.slice(lastIndex)}</span>
-    );
+    parts.push(<span key={`text-${lastIndex}`}>{text.slice(lastIndex)}</span>);
   }
 
   return <span className={className}>{parts}</span>;
