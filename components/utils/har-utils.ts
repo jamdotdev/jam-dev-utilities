@@ -112,3 +112,76 @@ export function tryParseJSON(str: string) {
     return str;
   }
 }
+
+// Search match categories for visual indicators
+export type MatchCategory = "url" | "headers" | "request" | "response";
+
+export interface MatchInfo {
+  categories: MatchCategory[];
+  hasMatch: boolean;
+}
+
+/**
+ * Determines which categories of content match the search query for a given entry.
+ * Used to display colored indicators showing where matches were found.
+ */
+export function getMatchCategories(
+  entry: HarEntry,
+  searchQuery: string
+): MatchInfo {
+  if (!searchQuery) {
+    return { categories: [], hasMatch: false };
+  }
+
+  const query = searchQuery.toLowerCase();
+  const categories: MatchCategory[] = [];
+
+  // Check URL
+  if (entry.request.url.toLowerCase().includes(query)) {
+    categories.push("url");
+  }
+
+  // Check request and response headers
+  const hasHeaderMatch =
+    entry.request.headers.some(
+      (header) =>
+        header.name.toLowerCase().includes(query) ||
+        header.value.toLowerCase().includes(query)
+    ) ||
+    entry.response.headers.some(
+      (header) =>
+        header.name.toLowerCase().includes(query) ||
+        header.value.toLowerCase().includes(query)
+    );
+
+  if (hasHeaderMatch) {
+    categories.push("headers");
+  }
+
+  // Check request payload
+  if (entry.request.postData?.text) {
+    if (entry.request.postData.text.toLowerCase().includes(query)) {
+      categories.push("request");
+    }
+  }
+
+  // Check response content
+  if (entry.response.content.text) {
+    let contentToSearch = entry.response.content.text;
+    if (isBase64(contentToSearch)) {
+      try {
+        contentToSearch = atob(contentToSearch);
+      } catch (e) {
+        // If decode fails, search in original
+      }
+    }
+    if (contentToSearch.toLowerCase().includes(query)) {
+      categories.push("response");
+    }
+  }
+
+  return {
+    categories,
+    hasMatch: categories.length > 0,
+  };
+}
