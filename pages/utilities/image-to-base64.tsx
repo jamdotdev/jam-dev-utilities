@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Textarea } from "@/components/ds/TextareaComponent";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
@@ -32,6 +32,27 @@ export default function ImageToBase64() {
     };
     reader.readAsDataURL(file);
   }, []);
+
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (items) {
+        for (let item of Array.from(items)) {
+          if (item.type.startsWith("image/")) {
+            const file = item.getAsFile();
+            if (file) {
+              handleFileSelect(file);
+              e.preventDefault();
+              return;
+            }
+          }
+        }
+      }
+    };
+
+    document.addEventListener("paste", handlePaste);
+    return () => document.removeEventListener("paste", handlePaste);
+  }, [handleFileSelect]);
 
   return (
     <main>
