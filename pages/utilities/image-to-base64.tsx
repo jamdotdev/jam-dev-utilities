@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Textarea } from "@/components/ds/TextareaComponent";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
@@ -33,6 +33,27 @@ export default function ImageToBase64() {
     reader.readAsDataURL(file);
   }, []);
 
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (items) {
+        for (const item of Array.from(items)) {
+          if (item.type.startsWith("image/")) {
+            const file = item.getAsFile();
+            if (file) {
+              handleFileSelect(file);
+              e.preventDefault();
+              return;
+            }
+          }
+        }
+      }
+    };
+
+    document.addEventListener("paste", handlePaste);
+    return () => document.removeEventListener("paste", handlePaste);
+  }, [handleFileSelect]);
+
   return (
     <main>
       <Meta
@@ -51,6 +72,7 @@ export default function ImageToBase64() {
 
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
+          <Label>Paste from clipboard or drag n drop</Label>
           <ImageUploadComponent onFileSelect={handleFileSelect} />
           <div className="pt-8">
             <Label>Base64 Output</Label>
