@@ -80,7 +80,7 @@ export function CMDK(props: CDMKProps) {
             <CommandItem
               onSelect={() => {
                 window.open(
-                  "https://github.com/Strawberry-Jam-Manufacturers/jam-dev-utilities",
+                  "https://github.com/jamdotdev/jam-dev-utilities",
                   "_blank"
                 );
               }}
