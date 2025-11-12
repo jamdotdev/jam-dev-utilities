@@ -11,6 +11,7 @@ import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { ImageUploadComponent } from "@/components/ds/ImageUploadComponent";
 import ImageToBase64SEO from "@/components/seo/ImageToBase64SEO";
+import { DividerComponent } from "../../components/ds/DividerComponent";
 
 export default function ImageToBase64() {
   const [base64, setBase64] = useState("");
@@ -85,7 +86,8 @@ export default function ImageToBase64() {
             <Button variant="outline" onClick={() => handleCopyBase64(base64)}>
               {buttonBase64}
             </Button>
-            <Divider />
+
+            <DividerComponent margin="medium" />
 
             <Label>Use in {"<img>"} tag:</Label>
             <Textarea
@@ -103,7 +105,7 @@ export default function ImageToBase64() {
               {buttonImgTag}
             </Button>
 
-            <Divider />
+            <DividerComponent margin="medium" />
 
             <Label>Use in CSS</Label>
             <Textarea
@@ -132,10 +134,6 @@ export default function ImageToBase64() {
     </main>
   );
 }
-
-const Divider = () => {
-  return <div className="h-[1px] bg-border my-6"></div>;
-};
 
 const truncate = (input: string, maxLength: number) => {
   if (input.length <= maxLength) {
