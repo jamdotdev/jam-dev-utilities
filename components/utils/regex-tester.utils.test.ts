@@ -1,4 +1,26 @@
-import { createRegex } from "./regex-tester.utils";
+import { createRegex, escapeRegexPattern } from "./regex-tester.utils";
+
+describe("escapeRegexPattern", () => {
+  test("should escape special regex characters", () => {
+    expect(escapeRegexPattern("hello.world")).toBe("hello\\.world");
+    expect(escapeRegexPattern("a*b+c?")).toBe("a\\*b\\+c\\?");
+    expect(escapeRegexPattern("(test)")).toBe("\\(test\\)");
+    expect(escapeRegexPattern("[abc]")).toBe("\\[abc\\]");
+    expect(escapeRegexPattern("a{1,2}")).toBe("a\\{1,2\\}");
+    expect(escapeRegexPattern("a|b")).toBe("a\\|b");
+    expect(escapeRegexPattern("^start$end")).toBe("\\^start\\$end");
+    expect(escapeRegexPattern("back\\slash")).toBe("back\\\\slash");
+  });
+
+  test("should return plain text unchanged", () => {
+    expect(escapeRegexPattern("hello world")).toBe("hello world");
+    expect(escapeRegexPattern("abc123")).toBe("abc123");
+  });
+
+  test("should handle empty string", () => {
+    expect(escapeRegexPattern("")).toBe("");
+  });
+});
 
 describe("createRegex", () => {
   test("should create regex from simple pattern without flags and delimiters", () => {

@@ -1,3 +1,7 @@
+export const escapeRegexPattern = (text: string): string => {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
 export const createRegex = (pattern: string): RegExp => {
   if (typeof pattern !== "string" || pattern.trim() === "") {
     throw new Error("Pattern must be a non-empty string");

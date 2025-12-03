@@ -2,12 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 import { Textarea } from "@/components/ds/TextareaComponent";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
+import { Button } from "@/components/ds/ButtonComponent";
 import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import Meta from "@/components/Meta";
 import RegexHighlightText from "@/components/RegexHighlightText";
-import { createRegex } from "@/components/utils/regex-tester.utils";
+import {
+  createRegex,
+  escapeRegexPattern,
+} from "@/components/utils/regex-tester.utils";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import GitHubContribution from "@/components/GitHubContribution";
 
@@ -16,6 +20,14 @@ export default function RegexTester() {
   const [testString, setTestString] = useState("");
   const [result, setResult] = useState<string | null>("Please fill out");
   const [matches, setMatches] = useState<string[] | null>(null);
+
+  const handleFixPattern = useCallback(() => {
+    if (!testString.trim()) {
+      return;
+    }
+    const escapedPattern = escapeRegexPattern(testString);
+    setPattern(escapedPattern);
+  }, [testString]);
 
   const handleTest = useCallback(() => {
     try {
@@ -81,9 +93,17 @@ export default function RegexTester() {
               rows={1}
               placeholder="Enter regex pattern here (e.g., /pattern/g)"
               onChange={(event) => setPattern(event.target.value)}
-              className="mb-6 min-h-0"
+              className="mb-4 min-h-0"
               value={pattern}
             />
+            <Button
+              variant="outline"
+              onClick={handleFixPattern}
+              disabled={!testString.trim()}
+              className="mb-6"
+            >
+              Fix Pattern
+            </Button>
 
             <Label>Test String</Label>
             <div>
