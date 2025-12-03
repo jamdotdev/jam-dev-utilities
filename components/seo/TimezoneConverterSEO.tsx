@@ -6,9 +6,9 @@ export default function TimezoneConverterSEO() {
       <section>
         <p>
           Easily convert times between different timezones with this free tool.
-          Perfect for remote software teams who need to schedule syncs, meetings,
-          and standups across multiple timezones. No more mental math or timezone
-          confusion.
+          Perfect for remote software teams who need to schedule syncs,
+          meetings, and standups across multiple timezones. No more mental math
+          or timezone confusion.
         </p>
       </section>
 
@@ -42,7 +42,8 @@ export default function TimezoneConverterSEO() {
             timezones.
           </li>
           <li>
-            <b>Step 3:</b> <br /> Toggle timezones on/off to customize your view.
+            <b>Step 3:</b> <br /> Toggle timezones on/off to customize your
+            view.
           </li>
         </ul>
       </section>
@@ -51,21 +52,21 @@ export default function TimezoneConverterSEO() {
         <h2>Why Use a Timezone Converter?</h2>
         <p>
           Remote teams often span multiple continents and timezones. Scheduling
-          meetings that work for everyone can be challenging. A timezone converter
-          helps you:
+          meetings that work for everyone can be challenging. A timezone
+          converter helps you:
         </p>
         <ul>
           <li>
-            <b>Schedule Meetings:</b> <br /> Find times that work across different
-            regions without manual calculations.
+            <b>Schedule Meetings:</b> <br /> Find times that work across
+            different regions without manual calculations.
           </li>
           <li>
-            <b>Avoid Confusion:</b> <br /> Eliminate timezone math errors that can
-            lead to missed meetings.
+            <b>Avoid Confusion:</b> <br /> Eliminate timezone math errors that
+            can lead to missed meetings.
           </li>
           <li>
-            <b>Plan Ahead:</b> <br /> See how a proposed meeting time affects team
-            members in different locations.
+            <b>Plan Ahead:</b> <br /> See how a proposed meeting time affects
+            team members in different locations.
           </li>
         </ul>
       </section>
