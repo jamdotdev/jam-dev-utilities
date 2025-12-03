@@ -5,7 +5,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getDetailedMatches, RegexMatch } from "@/components/utils/regex-tester.utils";
+import {
+  getDetailedMatches,
+  RegexMatch,
+} from "@/components/utils/regex-tester.utils";
 import { cn } from "@/lib/utils";
 
 interface RegexCaptureGroupVisualizerProps {
@@ -38,7 +41,8 @@ export default function RegexCaptureGroupVisualizer({
   if (matches.length === 0) {
     return (
       <div className="text-sm text-muted-foreground italic">
-        No capture groups found. Add groups with parentheses () to see them here.
+        No capture groups found. Add groups with parentheses () to see them
+        here.
       </div>
     );
   }
@@ -50,7 +54,8 @@ export default function RegexCaptureGroupVisualizer({
   if (!hasGroups) {
     return (
       <div className="text-sm text-muted-foreground italic">
-        No capture groups in pattern. Use parentheses () to create capture groups.
+        No capture groups in pattern. Use parentheses () to create capture
+        groups.
       </div>
     );
   }
@@ -69,14 +74,20 @@ export default function RegexCaptureGroupVisualizer({
                 "border-foreground/30 bg-muted/30"
               )}
             >
-              <div className="text-xs text-muted-foreground mb-2">Full Match</div>
+              <div className="text-xs text-muted-foreground mb-2">
+                Full Match
+              </div>
               <div className="font-mono text-sm bg-background px-2 py-1 rounded border">
-                {match.fullMatch || <span className="text-muted-foreground italic">empty</span>}
+                {match.fullMatch || (
+                  <span className="text-muted-foreground italic">empty</span>
+                )}
               </div>
 
               {match.captureGroups.length > 0 && (
                 <div className="mt-3 space-y-2">
-                  <div className="text-xs text-muted-foreground">Capture Groups (CSS Box Model)</div>
+                  <div className="text-xs text-muted-foreground">
+                    Capture Groups (CSS Box Model)
+                  </div>
                   <div className="relative">
                     {match.captureGroups.map((group, groupIndex) => (
                       <Tooltip key={groupIndex}>
@@ -97,13 +108,19 @@ export default function RegexCaptureGroupVisualizer({
                                 Group {groupIndex + 1}
                               </span>
                               <span className="font-mono text-sm truncate">
-                                {group ?? <span className="text-muted-foreground italic">undefined</span>}
+                                {group ?? (
+                                  <span className="text-muted-foreground italic">
+                                    undefined
+                                  </span>
+                                )}
                               </span>
                             </div>
                           </div>
                         </TooltipTrigger>
                         <TooltipContent side="right" className="max-w-xs">
-                          <p className="font-semibold">Capture Group {groupIndex + 1}</p>
+                          <p className="font-semibold">
+                            Capture Group {groupIndex + 1}
+                          </p>
                           <p className="text-xs text-muted-foreground mt-1">
                             Captured value: {group ?? "undefined"}
                           </p>
@@ -120,35 +137,45 @@ export default function RegexCaptureGroupVisualizer({
 
               {Object.keys(match.groups).length > 0 && (
                 <div className="mt-3 space-y-2">
-                  <div className="text-xs text-muted-foreground">Named Groups</div>
+                  <div className="text-xs text-muted-foreground">
+                    Named Groups
+                  </div>
                   <div className="flex flex-wrap gap-2">
-                    {Object.entries(match.groups).map(([name, value], index) => (
-                      <Tooltip key={name}>
-                        <TooltipTrigger asChild>
-                          <div
-                            className={cn(
-                              "px-3 py-2 rounded border-2 transition-all cursor-help",
-                              "hover:shadow-md hover:ring-2 hover:ring-ring",
-                              GROUP_COLORS[index % GROUP_COLORS.length]
-                            )}
-                          >
-                            <div className="text-xs font-medium mb-1">{name}</div>
-                            <div className="font-mono text-sm">
-                              {value ?? <span className="text-muted-foreground italic">undefined</span>}
+                    {Object.entries(match.groups).map(
+                      ([name, value], index) => (
+                        <Tooltip key={name}>
+                          <TooltipTrigger asChild>
+                            <div
+                              className={cn(
+                                "px-3 py-2 rounded border-2 transition-all cursor-help",
+                                "hover:shadow-md hover:ring-2 hover:ring-ring",
+                                GROUP_COLORS[index % GROUP_COLORS.length]
+                              )}
+                            >
+                              <div className="text-xs font-medium mb-1">
+                                {name}
+                              </div>
+                              <div className="font-mono text-sm">
+                                {value ?? (
+                                  <span className="text-muted-foreground italic">
+                                    undefined
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom" className="max-w-xs">
-                          <p className="font-semibold">Named Group: {name}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Captured value: {value ?? "undefined"}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Access via: match.groups.{name}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="max-w-xs">
+                            <p className="font-semibold">Named Group: {name}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Captured value: {value ?? "undefined"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Access via: match.groups.{name}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )
+                    )}
                   </div>
                 </div>
               )}

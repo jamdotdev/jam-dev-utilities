@@ -6,7 +6,10 @@ interface RegexPresetPatternsProps {
   selectedPattern: string;
 }
 
-export default function RegexPresetPatterns({ onSelect, selectedPattern }: RegexPresetPatternsProps) {
+export default function RegexPresetPatterns({
+  onSelect,
+  selectedPattern,
+}: RegexPresetPatternsProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {PRESET_PATTERNS.map((preset) => (

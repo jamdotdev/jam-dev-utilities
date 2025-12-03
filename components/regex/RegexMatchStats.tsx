@@ -1,12 +1,18 @@
 import { useMemo } from "react";
-import { getMatchStats, MatchStats } from "@/components/utils/regex-tester.utils";
+import {
+  getMatchStats,
+  MatchStats,
+} from "@/components/utils/regex-tester.utils";
 
 interface RegexMatchStatsProps {
   pattern: string;
   testString: string;
 }
 
-export default function RegexMatchStats({ pattern, testString }: RegexMatchStatsProps) {
+export default function RegexMatchStats({
+  pattern,
+  testString,
+}: RegexMatchStatsProps) {
   const stats: MatchStats | null = useMemo(() => {
     if (!pattern || !testString) return null;
     try {
@@ -31,10 +37,7 @@ export default function RegexMatchStats({ pattern, testString }: RegexMatchStats
         value={stats.totalMatches.toString()}
         highlight={stats.totalMatches > 0}
       />
-      <StatCard
-        label="Unique Matches"
-        value={stats.uniqueMatches.toString()}
-      />
+      <StatCard label="Unique Matches" value={stats.uniqueMatches.toString()} />
       <StatCard
         label="Avg. Length"
         value={stats.averageMatchLength.toFixed(1)}

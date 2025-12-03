@@ -5,14 +5,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { RegexFlags, FLAG_DESCRIPTIONS } from "@/components/utils/regex-tester.utils";
+import {
+  RegexFlags,
+  FLAG_DESCRIPTIONS,
+} from "@/components/utils/regex-tester.utils";
 
 interface RegexFlagToggleProps {
   flags: RegexFlags;
   onFlagChange: (flag: keyof RegexFlags) => void;
 }
 
-export default function RegexFlagToggle({ flags, onFlagChange }: RegexFlagToggleProps) {
+export default function RegexFlagToggle({
+  flags,
+  onFlagChange,
+}: RegexFlagToggleProps) {
   const flagKeys = Object.keys(flags) as (keyof RegexFlags)[];
 
   return (

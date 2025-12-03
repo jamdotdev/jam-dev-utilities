@@ -9,7 +9,9 @@ interface RegexCheatSheetProps {
 
 export default function RegexCheatSheet({ onInsert }: RegexCheatSheetProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["Character Classes"]));
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(["Character Classes"])
+  );
 
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => {
@@ -41,7 +43,10 @@ export default function RegexCheatSheet({ onInsert }: RegexCheatSheetProps) {
       {isExpanded && (
         <div className="p-4 space-y-3 bg-background">
           {Object.entries(CHEAT_SHEET).map(([category, items]) => (
-            <div key={category} className="border border-border rounded-md overflow-hidden">
+            <div
+              key={category}
+              className="border border-border rounded-md overflow-hidden"
+            >
               <button
                 type="button"
                 onClick={() => toggleSection(category)}

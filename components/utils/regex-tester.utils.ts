@@ -40,24 +40,79 @@ export interface MatchStats {
   uniqueMatches: number;
 }
 
-export const FLAG_DESCRIPTIONS: Record<keyof RegexFlags, { name: string; description: string }> = {
-  g: { name: "Global", description: "Find all matches rather than stopping after the first match" },
-  i: { name: "Case Insensitive", description: "Match letters regardless of case (a matches A)" },
-  m: { name: "Multiline", description: "^ and $ match start/end of each line, not just the string" },
-  s: { name: "DotAll", description: "Dot (.) matches newline characters as well" },
-  u: { name: "Unicode", description: "Enable full Unicode support for the pattern" },
-  y: { name: "Sticky", description: "Match only from the lastIndex position in the target string" },
+export const FLAG_DESCRIPTIONS: Record<
+  keyof RegexFlags,
+  { name: string; description: string }
+> = {
+  g: {
+    name: "Global",
+    description: "Find all matches rather than stopping after the first match",
+  },
+  i: {
+    name: "Case Insensitive",
+    description: "Match letters regardless of case (a matches A)",
+  },
+  m: {
+    name: "Multiline",
+    description: "^ and $ match start/end of each line, not just the string",
+  },
+  s: {
+    name: "DotAll",
+    description: "Dot (.) matches newline characters as well",
+  },
+  u: {
+    name: "Unicode",
+    description: "Enable full Unicode support for the pattern",
+  },
+  y: {
+    name: "Sticky",
+    description: "Match only from the lastIndex position in the target string",
+  },
 };
 
 export const PRESET_PATTERNS = [
-  { name: "Email", pattern: "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/", testString: "test@example.com\ninvalid-email\nuser.name+tag@domain.co.uk" },
-  { name: "URL", pattern: "/https?:\\/\\/[\\w\\-]+(\\.[\\w\\-]+)+[/#?]?.*/gi", testString: "Visit https://example.com/path?query=1\nOr http://sub.domain.org/page#section" },
-  { name: "Phone (US)", pattern: "/\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}/g", testString: "(555) 123-4567\n555.123.4567\n555-123-4567" },
-  { name: "Date (YYYY-MM-DD)", pattern: "/\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])/g", testString: "2024-01-15\n2023-12-31\n2024-13-45 (invalid)" },
-  { name: "IPv4 Address", pattern: "/\\b(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\b/g", testString: "192.168.1.1\n10.0.0.255\n256.1.1.1 (invalid)" },
-  { name: "Hex Color", pattern: "/#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\\b/g", testString: "#FF5733\n#abc\n#GGGGGG (invalid)" },
-  { name: "HTML Tag", pattern: "/<([a-z]+)([^<]+)*(?:>(.*)<\\/\\1>|\\s+\\/>)/gi", testString: "<div class=\"container\">Content</div>\n<img src=\"image.png\" />" },
-  { name: "Credit Card", pattern: "/\\b(?:\\d{4}[- ]?){3}\\d{4}\\b/g", testString: "4111-1111-1111-1111\n4111 1111 1111 1111\n4111111111111111" },
+  {
+    name: "Email",
+    pattern: "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/",
+    testString: "test@example.com\ninvalid-email\nuser.name+tag@domain.co.uk",
+  },
+  {
+    name: "URL",
+    pattern: "/https?:\\/\\/[\\w\\-]+(\\.[\\w\\-]+)+[/#?]?.*/gi",
+    testString:
+      "Visit https://example.com/path?query=1\nOr http://sub.domain.org/page#section",
+  },
+  {
+    name: "Phone (US)",
+    pattern: "/\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}/g",
+    testString: "(555) 123-4567\n555.123.4567\n555-123-4567",
+  },
+  {
+    name: "Date (YYYY-MM-DD)",
+    pattern: "/\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])/g",
+    testString: "2024-01-15\n2023-12-31\n2024-13-45 (invalid)",
+  },
+  {
+    name: "IPv4 Address",
+    pattern:
+      "/\\b(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\b/g",
+    testString: "192.168.1.1\n10.0.0.255\n256.1.1.1 (invalid)",
+  },
+  {
+    name: "Hex Color",
+    pattern: "/#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\\b/g",
+    testString: "#FF5733\n#abc\n#GGGGGG (invalid)",
+  },
+  {
+    name: "HTML Tag",
+    pattern: "/<([a-z]+)([^<]+)*(?:>(.*)<\\/\\1>|\\s+\\/>)/gi",
+    testString: '<div class="container">Content</div>\n<img src="image.png" />',
+  },
+  {
+    name: "Credit Card",
+    pattern: "/\\b(?:\\d{4}[- ]?){3}\\d{4}\\b/g",
+    testString: "4111-1111-1111-1111\n4111 1111 1111 1111\n4111111111111111",
+  },
 ];
 
 export const createRegex = (pattern: string): RegExp => {
@@ -104,8 +159,15 @@ export const createRegex = (pattern: string): RegExp => {
 };
 
 export const parseFlags = (pattern: string): RegexFlags => {
-  const flags: RegexFlags = { g: false, i: false, m: false, s: false, u: false, y: false };
-  
+  const flags: RegexFlags = {
+    g: false,
+    i: false,
+    m: false,
+    s: false,
+    u: false,
+    y: false,
+  };
+
   if (pattern.startsWith("/")) {
     const lastSlashIndex = pattern.lastIndexOf("/");
     if (lastSlashIndex > 0) {
@@ -117,11 +179,14 @@ export const parseFlags = (pattern: string): RegexFlags => {
       }
     }
   }
-  
+
   return flags;
 };
 
-export const buildPatternWithFlags = (patternBody: string, flags: RegexFlags): string => {
+export const buildPatternWithFlags = (
+  patternBody: string,
+  flags: RegexFlags
+): string => {
   const flagStr = Object.entries(flags)
     .filter(([, enabled]) => enabled)
     .map(([flag]) => flag)
@@ -164,15 +229,24 @@ export const findCaptureGroups = (pattern: string): CaptureGroup[] => {
     if (patternBody[i] === "(") {
       let name: string | null = null;
       let isCapturing = true;
-      
+
       if (patternBody.slice(i + 1, i + 3) === "?:") {
         isCapturing = false;
-      } else if (patternBody.slice(i + 1, i + 4) === "?<" && patternBody[i + 4] !== "=" && patternBody[i + 4] !== "!") {
+      } else if (
+        patternBody.slice(i + 1, i + 4) === "?<" &&
+        patternBody[i + 4] !== "=" &&
+        patternBody[i + 4] !== "!"
+      ) {
         const nameEnd = patternBody.indexOf(">", i + 4);
         if (nameEnd !== -1) {
           name = patternBody.slice(i + 4, nameEnd);
         }
-      } else if (patternBody[i + 1] === "?" && (patternBody[i + 2] === "=" || patternBody[i + 2] === "!" || patternBody[i + 2] === "<")) {
+      } else if (
+        patternBody[i + 1] === "?" &&
+        (patternBody[i + 2] === "=" ||
+          patternBody[i + 2] === "!" ||
+          patternBody[i + 2] === "<")
+      ) {
         isCapturing = false;
       }
 
@@ -210,7 +284,7 @@ export const explainPattern = (pattern: string): PatternComponent[] => {
 
   const explanations: Record<string, string> = {
     "^": "Start of string/line",
-    "$": "End of string/line",
+    $: "End of string/line",
     ".": "Any character (except newline)",
     "*": "Zero or more of the preceding",
     "+": "One or more of the preceding",
@@ -234,8 +308,15 @@ export const explainPattern = (pattern: string): PatternComponent[] => {
 
     if (char === "\\") {
       const escaped = patternBody.slice(i, i + 2);
-      const explanation = explanations[escaped] || `Escaped character: ${patternBody[i + 1]}`;
-      components.push({ type: "escape", value: escaped, explanation, start: i, end: i + 2 });
+      const explanation =
+        explanations[escaped] || `Escaped character: ${patternBody[i + 1]}`;
+      components.push({
+        type: "escape",
+        value: escaped,
+        explanation,
+        start: i,
+        end: i + 2,
+      });
       i += 2;
       continue;
     }
@@ -248,10 +329,16 @@ export const explainPattern = (pattern: string): PatternComponent[] => {
         j++;
       }
       const charClass = patternBody.slice(i, j + 1);
-      const explanation = negated 
+      const explanation = negated
         ? `Character class (NOT): matches any character NOT in ${charClass}`
         : `Character class: matches any character in ${charClass}`;
-      components.push({ type: "characterClass", value: charClass, explanation, start: i, end: j + 1 });
+      components.push({
+        type: "characterClass",
+        value: charClass,
+        explanation,
+        start: i,
+        end: j + 1,
+      });
       i = j + 1;
       continue;
     }
@@ -259,7 +346,7 @@ export const explainPattern = (pattern: string): PatternComponent[] => {
     if (char === "(") {
       let groupType = "Capturing group";
       let skipChars = 1;
-      
+
       if (patternBody.slice(i + 1, i + 3) === "?:") {
         groupType = "Non-capturing group";
         skipChars = 3;
@@ -283,13 +370,25 @@ export const explainPattern = (pattern: string): PatternComponent[] => {
         }
       }
 
-      components.push({ type: "groupStart", value: "(", explanation: groupType, start: i, end: i + skipChars });
+      components.push({
+        type: "groupStart",
+        value: "(",
+        explanation: groupType,
+        start: i,
+        end: i + skipChars,
+      });
       i += skipChars;
       continue;
     }
 
     if (char === ")") {
-      components.push({ type: "groupEnd", value: ")", explanation: "End of group", start: i, end: i + 1 });
+      components.push({
+        type: "groupEnd",
+        value: ")",
+        explanation: "End of group",
+        start: i,
+        end: i + 1,
+      });
       i++;
       continue;
     }
@@ -300,7 +399,7 @@ export const explainPattern = (pattern: string): PatternComponent[] => {
       const quantifier = patternBody.slice(i, j + 1);
       const inner = quantifier.slice(1, -1);
       let explanation = "";
-      
+
       if (inner.includes(",")) {
         const [min, max] = inner.split(",");
         if (max === "") {
@@ -311,16 +410,34 @@ export const explainPattern = (pattern: string): PatternComponent[] => {
       } else {
         explanation = `Exactly ${inner} of the preceding`;
       }
-      
-      components.push({ type: "quantifier", value: quantifier, explanation, start: i, end: j + 1 });
+
+      components.push({
+        type: "quantifier",
+        value: quantifier,
+        explanation,
+        start: i,
+        end: j + 1,
+      });
       i = j + 1;
       continue;
     }
 
     if (explanations[char]) {
-      components.push({ type: "special", value: char, explanation: explanations[char], start: i, end: i + 1 });
+      components.push({
+        type: "special",
+        value: char,
+        explanation: explanations[char],
+        start: i,
+        end: i + 1,
+      });
     } else {
-      components.push({ type: "literal", value: char, explanation: `Literal character: "${char}"`, start: i, end: i + 1 });
+      components.push({
+        type: "literal",
+        value: char,
+        explanation: `Literal character: "${char}"`,
+        start: i,
+        end: i + 1,
+      });
     }
     i++;
   }
@@ -328,7 +445,10 @@ export const explainPattern = (pattern: string): PatternComponent[] => {
   return components;
 };
 
-export const getMatchStats = (pattern: string, testString: string): MatchStats => {
+export const getMatchStats = (
+  pattern: string,
+  testString: string
+): MatchStats => {
   const startTime = performance.now();
   const stats: MatchStats = {
     totalMatches: 0,
@@ -340,8 +460,11 @@ export const getMatchStats = (pattern: string, testString: string): MatchStats =
 
   try {
     const regex = createRegex(pattern);
-    const globalRegex = new RegExp(regex.source, regex.flags.includes("g") ? regex.flags : regex.flags + "g");
-    
+    const globalRegex = new RegExp(
+      regex.source,
+      regex.flags.includes("g") ? regex.flags : regex.flags + "g"
+    );
+
     let match;
     const uniqueSet = new Set<string>();
     let totalLength = 0;
@@ -362,7 +485,8 @@ export const getMatchStats = (pattern: string, testString: string): MatchStats =
     }
 
     stats.uniqueMatches = uniqueSet.size;
-    stats.averageMatchLength = stats.totalMatches > 0 ? totalLength / stats.totalMatches : 0;
+    stats.averageMatchLength =
+      stats.totalMatches > 0 ? totalLength / stats.totalMatches : 0;
   } catch {
     // Pattern is invalid, return empty stats
   }
@@ -371,13 +495,19 @@ export const getMatchStats = (pattern: string, testString: string): MatchStats =
   return stats;
 };
 
-export const getDetailedMatches = (pattern: string, testString: string): RegexMatch[] => {
+export const getDetailedMatches = (
+  pattern: string,
+  testString: string
+): RegexMatch[] => {
   const matches: RegexMatch[] = [];
 
   try {
     const regex = createRegex(pattern);
-    const globalRegex = new RegExp(regex.source, regex.flags.includes("g") ? regex.flags : regex.flags + "g");
-    
+    const globalRegex = new RegExp(
+      regex.source,
+      regex.flags.includes("g") ? regex.flags : regex.flags + "g"
+    );
+
     let match;
     while ((match = globalRegex.exec(testString)) !== null) {
       matches.push({
@@ -411,13 +541,13 @@ export const CHEAT_SHEET = {
     { syntax: "[^abc]", description: "Not a, b, or c" },
     { syntax: "[a-z]", description: "Character range a-z" },
   ],
-  "Anchors": [
+  Anchors: [
     { syntax: "^", description: "Start of string/line" },
     { syntax: "$", description: "End of string/line" },
     { syntax: "\\b", description: "Word boundary" },
     { syntax: "\\B", description: "Non-word boundary" },
   ],
-  "Quantifiers": [
+  Quantifiers: [
     { syntax: "*", description: "0 or more" },
     { syntax: "+", description: "1 or more" },
     { syntax: "?", description: "0 or 1 (optional)" },

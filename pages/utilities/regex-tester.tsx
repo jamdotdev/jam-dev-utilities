@@ -145,7 +145,9 @@ export default function RegexTester() {
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div className="space-y-6">
             <div>
-              <Label className="mb-2 block">Quick Start - Preset Patterns</Label>
+              <Label className="mb-2 block">
+                Quick Start - Preset Patterns
+              </Label>
               <RegexPresetPatterns
                 onSelect={handlePresetSelect}
                 selectedPattern={pattern}
@@ -166,7 +168,10 @@ export default function RegexTester() {
               />
               <div className="flex items-center gap-3">
                 <span className="text-sm text-muted-foreground">Flags:</span>
-                <RegexFlagToggle flags={flags} onFlagChange={handleFlagChange} />
+                <RegexFlagToggle
+                  flags={flags}
+                  onFlagChange={handleFlagChange}
+                />
               </div>
             </div>
 
@@ -194,7 +199,9 @@ export default function RegexTester() {
                           : ""
                   }
                 >
-                  {result === "" ? "Please fill out all required fields" : result}
+                  {result === ""
+                    ? "Please fill out all required fields"
+                    : result}
                 </div>
                 {matches && (
                   <>

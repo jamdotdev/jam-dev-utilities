@@ -30,7 +30,9 @@ const getComponentColor = (type: string): string => {
   }
 };
 
-export default function RegexPatternExplainer({ pattern }: RegexPatternExplainerProps) {
+export default function RegexPatternExplainer({
+  pattern,
+}: RegexPatternExplainerProps) {
   const components = useMemo(() => {
     if (!pattern) return [];
     try {
@@ -74,14 +76,55 @@ export default function RegexPatternExplainer({ pattern }: RegexPatternExplainer
           ))}
         </div>
         <div className="space-y-1">
-          <div className="text-xs font-medium text-muted-foreground">Legend:</div>
+          <div className="text-xs font-medium text-muted-foreground">
+            Legend:
+          </div>
           <div className="flex flex-wrap gap-2 text-xs">
-            <span className={cn("px-2 py-0.5 rounded", getComponentColor("escape"))}>Escape</span>
-            <span className={cn("px-2 py-0.5 rounded", getComponentColor("characterClass"))}>Character Class</span>
-            <span className={cn("px-2 py-0.5 rounded", getComponentColor("groupStart"))}>Group</span>
-            <span className={cn("px-2 py-0.5 rounded", getComponentColor("quantifier"))}>Quantifier</span>
-            <span className={cn("px-2 py-0.5 rounded", getComponentColor("special"))}>Special</span>
-            <span className={cn("px-2 py-0.5 rounded", getComponentColor("literal"))}>Literal</span>
+            <span
+              className={cn("px-2 py-0.5 rounded", getComponentColor("escape"))}
+            >
+              Escape
+            </span>
+            <span
+              className={cn(
+                "px-2 py-0.5 rounded",
+                getComponentColor("characterClass")
+              )}
+            >
+              Character Class
+            </span>
+            <span
+              className={cn(
+                "px-2 py-0.5 rounded",
+                getComponentColor("groupStart")
+              )}
+            >
+              Group
+            </span>
+            <span
+              className={cn(
+                "px-2 py-0.5 rounded",
+                getComponentColor("quantifier")
+              )}
+            >
+              Quantifier
+            </span>
+            <span
+              className={cn(
+                "px-2 py-0.5 rounded",
+                getComponentColor("special")
+              )}
+            >
+              Special
+            </span>
+            <span
+              className={cn(
+                "px-2 py-0.5 rounded",
+                getComponentColor("literal")
+              )}
+            >
+              Literal
+            </span>
           </div>
         </div>
       </div>
