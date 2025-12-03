@@ -1,3 +1,10 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 interface RegexHighlightTextProps {
   text: string;
   matches: string[];
@@ -16,6 +23,7 @@ export default function RegexHighlightText(props: RegexHighlightTextProps) {
   );
 
   let lastIndex = 0;
+  let matchNumber = 0;
 
   props.matches.forEach((match, index) => {
     const offset = props.text.indexOf(match, lastIndex);
@@ -28,10 +36,36 @@ export default function RegexHighlightText(props: RegexHighlightTextProps) {
       );
     }
 
+    matchNumber++;
+    const currentMatchNumber = matchNumber;
+    const matchLength = match.length;
+    const startPos = offset;
+    const endPos = offset + matchLength;
+
     parts.push(
-      <span key={`match-${offset}-${index}`} className="bg-blue-200/80">
-        {match === "\n" ? newLine : match}
-      </span>
+      <Tooltip key={`match-${offset}-${index}`}>
+        <TooltipTrigger asChild>
+          <span className="bg-blue-200/80 dark:bg-blue-700/60 hover:bg-blue-300 dark:hover:bg-blue-600 cursor-help transition-colors rounded-sm">
+            {match === "\n" ? newLine : match}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs">
+          <div className="space-y-1">
+            <p className="font-semibold">Match #{currentMatchNumber}</p>
+            <p className="text-xs text-muted-foreground">
+              Position: {startPos} - {endPos}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Length: {matchLength} character{matchLength !== 1 ? "s" : ""}
+            </p>
+            {match.length <= 50 && (
+              <p className="text-xs font-mono bg-muted px-1 py-0.5 rounded mt-1">
+                &quot;{match === "\n" ? "\\n" : match}&quot;
+              </p>
+            )}
+          </div>
+        </TooltipContent>
+      </Tooltip>
     );
 
     lastIndex = offset + match.length;
@@ -45,5 +79,9 @@ export default function RegexHighlightText(props: RegexHighlightTextProps) {
     );
   }
 
-  return <pre className="whitespace-pre-wrap break-words">{parts}</pre>;
+  return (
+    <TooltipProvider delayDuration={100}>
+      <pre className="whitespace-pre-wrap break-words">{parts}</pre>
+    </TooltipProvider>
+  );
 }
