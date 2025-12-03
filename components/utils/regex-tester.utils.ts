@@ -73,7 +73,7 @@ export const FLAG_DESCRIPTIONS: Record<
 export const PRESET_PATTERNS = [
   {
     name: "Email",
-    pattern: "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/",
+    pattern: "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/gm",
     testString: "test@example.com\ninvalid-email\nuser.name+tag@domain.co.uk",
   },
   {

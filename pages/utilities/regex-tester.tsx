@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Textarea } from "@/components/ds/TextareaComponent";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
+import { Button } from "@/components/ds/ButtonComponent";
 import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
@@ -84,6 +85,21 @@ export default function RegexTester() {
     },
     [pattern, flags]
   );
+
+  const handleClear = useCallback(() => {
+    setPattern("");
+    setTestString("");
+    setResult("");
+    setMatches(null);
+    setFlags({
+      g: false,
+      i: false,
+      m: false,
+      s: false,
+      u: false,
+      y: false,
+    });
+  }, []);
 
   const handleTest = useCallback(() => {
     try {
@@ -210,6 +226,12 @@ export default function RegexTester() {
                   </>
                 )}
               </div>
+            </div>
+
+            <div className="flex justify-end">
+              <Button variant="outline" onClick={handleClear}>
+                Clear
+              </Button>
             </div>
           </div>
         </Card>
