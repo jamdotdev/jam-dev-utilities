@@ -161,4 +161,10 @@ export const tools = [
       "Generate cryptographically secure random strings with configurable character sets. Perfect for API keys, tokens, passwords, and secure identifiers.",
     link: "/utilities/random-string-generator",
   },
+  {
+    title: "Timezone Converter",
+    description:
+      "Convert times between timezones for remote team scheduling. Perfect for distributed software teams coordinating meetings across multiple timezones.",
+    link: "/utilities/timezone-converter",
+  },
 ];
