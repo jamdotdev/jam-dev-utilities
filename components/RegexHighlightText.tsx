@@ -1,9 +1,8 @@
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 interface RegexHighlightTextProps {
   text: string;
@@ -43,20 +42,26 @@ export default function RegexHighlightText(props: RegexHighlightTextProps) {
     const endPos = offset + matchLength;
 
     parts.push(
-      <Tooltip key={`match-${offset}-${index}`}>
-        <TooltipTrigger asChild>
+      <HoverCard
+        key={`match-${offset}-${index}`}
+        openDelay={100}
+        closeDelay={100}
+      >
+        <HoverCardTrigger asChild>
           <span className="bg-blue-200/80 dark:bg-blue-700/60 hover:bg-blue-300 dark:hover:bg-blue-600 cursor-help transition-colors rounded-sm">
             {match === "\n" ? newLine : match}
           </span>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-xs">
+        </HoverCardTrigger>
+        <HoverCardContent side="top" className="w-auto max-w-xs p-3">
           <div className="space-y-1">
-            <p className="font-semibold">Match #{currentMatchNumber}</p>
+            <p className="text-sm font-semibold">Match #{currentMatchNumber}</p>
             <p className="text-xs text-muted-foreground">
-              Position: {startPos} - {endPos}
+              Position: <span className="font-mono">{startPos}</span> -{" "}
+              <span className="font-mono">{endPos}</span>
             </p>
             <p className="text-xs text-muted-foreground">
-              Length: {matchLength} character{matchLength !== 1 ? "s" : ""}
+              Length: <span className="font-mono">{matchLength}</span> character
+              {matchLength !== 1 ? "s" : ""}
             </p>
             {match.length <= 50 && (
               <p className="text-xs font-mono bg-muted px-1 py-0.5 rounded mt-1">
@@ -64,8 +69,8 @@ export default function RegexHighlightText(props: RegexHighlightTextProps) {
               </p>
             )}
           </div>
-        </TooltipContent>
-      </Tooltip>
+        </HoverCardContent>
+      </HoverCard>
     );
 
     lastIndex = offset + match.length;
@@ -79,9 +84,5 @@ export default function RegexHighlightText(props: RegexHighlightTextProps) {
     );
   }
 
-  return (
-    <TooltipProvider delayDuration={100}>
-      <pre className="whitespace-pre-wrap break-words">{parts}</pre>
-    </TooltipProvider>
-  );
+  return <pre className="whitespace-pre-wrap break-words">{parts}</pre>;
 }

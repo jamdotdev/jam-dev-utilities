@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { explainPattern } from "@/components/utils/regex-tester.utils";
 import { cn } from "@/lib/utils";
 
@@ -51,83 +50,75 @@ export default function RegexPatternExplainer({
   }
 
   return (
-    <TooltipProvider delayDuration={100}>
-      <div className="space-y-3">
-        <div className="flex flex-wrap gap-0.5 font-mono text-sm p-3 bg-muted rounded-lg">
-          {components.map((component, index) => (
-            <Tooltip key={index}>
-              <TooltipTrigger asChild>
-                <span
-                  className={cn(
-                    "px-1 py-0.5 rounded cursor-help transition-all hover:ring-2 hover:ring-ring",
-                    getComponentColor(component.type)
-                  )}
-                >
-                  {component.value}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-xs">
-                <p className="font-semibold capitalize">{component.type}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {component.explanation}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          ))}
-        </div>
-        <div className="space-y-1">
-          <div className="text-xs font-medium text-muted-foreground">
-            Legend:
-          </div>
-          <div className="flex flex-wrap gap-2 text-xs">
-            <span
-              className={cn("px-2 py-0.5 rounded", getComponentColor("escape"))}
-            >
-              Escape
-            </span>
-            <span
-              className={cn(
-                "px-2 py-0.5 rounded",
-                getComponentColor("characterClass")
-              )}
-            >
-              Character Class
-            </span>
-            <span
-              className={cn(
-                "px-2 py-0.5 rounded",
-                getComponentColor("groupStart")
-              )}
-            >
-              Group
-            </span>
-            <span
-              className={cn(
-                "px-2 py-0.5 rounded",
-                getComponentColor("quantifier")
-              )}
-            >
-              Quantifier
-            </span>
-            <span
-              className={cn(
-                "px-2 py-0.5 rounded",
-                getComponentColor("special")
-              )}
-            >
-              Special
-            </span>
-            <span
-              className={cn(
-                "px-2 py-0.5 rounded",
-                getComponentColor("literal")
-              )}
-            >
-              Literal
-            </span>
-          </div>
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-0.5 font-mono text-sm p-3 bg-muted rounded-lg">
+        {components.map((component, index) => (
+          <HoverCard key={index} openDelay={100} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <span
+                className={cn(
+                  "px-1 py-0.5 rounded cursor-help transition-all hover:ring-2 hover:ring-ring",
+                  getComponentColor(component.type)
+                )}
+              >
+                {component.value}
+              </span>
+            </HoverCardTrigger>
+            <HoverCardContent side="bottom" className="w-auto max-w-xs p-3">
+              <p className="text-sm font-semibold capitalize">
+                {component.type}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {component.explanation}
+              </p>
+            </HoverCardContent>
+          </HoverCard>
+        ))}
+      </div>
+      <div className="space-y-1">
+        <div className="text-xs font-medium text-muted-foreground">Legend:</div>
+        <div className="flex flex-wrap gap-2 text-xs">
+          <span
+            className={cn("px-2 py-0.5 rounded", getComponentColor("escape"))}
+          >
+            Escape
+          </span>
+          <span
+            className={cn(
+              "px-2 py-0.5 rounded",
+              getComponentColor("characterClass")
+            )}
+          >
+            Character Class
+          </span>
+          <span
+            className={cn(
+              "px-2 py-0.5 rounded",
+              getComponentColor("groupStart")
+            )}
+          >
+            Group
+          </span>
+          <span
+            className={cn(
+              "px-2 py-0.5 rounded",
+              getComponentColor("quantifier")
+            )}
+          >
+            Quantifier
+          </span>
+          <span
+            className={cn("px-2 py-0.5 rounded", getComponentColor("special"))}
+          >
+            Special
+          </span>
+          <span
+            className={cn("px-2 py-0.5 rounded", getComponentColor("literal"))}
+          >
+            Literal
+          </span>
         </div>
       </div>
-    </TooltipProvider>
+    </div>
   );
 }
