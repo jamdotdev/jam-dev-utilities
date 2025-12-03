@@ -1,4 +1,5 @@
 import { useCallback, useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
 import { Button } from "@/components/ds/ButtonComponent";
@@ -18,7 +19,14 @@ import {
   formatDateForInput,
 } from "@/components/utils/timezone-converter.utils";
 
+function getQueryParam(
+  value: string | string[] | undefined
+): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 export default function TimezoneConverter() {
+  const router = useRouter();
   const [sourceTimezone, setSourceTimezone] = useState("America/New_York");
   const [sourceTime, setSourceTime] = useState("");
   const [sourceDate, setSourceDate] = useState("");
@@ -28,18 +36,61 @@ export default function TimezoneConverter() {
   const [convertedTimes, setConvertedTimes] = useState<
     { timezone: string; label: string; time: string; date: string }[]
   >([]);
+  const [isInitialized, setIsInitialized] = useState(false);
   const { buttonText, handleCopy } = useCopyToClipboard();
+  const [linkButtonText, setLinkButtonText] = useState("Copy Link to Share");
 
   useEffect(() => {
-    const now = new Date();
+    if (!router.isReady) return;
+
+    const timeParam = getQueryParam(router.query.time);
+    const dateParam = getQueryParam(router.query.date);
+    const tzParam = getQueryParam(router.query.tz);
+
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const matchingTz = commonTimezones.find((tz) => tz.id === userTimezone);
-    if (matchingTz) {
-      setSourceTimezone(userTimezone);
-    }
-    setSourceTime(formatTimeForInput(now, userTimezone));
-    setSourceDate(formatDateForInput(now, userTimezone));
-  }, []);
+    const now = new Date();
+
+    const tzFromQuery =
+      tzParam && commonTimezones.some((t) => t.id === tzParam)
+        ? tzParam
+        : commonTimezones.some((t) => t.id === userTimezone)
+          ? userTimezone
+          : "America/New_York";
+
+    const timeFromQuery =
+      timeParam && /^\d{2}:\d{2}$/.test(timeParam)
+        ? timeParam
+        : formatTimeForInput(now, tzFromQuery);
+
+    const dateFromQuery =
+      dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)
+        ? dateParam
+        : formatDateForInput(now, tzFromQuery);
+
+    setSourceTimezone(tzFromQuery);
+    setSourceTime(timeFromQuery);
+    setSourceDate(dateFromQuery);
+    setIsInitialized(true);
+  }, [router.isReady, router.query]);
+
+  useEffect(() => {
+    if (!router.isReady || !isInitialized) return;
+    if (!sourceTime || !sourceDate || !sourceTimezone) return;
+
+    router.replace(
+      {
+        pathname: router.pathname,
+        query: {
+          time: sourceTime,
+          date: sourceDate,
+          tz: sourceTimezone,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sourceTime, sourceDate, sourceTimezone, router.isReady, isInitialized]);
 
   useEffect(() => {
     if (sourceTime && sourceDate) {
@@ -67,6 +118,14 @@ export default function TimezoneConverter() {
       .join("\n");
     handleCopy(text);
   }, [convertedTimes, handleCopy]);
+
+  const handleCopyLink = useCallback(() => {
+    if (typeof window === "undefined") return;
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setLinkButtonText("Copied!");
+      setTimeout(() => setLinkButtonText("Copy Link to Share"), 2000);
+    });
+  }, []);
 
   const getSourceTimezoneLabel = () => {
     const tz = commonTimezones.find((t) => t.id === sourceTimezone);
@@ -170,9 +229,14 @@ export default function TimezoneConverter() {
             </div>
           )}
 
-          <Button variant="outline" onClick={handleCopyAll}>
-            {buttonText}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleCopyAll}>
+              {buttonText}
+            </Button>
+            <Button variant="outline" onClick={handleCopyLink}>
+              {linkButtonText}
+            </Button>
+          </div>
         </Card>
       </section>
 
