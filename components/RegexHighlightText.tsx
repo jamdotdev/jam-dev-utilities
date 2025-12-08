@@ -1,3 +1,9 @@
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+
 interface RegexHighlightTextProps {
   text: string;
   matches: string[];
@@ -16,6 +22,7 @@ export default function RegexHighlightText(props: RegexHighlightTextProps) {
   );
 
   let lastIndex = 0;
+  let matchNumber = 0;
 
   props.matches.forEach((match, index) => {
     const offset = props.text.indexOf(match, lastIndex);
@@ -28,10 +35,45 @@ export default function RegexHighlightText(props: RegexHighlightTextProps) {
       );
     }
 
+    matchNumber++;
+    const currentMatchNumber = matchNumber;
+    const matchLength = match.length;
+    const startPos = offset;
+    const endPos = offset + matchLength;
+
     parts.push(
-      <span key={`match-${offset}-${index}`} className="bg-blue-200/80">
-        {match === "\n" ? newLine : match}
-      </span>
+      <HoverCard
+        key={`match-${offset}-${index}`}
+        openDelay={100}
+        closeDelay={100}
+      >
+        <HoverCardTrigger asChild>
+          <span className="bg-blue-200/80 dark:bg-blue-700/60 hover:bg-blue-300 dark:hover:bg-blue-600 cursor-help transition-colors rounded-sm">
+            {match === "\n" ? newLine : match}
+          </span>
+        </HoverCardTrigger>
+        <HoverCardContent side="top" className="w-auto max-w-xs p-3">
+          <div className="space-y-1">
+            <p className="text-sm font-semibold">Match #{currentMatchNumber}</p>
+            <p className="text-xs text-muted-foreground">
+              Position:{" "}
+              <span className="bg-muted px-1 rounded">{startPos}</span> -{" "}
+              <span className="bg-muted px-1 rounded">{endPos}</span>
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Length:{" "}
+              <span className="bg-muted px-1 rounded">{matchLength}</span>{" "}
+              character
+              {matchLength !== 1 ? "s" : ""}
+            </p>
+            {match.length <= 50 && (
+              <p className="text-xs bg-muted px-1 py-0.5 rounded mt-1">
+                &quot;{match === "\n" ? "\\n" : match}&quot;
+              </p>
+            )}
+          </div>
+        </HoverCardContent>
+      </HoverCard>
     );
 
     lastIndex = offset + match.length;
