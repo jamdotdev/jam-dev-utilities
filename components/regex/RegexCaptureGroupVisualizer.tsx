@@ -126,17 +126,19 @@ export default function RegexCaptureGroupVisualizer({
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           Captured value:{" "}
-                          <span className="font-mono">
+                          <span className="bg-muted px-1 rounded">
                             {group ?? "undefined"}
                           </span>
                         </p>
                         <p className="text-xs text-muted-foreground">
                           Access via:{" "}
-                          <span className="font-mono">
+                          <span className="bg-muted px-1 rounded">
                             match[{groupIndex + 1}]
                           </span>{" "}
                           or{" "}
-                          <span className="font-mono">${groupIndex + 1}</span>
+                          <span className="bg-muted px-1 rounded">
+                            ${groupIndex + 1}
+                          </span>
                         </p>
                       </HoverCardContent>
                     </HoverCard>
@@ -180,13 +182,15 @@ export default function RegexCaptureGroupVisualizer({
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           Captured value:{" "}
-                          <span className="font-mono">
+                          <span className="bg-muted px-1 rounded">
                             {value ?? "undefined"}
                           </span>
                         </p>
                         <p className="text-xs text-muted-foreground">
                           Access via:{" "}
-                          <span className="font-mono">match.groups.{name}</span>
+                          <span className="bg-muted px-1 rounded">
+                            match.groups.{name}
+                          </span>
                         </p>
                       </HoverCardContent>
                     </HoverCard>

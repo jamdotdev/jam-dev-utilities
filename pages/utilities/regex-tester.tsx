@@ -14,7 +14,13 @@ import {
   buildPatternWithFlags,
   getPatternBody,
   RegexFlags,
+  PRESET_PATTERNS,
 } from "@/components/utils/regex-tester.utils";
+import {
+  HistoryEntry,
+  getHistory,
+  addToHistory,
+} from "@/components/utils/regex-history.utils";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import GitHubContribution from "@/components/GitHubContribution";
 import RegexFlagToggle from "@/components/regex/RegexFlagToggle";
@@ -23,12 +29,21 @@ import RegexPatternExplainer from "@/components/regex/RegexPatternExplainer";
 import RegexMatchStats from "@/components/regex/RegexMatchStats";
 import RegexCheatSheet from "@/components/regex/RegexCheatSheet";
 import RegexCaptureGroupVisualizer from "@/components/regex/RegexCaptureGroupVisualizer";
+import RegexHistory from "@/components/regex/RegexHistory";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ds/TabsComponent";
+
+interface SessionSource {
+  type: "preset" | "manual";
+  presetName?: string;
+  initialPattern?: string;
+  initialTestString?: string;
+  modified: boolean;
+}
 
 export default function RegexTester() {
   const [pattern, setPattern] = useState("");
@@ -43,7 +58,18 @@ export default function RegexTester() {
     u: false,
     y: false,
   });
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [sessionSource, setSessionSource] = useState<SessionSource | null>(
+    null
+  );
+  const [showCaptureGroups, setShowCaptureGroups] = useState(false);
   const patternInputRef = useRef<HTMLTextAreaElement>(null);
+  const lastSavedKeyRef = useRef<string>("");
+
+  // Load history from localStorage on mount
+  useEffect(() => {
+    setHistory(getHistory());
+  }, []);
 
   const handleFlagChange = useCallback(
     (flag: keyof RegexFlags) => {
@@ -59,11 +85,24 @@ export default function RegexTester() {
     [flags, pattern]
   );
 
-  const handlePatternChange = useCallback((newPattern: string) => {
-    setPattern(newPattern);
-    const parsedFlags = parseFlags(newPattern);
-    setFlags(parsedFlags);
-  }, []);
+  const handlePatternChange = useCallback(
+    (newPattern: string) => {
+      setPattern(newPattern);
+      const parsedFlags = parseFlags(newPattern);
+      setFlags(parsedFlags);
+
+      // Mark as modified if we came from a preset
+      if (sessionSource?.type === "preset" && !sessionSource.modified) {
+        if (newPattern !== sessionSource.initialPattern) {
+          setSessionSource({ ...sessionSource, modified: true });
+        }
+      } else if (!sessionSource) {
+        // Manual entry - mark as manual source
+        setSessionSource({ type: "manual", modified: true });
+      }
+    },
+    [sessionSource]
+  );
 
   const handlePresetSelect = useCallback(
     (presetPattern: string, presetTestString: string) => {
@@ -71,6 +110,16 @@ export default function RegexTester() {
       setTestString(presetTestString);
       const parsedFlags = parseFlags(presetPattern);
       setFlags(parsedFlags);
+
+      // Find preset name
+      const preset = PRESET_PATTERNS.find((p) => p.pattern === presetPattern);
+      setSessionSource({
+        type: "preset",
+        presetName: preset?.name,
+        initialPattern: presetPattern,
+        initialTestString: presetTestString,
+        modified: false,
+      });
     },
     []
   );
@@ -86,6 +135,23 @@ export default function RegexTester() {
     [pattern, flags]
   );
 
+  const handleTestStringChange = useCallback(
+    (newTestString: string) => {
+      setTestString(newTestString);
+
+      // Mark as modified if we came from a preset
+      if (sessionSource?.type === "preset" && !sessionSource.modified) {
+        if (newTestString !== sessionSource.initialTestString) {
+          setSessionSource({ ...sessionSource, modified: true });
+        }
+      } else if (!sessionSource && newTestString) {
+        // Manual entry - mark as manual source
+        setSessionSource({ type: "manual", modified: true });
+      }
+    },
+    [sessionSource]
+  );
+
   const handleClear = useCallback(() => {
     setPattern("");
     setTestString("");
@@ -99,9 +165,12 @@ export default function RegexTester() {
       u: false,
       y: false,
     });
+    setSessionSource(null);
+    lastSavedKeyRef.current = "";
   }, []);
 
   const handleTest = useCallback(() => {
+    const startTime = performance.now();
     try {
       const regex = createRegex(pattern);
       let newMatches: string[] = [];
@@ -115,6 +184,7 @@ export default function RegexTester() {
         }
       }
 
+      const execTimeMs = performance.now() - startTime;
       const suffix = newMatches.length > 1 ? "matches" : "match";
 
       if (newMatches.length > 0) {
@@ -124,13 +194,47 @@ export default function RegexTester() {
         setResult("No match found");
         setMatches(null);
       }
+
+      // Save to history if pattern is modified (not just clicking presets)
+      const shouldSave =
+        sessionSource?.type === "manual" ||
+        (sessionSource?.type === "preset" && sessionSource.modified);
+
+      if (shouldSave && pattern && testString) {
+        const flagString = Object.entries(flags)
+          .filter(([, v]) => v)
+          .map(([k]) => k)
+          .join("");
+        const saveKey = `${pattern}\0${testString}\0${flagString}`;
+
+        if (saveKey !== lastSavedKeyRef.current) {
+          lastSavedKeyRef.current = saveKey;
+          const updated = addToHistory({
+            pattern,
+            testString,
+            flags: flagString,
+            favorite: false,
+            matchCount: newMatches.length,
+            execTimeMs,
+          });
+          setHistory(updated);
+        }
+      }
     } catch (error) {
       if (error instanceof Error) {
         setResult(error.message);
       }
       setMatches(null);
     }
-  }, [pattern, testString]);
+  }, [pattern, testString, sessionSource, flags]);
+
+  const handleHistoryRestore = useCallback((entry: HistoryEntry) => {
+    setPattern(entry.pattern);
+    setTestString(entry.testString);
+    const parsedFlags = parseFlags(entry.pattern);
+    setFlags(parsedFlags);
+    setSessionSource({ type: "manual", modified: true });
+  }, []);
 
   useEffect(() => {
     if (pattern && testString) {
@@ -150,14 +254,14 @@ export default function RegexTester() {
       <Header />
       <CMDK />
 
-      <section className="container max-w-2xl mb-12">
+      <section className="container max-w-4xl mb-12">
         <PageHeader
           title="Regex Playground"
-          description="Interactive regex tester with pattern explanation, capture groups, and more."
+          description="Interactive regex tester with pattern explanation, history, and more."
         />
       </section>
 
-      <section className="container max-w-2xl mb-6">
+      <section className="container max-w-4xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div className="space-y-6">
             <div>
@@ -196,7 +300,7 @@ export default function RegexTester() {
               <Textarea
                 rows={4}
                 placeholder="Enter test string here"
-                onChange={(event) => setTestString(event.target.value)}
+                onChange={(event) => handleTestStringChange(event.target.value)}
                 value={testString}
               />
             </div>
@@ -228,6 +332,38 @@ export default function RegexTester() {
               </div>
             </div>
 
+            {/* Collapsible Capture Groups Section */}
+            {pattern && (
+              <div className="border-t border-border pt-4">
+                <button
+                  onClick={() => setShowCaptureGroups(!showCaptureGroups)}
+                  className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className={`w-4 h-4 transition-transform ${showCaptureGroups ? "rotate-90" : ""}`}
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  Capture Groups
+                </button>
+                {showCaptureGroups && (
+                  <div className="mt-3">
+                    <RegexCaptureGroupVisualizer
+                      pattern={pattern}
+                      testString={testString}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="flex justify-end">
               <Button variant="outline" onClick={handleClear}>
                 Clear
@@ -237,12 +373,12 @@ export default function RegexTester() {
         </Card>
       </section>
 
-      <section className="container max-w-2xl mb-6">
+      <section className="container max-w-4xl mb-6">
         <Tabs defaultValue="explanation" className="w-full">
           <TabsList className="w-full justify-start">
             <TabsTrigger value="explanation">Pattern Explanation</TabsTrigger>
-            <TabsTrigger value="groups">Capture Groups</TabsTrigger>
             <TabsTrigger value="stats">Statistics</TabsTrigger>
+            <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
 
           <TabsContent value="explanation">
@@ -251,24 +387,25 @@ export default function RegexTester() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="groups">
-            <Card className="p-4 hover:shadow-none shadow-none rounded-xl">
-              <RegexCaptureGroupVisualizer
-                pattern={pattern}
-                testString={testString}
-              />
-            </Card>
-          </TabsContent>
-
           <TabsContent value="stats">
             <Card className="p-4 hover:shadow-none shadow-none rounded-xl">
               <RegexMatchStats pattern={pattern} testString={testString} />
             </Card>
           </TabsContent>
+
+          <TabsContent value="history">
+            <Card className="p-4 hover:shadow-none shadow-none rounded-xl">
+              <RegexHistory
+                history={history}
+                onHistoryChange={setHistory}
+                onRestore={handleHistoryRestore}
+              />
+            </Card>
+          </TabsContent>
         </Tabs>
       </section>
 
-      <section className="container max-w-2xl mb-6">
+      <section className="container max-w-4xl mb-6">
         <RegexCheatSheet onInsert={handleCheatSheetInsert} />
       </section>
 

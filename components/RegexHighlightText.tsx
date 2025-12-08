@@ -56,15 +56,18 @@ export default function RegexHighlightText(props: RegexHighlightTextProps) {
           <div className="space-y-1">
             <p className="text-sm font-semibold">Match #{currentMatchNumber}</p>
             <p className="text-xs text-muted-foreground">
-              Position: <span className="font-mono">{startPos}</span> -{" "}
-              <span className="font-mono">{endPos}</span>
+              Position:{" "}
+              <span className="bg-muted px-1 rounded">{startPos}</span> -{" "}
+              <span className="bg-muted px-1 rounded">{endPos}</span>
             </p>
             <p className="text-xs text-muted-foreground">
-              Length: <span className="font-mono">{matchLength}</span> character
+              Length:{" "}
+              <span className="bg-muted px-1 rounded">{matchLength}</span>{" "}
+              character
               {matchLength !== 1 ? "s" : ""}
             </p>
             {match.length <= 50 && (
-              <p className="text-xs font-mono bg-muted px-1 py-0.5 rounded mt-1">
+              <p className="text-xs bg-muted px-1 py-0.5 rounded mt-1">
                 &quot;{match === "\n" ? "\\n" : match}&quot;
               </p>
             )}
