@@ -11,7 +11,7 @@ import InternetSpeedTestSEO from "@/components/seo/InternetSpeedTestSEO";
 
 type TestState = {
   status: "idle" | "running" | "finished";
-  result: SpeedResult;
+  result: SpeedResult | Record<string, never>;
 };
 
 type SpeedResult = ReturnType<
@@ -42,7 +42,7 @@ const outlineStyles =
 export default function InternetSpeedTest() {
   const [testState, setTestState] = useState<TestState>({
     status: "idle",
-    result: {} as SpeedResult,
+    result: {},
   });
 
   const engineRef = useRef<SpeedTestEngine | null>(null);
@@ -51,7 +51,7 @@ export default function InternetSpeedTest() {
     if (testState.status === "running") {
       engineRef.current?.pause?.();
       engineRef.current = null;
-      setTestState({ status: "idle", result: {} });
+      setTestState((prev) => ({ ...prev, status: "finished" }));
       return;
     }
 
