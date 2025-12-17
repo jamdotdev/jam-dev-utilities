@@ -24,4 +24,3 @@ export function ComplianceBadge({ passed, level }: ComplianceBadgeProps) {
     </div>
   );
 }
-

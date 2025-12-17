@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ds/PopoverComponent";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ds/PopoverComponent";
 import { SketchPicker } from "react-color";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +22,8 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
   ({ value, onChange, className, disabled = false }, ref) => {
     const [open, setOpen] = useState(false);
 
-    const displayValue = value && HEX_COLOR_WITH_HASH_PATTERN.test(value) ? value : DEFAULT_COLOR;
+    const displayValue =
+      value && HEX_COLOR_WITH_HASH_PATTERN.test(value) ? value : DEFAULT_COLOR;
 
     return (
       <Popover open={open} onOpenChange={setOpen}>
@@ -50,4 +55,3 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
 );
 
 ColorPicker.displayName = "ColorPicker";
-

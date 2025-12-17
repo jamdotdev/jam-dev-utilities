@@ -20,7 +20,8 @@ import {
 import { AlertCircle, Star } from "lucide-react";
 import { ComplianceBadge } from "@/components/WcagComplianceBadge";
 
-const TEXT_CONTENT = "Jam makes developers' lives easier with powerful debugging tools." as const;
+const TEXT_CONTENT =
+  "Jam makes developers' lives easier with powerful debugging tools." as const;
 
 const DEFAULT_FOREGROUND_COLOR = "#000000";
 const DEFAULT_BACKGROUND_COLOR = "#FFFFFF";
@@ -129,9 +130,7 @@ export default function WcagColorContrastChecker() {
               <>
                 <Divider />
                 <div>
-                  <Label className="mb-3 block">
-                    WCAG Compliance
-                  </Label>
+                  <Label className="mb-3 block">WCAG Compliance</Label>
                   <div className="space-y-6">
                     <div>
                       <h4 className="text-sm font-semibold mb-3">
@@ -164,9 +163,7 @@ export default function WcagColorContrastChecker() {
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-semibold mb-3">
-                        Large Text
-                      </h4>
+                      <h4 className="text-sm font-semibold mb-3">Large Text</h4>
                       <div className="flex flex-wrap gap-2 mb-3">
                         <ComplianceBadge
                           passed={contrastResult.aa.large}
@@ -256,4 +253,3 @@ export default function WcagColorContrastChecker() {
 const Divider = () => {
   return <div className="bg-border h-[1px] my-6"></div>;
 };
-

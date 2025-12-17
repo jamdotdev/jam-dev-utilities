@@ -6,8 +6,8 @@ export default function WcagColorContrastCheckerSEO() {
         <p>
           Ensure your designs meet accessibility standards with our free WCAG
           color contrast checker. This tool helps you verify that your color
-          combinations meet WCAG 2.1 AA and AAA compliance requirements for
-          both normal and large text.
+          combinations meet WCAG 2.1 AA and AAA compliance requirements for both
+          normal and large text.
         </p>
       </section>
 
@@ -28,8 +28,8 @@ export default function WcagColorContrastCheckerSEO() {
             hex format (e.g., #FFFFFF)
           </li>
           <li>
-            <b>Review the results:</b> Instantly see the contrast ratio and
-            WCAG compliance status for both AA and AAA standards
+            <b>Review the results:</b> Instantly see the contrast ratio and WCAG
+            compliance status for both AA and AAA standards
           </li>
         </ul>
       </section>
@@ -77,4 +77,3 @@ export default function WcagColorContrastCheckerSEO() {
     </div>
   );
 }
-

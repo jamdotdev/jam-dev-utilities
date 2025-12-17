@@ -75,7 +75,10 @@ export const getRelativeLuminance = (rgb: RGB): number => {
     const val = value / 255;
     return val <= SRGB_GAMMA_THRESHOLD
       ? val / SRGB_LOW_VALUE_DIVISOR
-      : Math.pow((val + SRGB_GAMMA_OFFSET) / SRGB_GAMMA_DIVISOR, SRGB_GAMMA_EXPONENT);
+      : Math.pow(
+          (val + SRGB_GAMMA_OFFSET) / SRGB_GAMMA_DIVISOR,
+          SRGB_GAMMA_EXPONENT
+        );
   };
 
   const r = normalize(rgb.r);
@@ -106,7 +109,9 @@ export const getContrastRatio = ({
   const lighter = Math.max(lum1, lum2);
   const darker = Math.min(lum1, lum2);
 
-  return (lighter + CONTRAST_RATIO_CONSTANT) / (darker + CONTRAST_RATIO_CONSTANT);
+  return (
+    (lighter + CONTRAST_RATIO_CONSTANT) / (darker + CONTRAST_RATIO_CONSTANT)
+  );
 };
 
 export const checkWCAGCompliance = (ratio: number): ContrastResult => {
@@ -142,7 +147,6 @@ export const calculateContrast = ({
   return checkWCAGCompliance(ratio);
 };
 
-
 export const normalizeHexInput = (value: string): string => {
   let normalized = value.trim().toUpperCase();
 
@@ -158,9 +162,7 @@ export const normalizeHexInput = (value: string): string => {
   return normalized;
 };
 
-export const validateAndLimitFontSize = (
-  value: string
-): string | undefined => {
+export const validateAndLimitFontSize = (value: string): string | undefined => {
   if (!value) return "";
 
   const numValue = parseFloat(value);
@@ -181,9 +183,15 @@ interface ContrastDescriptionRule {
 
 export const getContrastDescription = (ratio: number): string => {
   const rules: ContrastDescriptionRule[] = [
-    { condition: ratio >= WCAG.AAA.NORMAL_THRESHOLD, result: "Excellent contrast" },
+    {
+      condition: ratio >= WCAG.AAA.NORMAL_THRESHOLD,
+      result: "Excellent contrast",
+    },
     { condition: ratio >= WCAG.AA.NORMAL_THRESHOLD, result: "Good contrast" },
-    { condition: ratio >= WCAG.AA.LARGE_THRESHOLD, result: "Minimum contrast for large text" },
+    {
+      condition: ratio >= WCAG.AA.LARGE_THRESHOLD,
+      result: "Minimum contrast for large text",
+    },
   ];
 
   const matchedRule = rules.find((rule) => rule.condition);

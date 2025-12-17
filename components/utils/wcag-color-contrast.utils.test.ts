@@ -281,8 +281,12 @@ describe("wcag-color-contrast.utils", () => {
 
     test("should return 'Minimum contrast for large text' for ratio >= 3 and < 4.5", () => {
       expect(getContrastDescription(3)).toBe("Minimum contrast for large text");
-      expect(getContrastDescription(3.5)).toBe("Minimum contrast for large text");
-      expect(getContrastDescription(4.4)).toBe("Minimum contrast for large text");
+      expect(getContrastDescription(3.5)).toBe(
+        "Minimum contrast for large text"
+      );
+      expect(getContrastDescription(4.4)).toBe(
+        "Minimum contrast for large text"
+      );
     });
 
     test("should return 'Insufficient contrast' for ratio < 3", () => {
@@ -293,4 +297,3 @@ describe("wcag-color-contrast.utils", () => {
     });
   });
 });
-
