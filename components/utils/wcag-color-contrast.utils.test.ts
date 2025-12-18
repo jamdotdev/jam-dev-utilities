@@ -1,6 +1,9 @@
 import {
   hexToRgb,
   isValidHex,
+  rgbToHex,
+  normalizeHexForDisplay,
+  normalizeHexInput,
   getRelativeLuminance,
   getContrastRatio,
   checkWCAGCompliance,
@@ -20,17 +23,46 @@ describe("wcag-color-contrast.utils", () => {
       expect(hexToRgb("#767676")).toEqual({ r: 118, g: 118, b: 118 });
     });
 
+    test("should convert 3-digit hex color to RGB (expanded)", () => {
+      expect(hexToRgb("#000")).toEqual({ r: 0, g: 0, b: 0 });
+      expect(hexToRgb("#fff")).toEqual({ r: 255, g: 255, b: 255 });
+      expect(hexToRgb("#FFF")).toEqual({ r: 255, g: 255, b: 255 });
+      expect(hexToRgb("#f00")).toEqual({ r: 255, g: 0, b: 0 });
+      expect(hexToRgb("#0f0")).toEqual({ r: 0, g: 255, b: 0 });
+      expect(hexToRgb("#00f")).toEqual({ r: 0, g: 0, b: 255 });
+      expect(hexToRgb("#abc")).toEqual({ r: 170, g: 187, b: 204 });
+    });
+
     test("should convert hex without # prefix", () => {
       expect(hexToRgb("000000")).toEqual({ r: 0, g: 0, b: 0 });
       expect(hexToRgb("FFFFFF")).toEqual({ r: 255, g: 255, b: 255 });
+      expect(hexToRgb("fff")).toEqual({ r: 255, g: 255, b: 255 });
+      expect(hexToRgb("000")).toEqual({ r: 0, g: 0, b: 0 });
     });
 
     test("should return null for invalid hex colors", () => {
       expect(hexToRgb("#GGGGGG")).toBeNull();
-      expect(hexToRgb("#FFF")).toBeNull();
       expect(hexToRgb("invalid")).toBeNull();
-      expect(hexToRgb("#12345")).toBeNull();
+      expect(hexToRgb("#12")).toBeNull();
       expect(hexToRgb("#1234567")).toBeNull();
+      expect(hexToRgb("#123456789")).toBeNull();
+    });
+
+    test("should handle 4 and 5 digit hex colors (treated as 3 during typing)", () => {
+
+      const result4 = hexToRgb("#fff0");
+      expect(result4).not.toBeNull();
+      expect(result4).toEqual({ r: 255, g: 255, b: 255 });
+
+
+      const result5 = hexToRgb("#12345");
+      expect(result5).not.toBeNull();
+    });
+
+    test("should return null for invalid lengths", () => {
+      expect(hexToRgb("#12")).toBeNull();
+      expect(hexToRgb("#1234567")).toBeNull();
+      expect(hexToRgb("#12345678")).toBeNull();
     });
   });
 
@@ -44,13 +76,125 @@ describe("wcag-color-contrast.utils", () => {
       expect(isValidHex("FFFFFF")).toBe(true);
     });
 
+    test("should validate 3-digit hex colors", () => {
+      expect(isValidHex("#000")).toBe(true);
+      expect(isValidHex("#fff")).toBe(true);
+      expect(isValidHex("#FFF")).toBe(true);
+      expect(isValidHex("#abc")).toBe(true);
+      expect(isValidHex("000")).toBe(true);
+      expect(isValidHex("fff")).toBe(true);
+      expect(isValidHex("ABC")).toBe(true);
+    });
+
+    test("should validate 4 and 5 digit hex colors (accepted during typing)", () => {
+      expect(isValidHex("#fff0")).toBe(true);
+      expect(isValidHex("#12345")).toBe(true);
+    });
+
     test("should reject invalid hex colors", () => {
-      expect(isValidHex("#FFF")).toBe(false);
       expect(isValidHex("#GGGGGG")).toBe(false);
       expect(isValidHex("invalid")).toBe(false);
-      expect(isValidHex("#12345")).toBe(false);
+      expect(isValidHex("#12")).toBe(false);
       expect(isValidHex("#1234567")).toBe(false);
+      expect(isValidHex("#123456789")).toBe(false);
       expect(isValidHex("")).toBe(false);
+    });
+  });
+
+  describe("rgbToHex", () => {
+    test("should convert RGB to hex", () => {
+      expect(rgbToHex({ r: 0, g: 0, b: 0 })).toBe("#000000");
+      expect(rgbToHex({ r: 255, g: 255, b: 255 })).toBe("#FFFFFF");
+      expect(rgbToHex({ r: 255, g: 0, b: 0 })).toBe("#FF0000");
+      expect(rgbToHex({ r: 0, g: 255, b: 0 })).toBe("#00FF00");
+      expect(rgbToHex({ r: 0, g: 0, b: 255 })).toBe("#0000FF");
+      expect(rgbToHex({ r: 118, g: 118, b: 118 })).toBe("#767676");
+    });
+
+    test("should pad single digit values with zeros", () => {
+      expect(rgbToHex({ r: 10, g: 5, b: 1 })).toBe("#0A0501");
+      expect(rgbToHex({ r: 0, g: 15, b: 255 })).toBe("#000FFF");
+    });
+
+    test("should convert to uppercase", () => {
+      expect(rgbToHex({ r: 170, g: 187, b: 204 })).toBe("#AABBCC");
+    });
+  });
+
+  describe("normalizeHexForDisplay", () => {
+    test("should normalize 3-digit hex to 6-digit", () => {
+      expect(normalizeHexForDisplay("#000")).toBe("#000000");
+      expect(normalizeHexForDisplay("#fff")).toBe("#FFFFFF");
+      expect(normalizeHexForDisplay("#FFF")).toBe("#FFFFFF");
+      expect(normalizeHexForDisplay("#abc")).toBe("#AABBCC");
+      expect(normalizeHexForDisplay("#f00")).toBe("#FF0000");
+    });
+
+    test("should normalize 4 and 5 digit hex to 6-digit (using first 3)", () => {
+      expect(normalizeHexForDisplay("#fff0")).toBe("#FFFFFF");
+      expect(normalizeHexForDisplay("#12345")).toBe("#112233");
+    });
+
+    test("should return 6-digit hex as is (uppercase)", () => {
+      expect(normalizeHexForDisplay("#000000")).toBe("#000000");
+      expect(normalizeHexForDisplay("#ffffff")).toBe("#FFFFFF");
+      expect(normalizeHexForDisplay("#FFFFFF")).toBe("#FFFFFF");
+      expect(normalizeHexForDisplay("#FF5733")).toBe("#FF5733");
+    });
+
+    test("should work without # prefix", () => {
+      expect(normalizeHexForDisplay("000")).toBe("#000000");
+      expect(normalizeHexForDisplay("fff")).toBe("#FFFFFF");
+      expect(normalizeHexForDisplay("FFFFFF")).toBe("#FFFFFF");
+    });
+
+    test("should return null for invalid hex", () => {
+      expect(normalizeHexForDisplay("invalid")).toBeNull();
+      expect(normalizeHexForDisplay("#GGGGGG")).toBeNull();
+      expect(normalizeHexForDisplay("#12")).toBeNull();
+      expect(normalizeHexForDisplay("#1234567")).toBeNull();
+      expect(normalizeHexForDisplay("")).toBeNull();
+    });
+  });
+
+  describe("normalizeHexInput", () => {
+    test("should add # prefix if missing", () => {
+      expect(normalizeHexInput("000000")).toBe("#000000");
+      expect(normalizeHexInput("fff")).toBe("#FFF");
+      expect(normalizeHexInput("FFFFFF")).toBe("#FFFFFF");
+    });
+
+    test("should keep # prefix if present", () => {
+      expect(normalizeHexInput("#000000")).toBe("#000000");
+      expect(normalizeHexInput("#fff")).toBe("#FFF");
+      expect(normalizeHexInput("#FFFFFF")).toBe("#FFFFFF");
+    });
+
+    test("should convert to uppercase", () => {
+      expect(normalizeHexInput("#ffffff")).toBe("#FFFFFF");
+      expect(normalizeHexInput("#abc")).toBe("#ABC");
+      expect(normalizeHexInput("abc")).toBe("#ABC");
+    });
+
+    test("should remove invalid characters", () => {
+      expect(normalizeHexInput("#FF-33")).toBe("#FF33");
+      expect(normalizeHexInput("FF 33")).toBe("#FF33");
+      expect(normalizeHexInput("#123!@#456")).toBe("#123#45");
+    });
+
+    test("should trim whitespace", () => {
+      expect(normalizeHexInput("  #fff  ")).toBe("#FFF");
+      expect(normalizeHexInput("  fff  ")).toBe("#FFF");
+    });
+
+    test("should limit to 7 characters (# + 6 digits)", () => {
+      expect(normalizeHexInput("#123456789")).toBe("#123456");
+      expect(normalizeHexInput("123456789")).toBe("#123456");
+    });
+
+    test("should handle empty string", () => {
+      expect(normalizeHexInput("")).toBe("");
+      expect(normalizeHexInput("   ")).toBe("");
     });
   });
 
@@ -229,16 +373,59 @@ describe("wcag-color-contrast.utils", () => {
       ).toBeNull();
       expect(
         calculateContrast({
-          foregroundHex: "#FFF",
+          foregroundHex: "#12",
           backgroundHex: "#FFFFFF",
         })
       ).toBeNull();
       expect(
         calculateContrast({
           foregroundHex: "#000000",
-          backgroundHex: "#FFF",
+          backgroundHex: "#123456789",
         })
       ).toBeNull();
+    });
+
+    test("should work with 4 and 5 digit hex colors (treated as 3)", () => {
+      const result = calculateContrast({
+        foregroundHex: "#fff0",
+        backgroundHex: "#12345",
+      });
+      expect(result).not.toBeNull();
+    });
+
+    test("should return null for invalid lengths", () => {
+      expect(
+        calculateContrast({
+          foregroundHex: "#1234567",
+          backgroundHex: "#000",
+        })
+      ).toBeNull();
+      expect(
+        calculateContrast({
+          foregroundHex: "#ffffff00",
+          backgroundHex: "#000",
+        })
+      ).toBeNull();
+    });
+
+    test("should work with 3-digit hex colors", () => {
+      const result = calculateContrast({
+        foregroundHex: "#000",
+        backgroundHex: "#fff",
+      });
+      expect(result).not.toBeNull();
+      if (result) {
+        expect(result.ratio).toBeCloseTo(21, 1);
+      }
+
+      const result2 = calculateContrast({
+        foregroundHex: "#f00",
+        backgroundHex: "#0f0",
+      });
+      expect(result2).not.toBeNull();
+      if (result2) {
+        expect(result2.ratio).toBeGreaterThan(1);
+      }
     });
 
     test("should work with hex colors without # prefix", () => {

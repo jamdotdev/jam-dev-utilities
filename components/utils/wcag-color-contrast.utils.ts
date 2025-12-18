@@ -17,6 +17,13 @@ export interface ContrastResult {
   };
 }
 
+interface ContrastDescriptionRule {
+  condition: boolean;
+  result: string;
+}
+
+type HexLength = 3 | 4 | 5 | 6;
+
 export const WCAG = {
   AA: {
     NORMAL_THRESHOLD: 4.5,
@@ -44,26 +51,71 @@ const LUMINANCE_B_COEFFICIENT = 0.0722 as const;
 
 const CONTRAST_RATIO_CONSTANT = 0.05 as const;
 
-const HEX_COLOR_PATTERN: RegExp = /^[0-9A-Fa-f]{6}$/;
+const HEX_COLOR_PATTERN: RegExp = /^[0-9A-Fa-f]{3,6}$/;
 const INVALID_HEX_CHARS: RegExp = /[^#0-9A-F]/gi;
 
-export const hexToRgb = (hex: string): RGB | null => {
-  const normalizedHex = hex.startsWith("#") ? hex.slice(1) : hex;
+const parseHexToRgb = (normalizedHex: string, length: HexLength): RGB => {
+  const shouldExpand = [3, 4, 5].includes(length);
+  const expandedLength = shouldExpand ? 3 : length;
 
-  if (!HEX_COLOR_PATTERN.test(normalizedHex)) {
-    return null;
+  let hexToParse = normalizedHex;
+
+  if (shouldExpand) {
+    hexToParse = hexToParse.substring(0, expandedLength).split("").map((char) => char + char).join("");
   }
 
-  const r = parseInt(normalizedHex.substring(0, 2), 16);
-  const g = parseInt(normalizedHex.substring(2, 4), 16);
-  const b = parseInt(normalizedHex.substring(4, 6), 16);
+  const r = parseInt(hexToParse.substring(0, 2), 16);
+  const g = parseInt(hexToParse.substring(2, 4), 16);
+  const b = parseInt(hexToParse.substring(4, 6), 16);
 
   return { r, g, b };
 };
 
+const hexToRgbMapper: Record<HexLength, (normalizedHex: string) => RGB> = {
+  3: (normalizedHex) => parseHexToRgb(normalizedHex, 3),
+  4: (normalizedHex) => parseHexToRgb(normalizedHex, 4),
+  5: (normalizedHex) => parseHexToRgb(normalizedHex, 5),
+  6: (normalizedHex) => parseHexToRgb(normalizedHex, 6),
+};
+
+export const hexToRgb = (hex: string): RGB | null => {
+  const normalizedHex = hex.startsWith("#") ? hex.slice(1) : hex;
+
+  if (!HEX_COLOR_PATTERN.test(normalizedHex)) return null;
+
+  const length = normalizedHex.length;
+
+  if (length < 3 || length > 6) return null;
+
+  const lengthKey = length as HexLength;
+  const parser = hexToRgbMapper[lengthKey];
+
+  if (!parser) return null;
+
+
+  return parser(normalizedHex);
+};
+
 export const isValidHex = (hex: string): boolean => {
   const normalizedHex = hex.startsWith("#") ? hex.slice(1) : hex;
-  return HEX_COLOR_PATTERN.test(normalizedHex);
+  return HEX_COLOR_PATTERN.test(normalizedHex) && normalizedHex.length >= 3 && normalizedHex.length <= 6;
+};
+
+const rgbComponentToHex = (component: number): string => {
+  return component.toString(16).padStart(2, "0").toUpperCase();
+};
+
+export const rgbToHex = (rgb: RGB): string => {
+  return `#${rgbComponentToHex(rgb.r)}${rgbComponentToHex(rgb.g)}${rgbComponentToHex(rgb.b)}`;
+};
+
+export const normalizeHexForDisplay = (hex: string): string | null => {
+  if (!isValidHex(hex)) return null;
+
+  const rgb = hexToRgb(hex);
+  if (!rgb) return null;
+
+  return rgbToHex(rgb);
 };
 
 /**
@@ -76,9 +128,9 @@ export const getRelativeLuminance = (rgb: RGB): number => {
     return val <= SRGB_GAMMA_THRESHOLD
       ? val / SRGB_LOW_VALUE_DIVISOR
       : Math.pow(
-          (val + SRGB_GAMMA_OFFSET) / SRGB_GAMMA_DIVISOR,
-          SRGB_GAMMA_EXPONENT
-        );
+        (val + SRGB_GAMMA_OFFSET) / SRGB_GAMMA_DIVISOR,
+        SRGB_GAMMA_EXPONENT
+      );
   };
 
   const r = normalize(rgb.r);
@@ -155,6 +207,7 @@ export const normalizeHexInput = (value: string): string => {
   }
 
   normalized = normalized.replace(INVALID_HEX_CHARS, "");
+
   if (normalized.length > 7) {
     normalized = normalized.slice(0, 7);
   }
@@ -162,24 +215,7 @@ export const normalizeHexInput = (value: string): string => {
   return normalized;
 };
 
-export const validateAndLimitFontSize = (value: string): string | undefined => {
-  if (!value) return "";
 
-  const numValue = parseFloat(value);
-  const rules: Array<{ condition: boolean; result: string | undefined }> = [
-    { condition: isNaN(numValue), result: undefined },
-    { condition: numValue > 90, result: "90" },
-    { condition: numValue >= 1, result: value },
-  ];
-
-  const matchedRule = rules.find((rule) => rule.condition);
-  return matchedRule?.result ?? undefined;
-};
-
-interface ContrastDescriptionRule {
-  condition: boolean;
-  result: string;
-}
 
 export const getContrastDescription = (ratio: number): string => {
   const rules: ContrastDescriptionRule[] = [
