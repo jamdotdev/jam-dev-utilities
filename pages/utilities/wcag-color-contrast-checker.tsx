@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import PageHeader from "@/components/PageHeader";
 import { Card } from "@/components/ds/CardComponent";
 import { Label } from "@/components/ds/LabelComponent";
@@ -14,6 +14,7 @@ import {
   calculateContrast,
   isValidHex,
   normalizeHexInput,
+  normalizeHexForDisplay,
   getContrastDescription,
   WCAG,
 } from "@/components/utils/wcag-color-contrast.utils";
@@ -30,22 +31,19 @@ export default function WcagColorContrastChecker() {
   const [foreground, setForeground] = useState(DEFAULT_FOREGROUND_COLOR);
   const [background, setBackground] = useState(DEFAULT_BACKGROUND_COLOR);
 
-  const handleForegroundChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const normalized = normalizeHexInput(event.target.value);
-    setForeground(normalized);
-  };
-
-  const handleBackgroundChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const normalized = normalizeHexInput(event.target.value);
-    setBackground(normalized);
-  };
+  const handleColorChange = useCallback(
+    (setter: (value: string) => void) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const normalized = normalizeHexInput(event.target.value);
+      setter(normalized);
+    },
+    []
+  );
 
   const fgValid = isValidHex(foreground);
   const bgValid = isValidHex(background);
+
+  const normalizedForeground = normalizeHexForDisplay(foreground) ?? DEFAULT_FOREGROUND_COLOR;
+  const normalizedBackground = normalizeHexForDisplay(background) ?? DEFAULT_BACKGROUND_COLOR;
 
   const contrastResult = useMemo(
     () =>
@@ -81,13 +79,13 @@ export default function WcagColorContrastChecker() {
                 <div className="flex items-center gap-3 mt-2">
                   <Input
                     placeholder="#000000"
-                    onChange={handleForegroundChange}
-                    className="h-8 text-sm max-w-[90px]"
+                    onChange={handleColorChange(setForeground)}
+                    className="h-8 text-sm max-w-[110px]"
                     value={foreground}
                     maxLength={7}
                   />
                   <ColorPicker
-                    value={fgValid ? foreground : "#000000"}
+                    value={foreground}
                     onChange={setForeground}
                   />
                 </div>
@@ -98,13 +96,13 @@ export default function WcagColorContrastChecker() {
                 <div className="flex items-center gap-3 mt-2">
                   <Input
                     placeholder="#FFFFFF"
-                    onChange={handleBackgroundChange}
-                    className="h-8 text-sm max-w-[90px]"
+                    onChange={handleColorChange(setBackground)}
+                    className="h-8 text-sm max-w-[110px]"
                     value={background}
                     maxLength={7}
                   />
                   <ColorPicker
-                    value={bgValid ? background : "#FFFFFF"}
+                    value={background}
                     onChange={setBackground}
                   />
                 </div>
@@ -148,11 +146,11 @@ export default function WcagColorContrastChecker() {
                       </div>
                       <div
                         className="p-4 rounded border"
-                        style={{ backgroundColor: background }}
+                        style={{ backgroundColor: normalizedBackground }}
                       >
                         <p
                           style={{
-                            color: foreground,
+                            color: normalizedForeground,
                             fontSize: "16px",
                             fontWeight: "normal",
                           }}
@@ -176,11 +174,11 @@ export default function WcagColorContrastChecker() {
                       </div>
                       <div
                         className="p-4 rounded border"
-                        style={{ backgroundColor: background }}
+                        style={{ backgroundColor: normalizedBackground }}
                       >
                         <p
                           style={{
-                            color: foreground,
+                            color: normalizedForeground,
                             fontSize: "24px",
                             fontWeight: "normal",
                           }}
@@ -202,19 +200,19 @@ export default function WcagColorContrastChecker() {
                       </div>
                       <div
                         className="p-4 rounded border flex flex-col items-center gap-3"
-                        style={{ backgroundColor: background }}
+                        style={{ backgroundColor: normalizedBackground }}
                       >
                         <Star
                           size={24}
-                          fill={foreground}
-                          style={{ color: foreground }}
+                          fill={normalizedForeground}
+                          style={{ color: normalizedForeground }}
                         />
                         <Input
                           placeholder="Text Input"
                           className="w-full max-w-xs"
                           style={{
-                            borderColor: foreground,
-                            color: foreground,
+                            borderColor: normalizedForeground,
+                            color: normalizedForeground,
                           }}
                           readOnly
                         />
