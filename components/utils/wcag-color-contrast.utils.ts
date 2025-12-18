@@ -61,7 +61,11 @@ const parseHexToRgb = (normalizedHex: string, length: HexLength): RGB => {
   let hexToParse = normalizedHex;
 
   if (shouldExpand) {
-    hexToParse = hexToParse.substring(0, expandedLength).split("").map((char) => char + char).join("");
+    hexToParse = hexToParse
+      .substring(0, expandedLength)
+      .split("")
+      .map((char) => char + char)
+      .join("");
   }
 
   const r = parseInt(hexToParse.substring(0, 2), 16);
@@ -92,13 +96,16 @@ export const hexToRgb = (hex: string): RGB | null => {
 
   if (!parser) return null;
 
-
   return parser(normalizedHex);
 };
 
 export const isValidHex = (hex: string): boolean => {
   const normalizedHex = hex.startsWith("#") ? hex.slice(1) : hex;
-  return HEX_COLOR_PATTERN.test(normalizedHex) && normalizedHex.length >= 3 && normalizedHex.length <= 6;
+  return (
+    HEX_COLOR_PATTERN.test(normalizedHex) &&
+    normalizedHex.length >= 3 &&
+    normalizedHex.length <= 6
+  );
 };
 
 const rgbComponentToHex = (component: number): string => {
@@ -128,9 +135,9 @@ export const getRelativeLuminance = (rgb: RGB): number => {
     return val <= SRGB_GAMMA_THRESHOLD
       ? val / SRGB_LOW_VALUE_DIVISOR
       : Math.pow(
-        (val + SRGB_GAMMA_OFFSET) / SRGB_GAMMA_DIVISOR,
-        SRGB_GAMMA_EXPONENT
-      );
+          (val + SRGB_GAMMA_OFFSET) / SRGB_GAMMA_DIVISOR,
+          SRGB_GAMMA_EXPONENT
+        );
   };
 
   const r = normalize(rgb.r);
@@ -214,8 +221,6 @@ export const normalizeHexInput = (value: string): string => {
 
   return normalized;
 };
-
-
 
 export const getContrastDescription = (ratio: number): string => {
   const rules: ContrastDescriptionRule[] = [

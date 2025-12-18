@@ -6,7 +6,10 @@ import {
 } from "@/components/ds/PopoverComponent";
 import { SketchPicker } from "react-color";
 import { cn } from "@/lib/utils";
-import { normalizeHexForDisplay, isValidHex } from "@/components/utils/wcag-color-contrast.utils";
+import {
+  normalizeHexForDisplay,
+  isValidHex,
+} from "@/components/utils/wcag-color-contrast.utils";
 import { X } from "lucide-react";
 
 const DEFAULT_COLOR = "#000000" as const;
@@ -41,7 +44,10 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
             aria-label="Pick a color"
           >
             {!isValid && value && (
-              <X className="w-6 h-6 text-red-500 dark:text-red-400" strokeWidth={2.5} />
+              <X
+                className="w-6 h-6 text-red-500 dark:text-red-400"
+                strokeWidth={2.5}
+              />
             )}
           </button>
         </PopoverTrigger>

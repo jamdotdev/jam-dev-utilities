@@ -49,11 +49,9 @@ describe("wcag-color-contrast.utils", () => {
     });
 
     test("should handle 4 and 5 digit hex colors (treated as 3 during typing)", () => {
-
       const result4 = hexToRgb("#fff0");
       expect(result4).not.toBeNull();
       expect(result4).toEqual({ r: 255, g: 255, b: 255 });
-
 
       const result5 = hexToRgb("#12345");
       expect(result5).not.toBeNull();

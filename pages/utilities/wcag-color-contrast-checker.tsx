@@ -32,18 +32,21 @@ export default function WcagColorContrastChecker() {
   const [background, setBackground] = useState(DEFAULT_BACKGROUND_COLOR);
 
   const handleColorChange = useCallback(
-    (setter: (value: string) => void) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      const normalized = normalizeHexInput(event.target.value);
-      setter(normalized);
-    },
+    (setter: (value: string) => void) =>
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        const normalized = normalizeHexInput(event.target.value);
+        setter(normalized);
+      },
     []
   );
 
   const fgValid = isValidHex(foreground);
   const bgValid = isValidHex(background);
 
-  const normalizedForeground = normalizeHexForDisplay(foreground) ?? DEFAULT_FOREGROUND_COLOR;
-  const normalizedBackground = normalizeHexForDisplay(background) ?? DEFAULT_BACKGROUND_COLOR;
+  const normalizedForeground =
+    normalizeHexForDisplay(foreground) ?? DEFAULT_FOREGROUND_COLOR;
+  const normalizedBackground =
+    normalizeHexForDisplay(background) ?? DEFAULT_BACKGROUND_COLOR;
 
   const contrastResult = useMemo(
     () =>
@@ -84,10 +87,7 @@ export default function WcagColorContrastChecker() {
                     value={foreground}
                     maxLength={7}
                   />
-                  <ColorPicker
-                    value={foreground}
-                    onChange={setForeground}
-                  />
+                  <ColorPicker value={foreground} onChange={setForeground} />
                 </div>
               </div>
 
@@ -101,10 +101,7 @@ export default function WcagColorContrastChecker() {
                     value={background}
                     maxLength={7}
                   />
-                  <ColorPicker
-                    value={background}
-                    onChange={setBackground}
-                  />
+                  <ColorPicker value={background} onChange={setBackground} />
                 </div>
               </div>
             </div>
