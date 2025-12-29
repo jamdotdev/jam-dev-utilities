@@ -161,4 +161,10 @@ export const tools = [
       "Generate cryptographically secure random strings with configurable character sets. Perfect for API keys, tokens, passwords, and secure identifiers.",
     link: "/utilities/random-string-generator",
   },
+  {
+    title: "WCAG Color Contrast Checker",
+    description:
+      "Check color contrast ratios for WCAG AA and AAA compliance. Ensure your designs meet accessibility standards with our free color contrast checker tool.",
+    link: "/utilities/wcag-color-contrast-checker",
+  },
 ];
