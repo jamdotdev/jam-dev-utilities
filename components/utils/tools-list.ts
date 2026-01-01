@@ -161,4 +161,16 @@ export const tools = [
       "Generate cryptographically secure random strings with configurable character sets. Perfect for API keys, tokens, passwords, and secure identifiers.",
     link: "/utilities/random-string-generator",
   },
+  {
+    title: "XML to JSON",
+    description:
+      "Convert XML data to JSON format instantly. Perfect for transforming XML APIs, configuration files, and data feeds into JSON for modern web applications.",
+    link: "/utilities/xml-to-json",
+  },
+  {
+    title: "Markdown to HTML",
+    description:
+      "Convert Markdown to HTML format quickly and easily. Perfect for blog posts, documentation, README files, and web content. Supports all standard Markdown syntax.",
+    link: "/utilities/markdown-to-html",
+  },
 ];
