@@ -167,4 +167,10 @@ export const tools = [
       "Check color contrast ratios for WCAG AA and AAA compliance. Ensure your designs meet accessibility standards with our free color contrast checker tool.",
     link: "/utilities/wcag-color-contrast-checker",
   },
+  {
+    title: "XML to JSON",
+    description:
+      "Transform XML data into JSON format instantly. Simplifies working with APIs and modern web applications that prefer JSON.",
+    link: "/utilities/xml-to-json",
+  },
 ];
