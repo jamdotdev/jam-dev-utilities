@@ -1,4 +1,4 @@
-import { xmlToJson } from "./xmlToJson";
+import { xmlToJson } from "./xml-to-json.utils";
 
 describe("XML to JSON Converter", () => {
   describe("Basic conversion", () => {

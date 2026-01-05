@@ -10,7 +10,7 @@ import { CMDK } from "@/components/CMDK";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import XmlToJsonSEO from "@/components/seo/XmlToJsonSEO";
 import Meta from "../../components/Meta";
-import { xmlToJson } from "@/components/utils/xmlToJson";
+import { xmlToJson } from "@/components/utils/xml-to-json.utils";
 
 export default function XMLtoJSON() {
   const [input, setInput] = useState("");
