@@ -8,18 +8,6 @@ export default function XmlToJsonSEO() {
           Our free, open-source, and ad-free XML to JSON converter makes it easy
           to transform your data formats. Convert configuration files, API
           responses, or legacy XML data into modern JSON with just a few clicks.
-          Built with 💜 for developers by developers.
-        </p>
-        <p className="text-sm text-muted-foreground mt-2">
-          Looking for YAML conversion instead? Check out{" "}
-          <a
-            href="https://jsontoyamlconverter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            jsontoyamlconverter.com
-          </a>{" "}
-          for JSON ↔ YAML conversions.
         </p>
       </section>
 
@@ -77,20 +65,25 @@ export default function XmlToJsonSEO() {
             browser - complete privacy guaranteed.
           </li>
           <li>
-            <b>Attribute handling</b> <br /> XML attributes are preserved as
-            @attributes in the JSON output.
+            <b>Attribute handling</b> <br /> XML attributes are preserved using
+            the @attributes convention, compatible with popular libraries like
+            xml2js.
           </li>
           <li>
             <b>Array detection</b> <br /> Multiple elements with the same name
             are automatically converted to arrays.
           </li>
           <li>
-            <b>CDATA support</b> <br /> CDATA sections are properly extracted as
-            text content.
+            <b>Text content preservation</b> <br /> Mixed content with text and
+            attributes uses the #text key for clarity.
           </li>
           <li>
             <b>Error detection</b> <br /> Invalid XML is detected and reported
-            immediately.
+            immediately with helpful error messages.
+          </li>
+          <li>
+            <b>Standards-compliant</b> <br /> Follows industry-standard
+            conversion patterns used by major XML parsing libraries.
           </li>
         </ul>
       </section>
@@ -100,13 +93,41 @@ export default function XmlToJsonSEO() {
         <p>Both XML and JSON have their strengths. Here's when to use each:</p>
         <ul>
           <li>
-            <b>XML:</b> <br />
-            Better for documents with mixed content, complex schemas, XSLT
-            transformations, and SOAP web services.
+            <b>Use XML for:</b> <br />
+            Documents with mixed content, complex schemas requiring validation,
+            XSLT transformations, SOAP web services, and when namespaces are
+            needed.
           </li>
           <li>
-            <b>JSON:</b> <br /> Preferred for REST APIs, configuration files,
-            web applications, and when file size matters.
+            <b>Use JSON for:</b> <br />
+            REST APIs, configuration files, web applications, mobile apps, NoSQL
+            databases, and when file size and parsing speed matter.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Understanding the Conversion Format</h2>
+        <p>Our converter uses industry-standard conventions:</p>
+        <ul>
+          <li>
+            <b>@attributes object:</b> <br />
+            XML attributes are grouped in an @attributes object, matching the
+            behavior of popular libraries like xml2js.
+          </li>
+          <li>
+            <b>#text key:</b> <br />
+            When an element has both text content and attributes or child
+            elements, the text is stored under a #text key.
+          </li>
+          <li>
+            <b>Automatic arrays:</b> <br />
+            Multiple sibling elements with the same name are automatically
+            converted to JSON arrays.
+          </li>
+          <li>
+            <b>Empty elements:</b> <br />
+            Self-closing or empty XML elements are converted to null in JSON.
           </li>
         </ul>
       </section>
@@ -115,40 +136,46 @@ export default function XmlToJsonSEO() {
         <h2>FAQs</h2>
         <ul>
           <li>
-            <b>What is XML?</b> <br /> XML (eXtensible Markup Language) is a
-            markup language that defines rules for encoding documents in a
-            format that is both human-readable and machine-readable.
+            <b>What is XML?</b> <br />
+            XML (eXtensible Markup Language) is a markup language that defines
+            rules for encoding documents in a format that is both human-readable
+            and machine-readable. It's widely used for data exchange and
+            configuration files.
           </li>
           <li>
-            <b>What is JSON?</b> <br /> JSON (JavaScript Object Notation) is a
-            lightweight data format used to transmit data between servers and
-            web applications.
+            <b>What is JSON?</b> <br />
+            JSON (JavaScript Object Notation) is a lightweight data format used
+            to transmit data between servers and web applications. It's the
+            standard format for modern REST APIs.
           </li>
           <li>
-            <b>How are XML attributes handled?</b> <br /> XML attributes are
-            converted to an @attributes object in the JSON output, preserving
-            all attribute data.
+            <b>How are XML attributes handled?</b> <br />
+            XML attributes are converted to an @attributes object in the JSON
+            output, preserving all attribute data while maintaining
+            compatibility with standard XML parsing libraries.
           </li>
           <li>
-            <b>Can I convert JSON back to XML?</b> <br /> While more complex due
-            to attribute handling, you can manually restructure JSON back to XML
-            format.
+            <b>Can I convert large XML files?</b> <br />
+            Yes! Since processing happens in your browser, you can convert files
+            of any size. However, very large files may take longer to process
+            depending on your device's capabilities.
           </li>
           <li>
-            <b>Is my data secure?</b> <br /> Yes! All processing happens in your
-            browser. Your XML data is never sent to any server.
+            <b>Is my data secure?</b> <br />
+            Absolutely! All processing happens entirely in your browser. Your
+            XML data is never sent to any server, ensuring complete privacy and
+            security.
           </li>
           <li>
-            <b>Need YAML conversion?</b> <br /> For JSON to YAML conversion,
-            visit{" "}
-            <a
-              href="https://jsontoyamlconverter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              jsontoyamlconverter.com
-            </a>
-            .
+            <b>Can I convert JSON back to XML?</b> <br />
+            While our tool focuses on XML to JSON conversion, you can manually
+            restructure JSON back to XML format. Note that some information like
+            attribute order may not be perfectly preserved.
+          </li>
+          <li>
+            <b>Does it handle namespaces?</b> <br />
+            XML namespaces are preserved in the element names. For example,
+            &lt;ns:element&gt; becomes "ns:element" in the JSON output.
           </li>
         </ul>
       </section>
