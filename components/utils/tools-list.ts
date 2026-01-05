@@ -168,7 +168,7 @@ export const tools = [
     link: "/utilities/wcag-color-contrast-checker",
   },
   {
-    title: "XML to JSON Converter",
+    title: "XML to JSON",
     description:
       "Transform XML data into JSON format instantly. Simplifies working with APIs and modern web applications that prefer JSON.",
     link: "/utilities/xml-to-json",

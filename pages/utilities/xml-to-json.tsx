@@ -4,6 +4,7 @@ import { Button } from "@/components/ds/ButtonComponent";
 import { Card } from "@/components/ds/CardComponent";
 import { Label } from "@/components/ds/LabelComponent";
 import { Textarea } from "@/components/ds/TextareaComponent";
+import GitHubContribution from "@/components/GitHubContribution";
 import Header from "@/components/Header";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import PageHeader from "@/components/PageHeader";
@@ -78,6 +79,8 @@ export default function XMLtoJSON() {
           </div>
         </Card>
       </section>
+
+      <GitHubContribution username="HamdiSaidaniX" />
 
       <CallToActionGrid />
 
