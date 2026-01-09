@@ -80,7 +80,11 @@ export default function CameraUtility() {
   const [isMediaSupported, setIsMediaSupported] = useState(true);
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sourceVideoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const mirroredStreamRef = useRef<MediaStream | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     setIsPipSupported(
@@ -97,8 +101,21 @@ export default function CameraUtility() {
 
   useEffect(() => {
     return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      if (mirroredStreamRef.current) {
+        mirroredStreamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      if (sourceVideoRef.current) {
+        sourceVideoRef.current.srcObject = null;
+        sourceVideoRef.current = null;
+      }
+      if (canvasRef.current) {
+        canvasRef.current = null;
       }
     };
   }, []);
@@ -121,17 +138,64 @@ export default function CameraUtility() {
 
   useEffect(() => {
     const video = videoRef.current;
-    const stream = streamRef.current;
+    const mirroredStream = mirroredStreamRef.current;
 
-    if (video && stream && (status === "active" || status === "pip")) {
-      if (video.srcObject !== stream) {
-        video.srcObject = stream;
+    if (video && mirroredStream && (status === "active" || status === "pip")) {
+      if (video.srcObject !== mirroredStream) {
+        video.srcObject = mirroredStream;
         video.play().catch(() => {
           // Ignore play errors - browser may block autoplay
         });
       }
     }
   }, [status]);
+
+  const createMirroredStream = useCallback(
+    (originalStream: MediaStream): MediaStream => {
+      const videoTrack = originalStream.getVideoTracks()[0];
+      const settings = videoTrack.getSettings();
+      const width = settings.width || 1280;
+      const height = settings.height || 720;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      canvasRef.current = canvas;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        return originalStream;
+      }
+
+      const sourceVideo = document.createElement("video");
+      sourceVideo.srcObject = originalStream;
+      sourceVideo.muted = true;
+      sourceVideo.playsInline = true;
+      sourceVideoRef.current = sourceVideo;
+
+      const drawMirroredFrame = () => {
+        if (!sourceVideoRef.current || !canvasRef.current) return;
+
+        ctx.save();
+        ctx.scale(-1, 1);
+        ctx.drawImage(sourceVideo, -width, 0, width, height);
+        ctx.restore();
+
+        animationFrameRef.current = requestAnimationFrame(drawMirroredFrame);
+      };
+
+      sourceVideo.onloadedmetadata = () => {
+        sourceVideo.play();
+        drawMirroredFrame();
+      };
+
+      const mirroredStream = canvas.captureStream(30);
+      mirroredStreamRef.current = mirroredStream;
+
+      return mirroredStream;
+    },
+    []
+  );
 
   const startCamera = useCallback(async () => {
     if (!isMediaSupported) {
@@ -155,8 +219,10 @@ export default function CameraUtility() {
 
       streamRef.current = stream;
 
+      const mirroredStream = createMirroredStream(stream);
+
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+        videoRef.current.srcObject = mirroredStream;
         await videoRef.current.play();
       }
 
@@ -193,7 +259,7 @@ export default function CameraUtility() {
 
       setStatus("error");
     }
-  }, [isMediaSupported]);
+  }, [isMediaSupported, createMirroredStream]);
 
   const enablePip = useCallback(async () => {
     if (!videoRef.current) return;
@@ -232,10 +298,27 @@ export default function CameraUtility() {
   }, []);
 
   const stopCamera = useCallback(async () => {
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
+
+    if (mirroredStreamRef.current) {
+      mirroredStreamRef.current.getTracks().forEach((track) => track.stop());
+      mirroredStreamRef.current = null;
+    }
+
+    if (sourceVideoRef.current) {
+      sourceVideoRef.current.srcObject = null;
+      sourceVideoRef.current = null;
+    }
+
+    canvasRef.current = null;
 
     try {
       if (document.pictureInPictureElement) {
@@ -337,7 +420,6 @@ export default function CameraUtility() {
                   playsInline
                   muted
                   className="w-full aspect-video object-cover"
-                  style={{ transform: "scaleX(-1)" }}
                 />
                 {status === "pip" && (
                   <div className="absolute inset-0 flex items-center justify-center">
