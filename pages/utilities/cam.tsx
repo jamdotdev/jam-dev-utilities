@@ -291,7 +291,9 @@ export default function CameraUtility() {
                 <h3 className="text-lg font-semibold text-destructive mb-2">
                   {errorInfo.title}
                 </h3>
-                <p className="text-muted-foreground mb-4">{errorInfo.message}</p>
+                <p className="text-muted-foreground mb-4">
+                  {errorInfo.message}
+                </p>
                 <div className="space-y-2">
                   <p className="text-sm font-medium">How to fix this:</p>
                   <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
