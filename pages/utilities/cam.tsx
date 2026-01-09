@@ -119,6 +119,20 @@ export default function CameraUtility() {
     };
   }, [status]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    const stream = streamRef.current;
+
+    if (video && stream && (status === "active" || status === "pip")) {
+      if (video.srcObject !== stream) {
+        video.srcObject = stream;
+        video.play().catch(() => {
+          // Ignore play errors - browser may block autoplay
+        });
+      }
+    }
+  }, [status]);
+
   const startCamera = useCallback(async () => {
     if (!isMediaSupported) {
       setErrorInfo(getNotSupportedError());
