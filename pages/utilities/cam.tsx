@@ -85,6 +85,8 @@ export default function CameraUtility() {
   const streamRef = useRef<MediaStream | null>(null);
   const mirroredStreamRef = useRef<MediaStream | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const pipWindowRef = useRef<Window | null>(null);
+  const [isDocPipSupported, setIsDocPipSupported] = useState(false);
 
   useEffect(() => {
     setIsPipSupported(
@@ -96,6 +98,9 @@ export default function CameraUtility() {
       typeof navigator !== "undefined" &&
         "mediaDevices" in navigator &&
         "getUserMedia" in navigator.mediaDevices
+    );
+    setIsDocPipSupported(
+      typeof window !== "undefined" && "documentPictureInPicture" in window
     );
   }, []);
 
@@ -116,6 +121,10 @@ export default function CameraUtility() {
       }
       if (canvasRef.current) {
         canvasRef.current = null;
+      }
+      if (pipWindowRef.current) {
+        pipWindowRef.current.close();
+        pipWindowRef.current = null;
       }
     };
   }, []);
@@ -262,16 +271,57 @@ export default function CameraUtility() {
   }, [isMediaSupported, createMirroredStream]);
 
   const enablePip = useCallback(async () => {
-    if (!videoRef.current) return;
+    if (!mirroredStreamRef.current) return;
 
-    if (!isPipSupported) {
+    if (!isPipSupported && !isDocPipSupported) {
       setErrorInfo(getPipNotSupportedError());
       return;
     }
 
     try {
-      await videoRef.current.requestPictureInPicture();
-      setStatus("pip");
+      if (
+        isDocPipSupported &&
+        "documentPictureInPicture" in window &&
+        window.documentPictureInPicture
+      ) {
+        const pipWindow = await (
+          window.documentPictureInPicture as {
+            requestWindow: (options?: {
+              width?: number;
+              height?: number;
+            }) => Promise<Window>;
+          }
+        ).requestWindow({
+          width: 320,
+          height: 180,
+        });
+
+        pipWindowRef.current = pipWindow;
+
+        const pipVideo = pipWindow.document.createElement("video");
+        pipVideo.srcObject = mirroredStreamRef.current;
+        pipVideo.autoplay = true;
+        pipVideo.muted = true;
+        pipVideo.playsInline = true;
+        pipVideo.style.cssText =
+          "width: 100%; height: 100%; object-fit: cover; background: black;";
+
+        pipWindow.document.body.style.cssText =
+          "margin: 0; padding: 0; overflow: hidden; background: black;";
+        pipWindow.document.body.appendChild(pipVideo);
+
+        pipVideo.play().catch(() => {});
+
+        pipWindow.addEventListener("pagehide", () => {
+          pipWindowRef.current = null;
+          setStatus("active");
+        });
+
+        setStatus("pip");
+      } else if (videoRef.current) {
+        await videoRef.current.requestPictureInPicture();
+        setStatus("pip");
+      }
     } catch (err) {
       const error = err as Error;
       if (error.name === "NotAllowedError") {
@@ -284,10 +334,14 @@ export default function CameraUtility() {
         });
       }
     }
-  }, [isPipSupported]);
+  }, [isPipSupported, isDocPipSupported]);
 
   const exitPip = useCallback(async () => {
     try {
+      if (pipWindowRef.current) {
+        pipWindowRef.current.close();
+        pipWindowRef.current = null;
+      }
       if (document.pictureInPictureElement) {
         await document.exitPictureInPicture();
       }
@@ -319,6 +373,11 @@ export default function CameraUtility() {
     }
 
     canvasRef.current = null;
+
+    if (pipWindowRef.current) {
+      pipWindowRef.current.close();
+      pipWindowRef.current = null;
+    }
 
     try {
       if (document.pictureInPictureElement) {
@@ -437,9 +496,9 @@ export default function CameraUtility() {
                   <>
                     <Button
                       onClick={enablePip}
-                      disabled={!isPipSupported}
+                      disabled={!isPipSupported && !isDocPipSupported}
                       title={
-                        !isPipSupported
+                        !isPipSupported && !isDocPipSupported
                           ? "Picture-in-Picture is not supported in your browser"
                           : undefined
                       }
@@ -462,7 +521,7 @@ export default function CameraUtility() {
                 )}
               </div>
 
-              {!isPipSupported && status === "active" && (
+              {!isPipSupported && !isDocPipSupported && status === "active" && (
                 <p className="text-sm text-muted-foreground text-center mt-4">
                   Picture-in-Picture is not supported in your browser. Try using
                   Chrome, Edge, or Safari.
