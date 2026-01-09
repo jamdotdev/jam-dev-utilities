@@ -361,7 +361,7 @@ export default function CameraUtility() {
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           {status === "idle" && (
             <div className="flex flex-col items-center justify-center py-12">
-              <p className="text-muted-foreground mb-6 text-center">
+              <p className="text-muted-foreground mb-6 text-center text-balance">
                 Click the button below to start your camera and enable
                 Picture-in-Picture mode.
               </p>
