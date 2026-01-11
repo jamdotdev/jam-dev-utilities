@@ -15,7 +15,7 @@ import {
   mediumHar,
   largeHar,
   hugeHar,
-} from "../fixtures/generate-har-fixtures";
+} from "../fixtures/generate-har-fixtures.util";
 import { HarData } from "../../components/utils/har-utils";
 
 /**
