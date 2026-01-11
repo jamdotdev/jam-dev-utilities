@@ -7,7 +7,7 @@
  * the chonkie library or similar could be used for more sophisticated chunking.
  */
 
-import { HarEntry } from "./har-utils";
+import { HarEntry, isBase64 } from "./har-utils";
 
 /**
  * Configuration for chunked search
@@ -162,17 +162,6 @@ export async function searchInHarEntryChunked(
   }
 
   return false;
-}
-
-/**
- * Check if a string is base64 encoded
- */
-function isBase64(str: string): boolean {
-  try {
-    return btoa(atob(str)) === str;
-  } catch (err) {
-    return false;
-  }
 }
 
 /**

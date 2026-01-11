@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "benchmark:har-search": "node __tests__/performance/benchmark-har-search.mjs",
+    "test:har-performance": "jest har-search-performance.test.ts",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
     "format:check": "prettier --check '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
