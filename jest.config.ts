@@ -14,8 +14,8 @@ const customJestConfig = {
   ],
   modulePathIgnorePatterns: ["<rootDir>/build"],
   testMatch: [
-    "**/__tests__/**/*.+(spec|test).+(ts|tsx|js)",
-    "**/?(*.)+test.+(ts|tsx|js)",
+    "**/__tests__/**/*.(spec|test).+(ts|tsx|js)",
+    "**/*.(spec|test).+(ts|tsx|js)",
   ],
 };
 

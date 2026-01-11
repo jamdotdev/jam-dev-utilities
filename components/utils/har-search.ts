@@ -49,15 +49,10 @@ function chunkText(text: string, chunkSize: number, overlap: number): string[] {
     // Move start position, accounting for overlap
     start += chunkSize - overlap;
     
-    // Ensure we don't create tiny chunks at the end
-    if (start < text.length && text.length - start < overlap) {
+    // If we're at the end or close enough, we're done
+    if (start >= text.length) {
       break;
     }
-  }
-
-  // If there's remaining text, add it as the last chunk
-  if (start < text.length) {
-    chunks.push(text.substring(start));
   }
 
   return chunks;
@@ -65,6 +60,8 @@ function chunkText(text: string, chunkSize: number, overlap: number): string[] {
 
 /**
  * Search within a text using chunking for large content
+ * Note: This function is async to maintain consistency with the HAR entry search
+ * functions that may need to perform other async operations in the future.
  * @param text - The text to search in
  * @param query - The search query (case-insensitive)
  * @param config - Chunking configuration
