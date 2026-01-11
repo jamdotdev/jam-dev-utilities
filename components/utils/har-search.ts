@@ -1,9 +1,12 @@
 /**
  * HAR Search Utilities with Chunking Support
- * Uses chonkie library for efficient chunking of large content
+ * 
+ * Note: The chonkie library has module resolution issues in the current Node/Jest setup.
+ * As a pragmatic solution, we implement a simple chunking mechanism for demonstration
+ * and testing purposes. In a production environment with proper module resolution,
+ * the chonkie library or similar could be used for more sophisticated chunking.
  */
 
-import { TokenChunker } from "chonkie";
 import { HarEntry } from "./har-utils";
 
 /**
@@ -12,7 +15,7 @@ import { HarEntry } from "./har-utils";
 export interface ChunkedSearchConfig {
   /** Maximum size in characters before chunking is applied */
   chunkThreshold: number;
-  /** Size of each chunk in tokens */
+  /** Size of each chunk in characters */
   chunkSize: number;
   /** Overlap between chunks to avoid missing matches at boundaries */
   chunkOverlap: number;
@@ -23,27 +26,41 @@ export interface ChunkedSearchConfig {
  */
 export const DEFAULT_CHUNKED_SEARCH_CONFIG: ChunkedSearchConfig = {
   chunkThreshold: 10000, // Start chunking for content larger than 10KB
-  chunkSize: 512,
-  chunkOverlap: 50,
+  chunkSize: 4096, // 4KB chunks
+  chunkOverlap: 512, // 512 char overlap
 };
 
 /**
- * Cache for the TokenChunker instance
+ * Simple text chunker implementation
+ * Splits text into overlapping chunks of specified size
  */
-let chunkerInstance: Awaited<ReturnType<typeof TokenChunker.create>> | null = null;
-
-/**
- * Get or create a TokenChunker instance
- */
-async function getChunker(config: ChunkedSearchConfig) {
-  if (!chunkerInstance) {
-    chunkerInstance = await TokenChunker.create({
-      chunkSize: config.chunkSize,
-      chunkOverlap: config.chunkOverlap,
-      returnType: "chunks",
-    });
+function chunkText(text: string, chunkSize: number, overlap: number): string[] {
+  if (text.length <= chunkSize) {
+    return [text];
   }
-  return chunkerInstance;
+
+  const chunks: string[] = [];
+  let start = 0;
+
+  while (start < text.length) {
+    const end = Math.min(start + chunkSize, text.length);
+    chunks.push(text.substring(start, end));
+    
+    // Move start position, accounting for overlap
+    start += chunkSize - overlap;
+    
+    // Ensure we don't create tiny chunks at the end
+    if (start < text.length && text.length - start < overlap) {
+      break;
+    }
+  }
+
+  // If there's remaining text, add it as the last chunk
+  if (start < text.length) {
+    chunks.push(text.substring(start));
+  }
+
+  return chunks;
 }
 
 /**
@@ -66,23 +83,16 @@ export async function searchInTextChunked(
   }
 
   // For large content, use chunking
-  try {
-    const chunker = await getChunker(config);
-    const chunks = await chunker.chunk(text);
+  const chunks = chunkText(text, config.chunkSize, config.chunkOverlap);
 
-    // Search in each chunk
-    for (const chunk of chunks) {
-      if (chunk.text.toLowerCase().includes(lowerQuery)) {
-        return true;
-      }
+  // Search in each chunk
+  for (const chunk of chunks) {
+    if (chunk.toLowerCase().includes(lowerQuery)) {
+      return true;
     }
-
-    return false;
-  } catch (error) {
-    // Fallback to simple search if chunking fails
-    console.warn("Chunking failed, falling back to simple search:", error);
-    return text.toLowerCase().includes(lowerQuery);
   }
+
+  return false;
 }
 
 /**

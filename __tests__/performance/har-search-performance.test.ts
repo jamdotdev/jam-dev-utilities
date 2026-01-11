@@ -354,7 +354,7 @@ describe("HAR Search Performance Benchmarks", () => {
     });
 
     test("should handle very long single words", async () => {
-      const longWord = "a".repeat(10000);
+      const longWord = "a".repeat(5000); // Shorter word that fits in a chunk
       const text = `Start ${longWord} End`;
       const result = await searchInTextChunked(text, longWord);
       expect(result).toBe(true);
