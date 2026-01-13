@@ -60,6 +60,12 @@ export const tools = [
     link: "/utilities/image-to-base64",
   },
   {
+    title: "Base64 to Image Converter",
+    description:
+      "Convert Base64 strings to images instantly. Preview Base64-encoded image data in your browser. Fast, free, and developer-friendly.",
+    link: "/utilities/base64-to-image",
+  },
+  {
     title: "JSON to CSV",
     description:
       "Transform your JSON data into sleek CSV format with Jam's free online converter. Simply paste your JSON and watch the magic happen!",

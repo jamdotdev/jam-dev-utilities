@@ -34,6 +34,7 @@ Here is the list of all utilities:
 - [HEX to RGB Converter](https://jam.dev/utilities/hex-to-rgb)
 - [Convert .env to netlify.toml](https://jam.dev/utilities/env-to-netlify-toml)
 - [Image to Base64 Converter](https://jam.dev/utilities/image-to-base64)
+- [Base64 to Image Converter](https://jam.dev/utilities/base64-to-image)
 - [JSON to CSV](https://jam.dev/utilities/json-to-csv)
 - [HAR file viewer](https://jam.dev/utilities/har-file-viewer)
 - [JSON to YAML](https://jam.dev/utilities/json-to-yaml)

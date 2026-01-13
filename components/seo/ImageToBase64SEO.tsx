@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function ImageToBase64SEO() {
   return (
     <div className="content-wrapper">
@@ -8,6 +10,20 @@ export default function ImageToBase64SEO() {
           need to reduce HTTP requests. Convert images to base64 so you can
           embed them directly into HTML, CSS, or JavaScript. This image to Data
           URI converter is simple and fast.
+        </p>
+      </section>
+
+      <section>
+        <h2>Related Tool</h2>
+        <p>
+          Have a Base64 string and want to preview the image? Use our{" "}
+          <Link
+            href="/utilities/base64-to-image"
+            className="text-primary underline hover:no-underline"
+          >
+            Base64 to Image Converter
+          </Link>{" "}
+          to instantly decode and view Base64-encoded images.
         </p>
       </section>
 
