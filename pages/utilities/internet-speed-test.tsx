@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import PageHeader from "@/components/PageHeader";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
@@ -46,6 +46,11 @@ export default function InternetSpeedTest() {
   });
 
   const engineRef = useRef<SpeedTestEngine | null>(null);
+  const startButtonRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    startButtonRef.current?.focus();
+  }, []);
 
   const toggleTest = useCallback(async () => {
     if (testState.status === "running") {
@@ -184,10 +189,12 @@ export default function InternetSpeedTest() {
           </Card>
 
           <Card
-            className="md:col-span-2 row-span-1 flex flex-col cursor-pointer select-none group border-none bg-foreground"
+            ref={startButtonRef}
+            className="md:col-span-2 row-span-1 flex flex-col cursor-pointer select-none group border-none bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 text-background shadow-lg hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200 focus-visible:ring-offset-4 focus-visible:ring-offset-background transition-transform hover:-translate-y-0.5 active:translate-y-px"
             onClick={toggleTest}
             role="button"
             tabIndex={0}
+            aria-pressed={testState.status === "running"}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
