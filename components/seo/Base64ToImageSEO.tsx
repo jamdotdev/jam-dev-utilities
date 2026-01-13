@@ -20,8 +20,7 @@ export default function Base64ToImageSEO() {
           <li>
             <b>Paste your Base64 string:</b> <br /> Enter the Base64-encoded
             image data into the text field. You can paste either a raw Base64
-            string or a complete data URI (e.g.,
-            data:image/png;base64,...).
+            string or a complete data URI (e.g., data:image/png;base64,...).
           </li>
           <li>
             <b>View the preview:</b> <br /> The decoded image will automatically
