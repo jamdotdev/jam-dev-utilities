@@ -110,7 +110,7 @@ export default function Base64ToImage() {
 
       <section className="container max-w-2xl mb-6">
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
-          <div className="mb-4">
+          <div>
             <Label>Base64 String</Label>
             <Textarea
               rows={6}
@@ -122,14 +122,14 @@ export default function Base64ToImage() {
           </div>
 
           {status !== "idle" && (
-            <div className="mb-4 flex text-red-600 text-sm" role="alert">
+            <div className="mt-6 flex text-red-600 text-sm" role="alert">
               {getStatusMessage(status)}
             </div>
           )}
 
           <div className="w-full">
             {imageSrc && (
-              <div className="border rounded p-4 overflow-auto">
+              <div className="mt-6 border rounded p-4 overflow-auto">
                 <Label>Image Preview</Label>
                 <img
                   src={imageSrc}
