@@ -2,6 +2,7 @@ import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
 interface GitHubContributionProps {
   username: string;
+  customUrl?: string;
 }
 
 export default function GitHubContribution(props: GitHubContributionProps) {
@@ -10,7 +11,7 @@ export default function GitHubContribution(props: GitHubContributionProps) {
       <p className="flex items-center gap-2 justify-center">
         <span>Built by</span> <GitHubLogoIcon />
         <a
-          href={`https://github.com/${props.username}`}
+          href={props.customUrl || `https://github.com/${props.username}`}
           target="_blank"
           rel="noreferrer"
         >

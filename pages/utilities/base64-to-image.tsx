@@ -155,7 +155,10 @@ export default function Base64ToImage() {
         </Card>
       </section>
 
-      <GitHubContribution username="devin-ai-integration" />
+      <GitHubContribution
+        username="devin-ai-integration"
+        customUrl="https://app.devin.ai"
+      />
       <CallToActionGrid />
 
       <section className="container max-w-2xl">
