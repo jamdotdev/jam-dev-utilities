@@ -11,6 +11,7 @@ import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
 import { ImageUploadComponent } from "@/components/ds/ImageUploadComponent";
 import ImageToBase64SEO from "@/components/seo/ImageToBase64SEO";
+import Link from "next/link";
 
 export default function ImageToBase64() {
   const [base64, setBase64] = useState("");
@@ -120,6 +121,18 @@ export default function ImageToBase64() {
             >
               {buttonCSS}
             </Button>
+
+            <div className="mt-6 text-sm text-muted-foreground">
+              <p>
+                Have a Base64 string and want to see the image?{" "}
+                <Link
+                  href="/utilities/base64-to-image"
+                  className="text-primary underline hover:no-underline"
+                >
+                  Use our Base64 to Image Converter
+                </Link>
+              </p>
+            </div>
           </div>
         </Card>
       </section>
