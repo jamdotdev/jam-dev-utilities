@@ -132,7 +132,7 @@ function FacetSidebar({
                 >
                   <Checkbox
                     checked={selectedLogLevels.includes(level)}
-                    onChange={() => handleLogLevelToggle(level)}
+                    onCheckedChange={() => handleLogLevelToggle(level)}
                   />
                   <span
                     className={cn(
@@ -185,7 +185,7 @@ function FacetSidebar({
                   >
                     <Checkbox
                       checked={selectedValues.includes(value)}
-                      onChange={() => handleValueToggle(column, value)}
+                      onCheckedChange={() => handleValueToggle(column, value)}
                     />
                     <span className="flex-1 truncate" title={value}>
                       {value}
@@ -264,7 +264,7 @@ function ColumnFilterDropdown({
                 >
                   <Checkbox
                     checked={selectedValues.includes(item.value)}
-                    onChange={() => handleToggle(item.value)}
+                    onCheckedChange={() => handleToggle(item.value)}
                   />
                   <span className="flex-1 truncate">{item.value}</span>
                   <span className="text-muted-foreground text-xs">
@@ -312,16 +312,45 @@ function LogsTable({
   const tableCellStyles = "border p-2 px-3 text-[13px]";
   const tableRowStyles = "hover:bg-muted-foreground/5 cursor-pointer";
 
+  const getColumnWidth = (header: string, index: number): string => {
+    const lowerHeader = header.toLowerCase();
+    if (lowerHeader.includes("date") || lowerHeader.includes("time")) {
+      return "180px";
+    }
+    if (lowerHeader.includes("host") || lowerHeader.includes("service")) {
+      return "200px";
+    }
+    if (
+      lowerHeader.includes("content") ||
+      lowerHeader.includes("message") ||
+      lowerHeader.includes("log")
+    ) {
+      return "auto";
+    }
+    if (index === headers.length - 1) {
+      return "auto";
+    }
+    return "150px";
+  };
+
   return (
     <div className="w-full overflow-x-auto">
-      <table className="w-full border-collapse">
+      <table className="w-full border-collapse table-fixed">
         <thead>
           <tr className="bg-muted/50">
-            {headers.map((header) => {
+            {headers.map((header, index) => {
               const facet = facets.get(header);
               const selectedValues = getSelectedValues(header);
+              const width = getColumnWidth(header, index);
               return (
-                <th key={header} className={tableHeaderStyles}>
+                <th
+                  key={header}
+                  className={tableHeaderStyles}
+                  style={{
+                    width,
+                    minWidth: width === "auto" ? "200px" : width,
+                  }}
+                >
                   <div className="flex items-center justify-between gap-2">
                     <span className="truncate">{header}</span>
                     {facet && facet.values.length > 1 && (
@@ -596,10 +625,10 @@ export default function CSVLogsViewer() {
 
       {csvData && (
         <>
-          <section className="container max-w-7xl mb-6">
+          <section className="px-6 mb-6">
             <div className="flex flex-col gap-4 mb-4">
               <div className="flex flex-col gap-2">
-                <div className="relative">
+                <div className="relative max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="text"
@@ -640,7 +669,7 @@ export default function CSVLogsViewer() {
             </div>
           </section>
 
-          <section className="container max-w-7xl mb-6">
+          <section className="px-6 mb-6">
             <div className="flex gap-6">
               <FacetSidebar
                 facets={facets}
