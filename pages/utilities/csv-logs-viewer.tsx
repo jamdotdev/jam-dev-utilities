@@ -290,7 +290,22 @@ type MarkerGroup = "primary" | "secondary";
 
 interface MarkerInfo {
   group: MarkerGroup;
-  number: number;
+  insertionOrder: number;
+}
+
+function computeDisplayNumbers(
+  markedRows: Map<number, MarkerInfo>,
+  group: MarkerGroup
+): Map<number, number> {
+  const entries = Array.from(markedRows.entries())
+    .filter(([, info]) => info.group === group)
+    .sort((a, b) => a[1].insertionOrder - b[1].insertionOrder);
+
+  const displayNumbers = new Map<number, number>();
+  entries.forEach(([originalIndex], index) => {
+    displayNumbers.set(originalIndex, index + 1);
+  });
+  return displayNumbers;
 }
 
 interface RowWithOriginalIndex {
@@ -308,6 +323,8 @@ interface LogsTableProps {
   onFilterChange: (column: string, values: string[]) => void;
   markedRows: Map<number, MarkerInfo>;
   onToggleMark: (originalIndex: number, group: MarkerGroup) => void;
+  primaryDisplayNumbers: Map<number, number>;
+  secondaryDisplayNumbers: Map<number, number>;
 }
 
 function LogsTable({
@@ -319,6 +336,8 @@ function LogsTable({
   onFilterChange,
   markedRows,
   onToggleMark,
+  primaryDisplayNumbers,
+  secondaryDisplayNumbers,
 }: LogsTableProps) {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
@@ -406,6 +425,11 @@ function LogsTable({
               const isMarked = markerInfo !== undefined;
               const isPrimaryMarker = markerInfo?.group === "primary";
               const isSecondaryMarker = markerInfo?.group === "secondary";
+              const displayNumber = isPrimaryMarker
+                ? primaryDisplayNumbers.get(originalIndex)
+                : isSecondaryMarker
+                  ? secondaryDisplayNumbers.get(originalIndex)
+                  : undefined;
 
               const getMarkerRowColor = () => {
                 if (isPrimaryMarker) {
@@ -448,7 +472,7 @@ function LogsTable({
                             isPrimaryMarker ? "bg-blue-500" : "bg-green-500"
                           )}
                         >
-                          {markerInfo.number}
+                          {displayNumber}
                         </span>
                       ) : (
                         <span className="inline-flex items-center justify-center w-5 h-5 rounded-full border border-muted-foreground/30 text-muted-foreground/50 text-xs hover:border-blue-500 hover:text-blue-500">
@@ -527,7 +551,7 @@ function LogsTable({
                                 )}
                               >
                                 {isPrimaryMarker ? "Flow A" : "Flow B"} #
-                                {markerInfo.number}
+                                {displayNumber}
                               </span>
                             )}
                           </div>
@@ -574,8 +598,7 @@ export default function CSVLogsViewer() {
   const [markedRows, setMarkedRows] = useState<Map<number, MarkerInfo>>(
     new Map()
   );
-  const [nextPrimaryMarker, setNextPrimaryMarker] = useState(1);
-  const [nextSecondaryMarker, setNextSecondaryMarker] = useState(1);
+  const [nextInsertionOrder, setNextInsertionOrder] = useState(1);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -610,8 +633,7 @@ export default function CSVLogsViewer() {
         setFilters([]);
         setSelectedLogLevels([]);
         setMarkedRows(new Map());
-        setNextPrimaryMarker(1);
-        setNextSecondaryMarker(1);
+        setNextInsertionOrder(1);
       } catch (error) {
         console.error("Error parsing CSV file:", error);
         setStatus("unsupported");
@@ -696,6 +718,16 @@ export default function CSVLogsViewer() {
     return result;
   }, [csvData, filters, debouncedSearchQuery, selectedLogLevels, markedRows]);
 
+  const primaryDisplayNumbers = useMemo(
+    () => computeDisplayNumbers(markedRows, "primary"),
+    [markedRows]
+  );
+
+  const secondaryDisplayNumbers = useMemo(
+    () => computeDisplayNumbers(markedRows, "secondary"),
+    [markedRows]
+  );
+
   const handleToggleMark = useCallback(
     (originalIndex: number, group: MarkerGroup) => {
       setMarkedRows((prev) => {
@@ -705,19 +737,16 @@ export default function CSVLogsViewer() {
         if (existing && existing.group === group) {
           newMap.delete(originalIndex);
         } else {
-          const nextNumber =
-            group === "primary" ? nextPrimaryMarker : nextSecondaryMarker;
-          newMap.set(originalIndex, { group, number: nextNumber });
-          if (group === "primary") {
-            setNextPrimaryMarker((n) => n + 1);
-          } else {
-            setNextSecondaryMarker((n) => n + 1);
-          }
+          newMap.set(originalIndex, {
+            group,
+            insertionOrder: nextInsertionOrder,
+          });
+          setNextInsertionOrder((n) => n + 1);
         }
         return newMap;
       });
     },
-    [nextPrimaryMarker, nextSecondaryMarker]
+    [nextInsertionOrder]
   );
 
   const handleFilterChange = useCallback((column: string, values: string[]) => {
@@ -884,6 +913,8 @@ export default function CSVLogsViewer() {
                   onFilterChange={handleFilterChange}
                   markedRows={markedRows}
                   onToggleMark={handleToggleMark}
+                  primaryDisplayNumbers={primaryDisplayNumbers}
+                  secondaryDisplayNumbers={secondaryDisplayNumbers}
                 />
               </div>
             </div>
