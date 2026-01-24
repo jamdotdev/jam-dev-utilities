@@ -179,4 +179,10 @@ export const tools = [
       "Transform XML data into JSON format instantly. Simplifies working with APIs and modern web applications that prefer JSON.",
     link: "/utilities/xml-to-json",
   },
+  {
+    title: "Diff Viewer",
+    description:
+      "Compare text, code, JSON, YAML, and config files with a fast inline or side-by-side diff viewer.",
+    link: "/utilities/diff-viewer",
+  },
 ];
