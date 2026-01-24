@@ -138,6 +138,12 @@ export const tools = [
     link: "/utilities/svg-viewer",
   },
   {
+    title: "Mermaid Diagram Builder",
+    description:
+      "Build and preview Mermaid flowcharts with a live editor and builder, plus export options for SVG and PNG.",
+    link: "/utilities/mermaid-diagram-builder",
+  },
+  {
     title: "Lorem Ipsum Generator",
     description:
       "Easily generate random Lorem Ipsum text for your design projects. Perfect for placeholder content and layout previews.",
