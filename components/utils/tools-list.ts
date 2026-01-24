@@ -179,4 +179,10 @@ export const tools = [
       "Transform XML data into JSON format instantly. Simplifies working with APIs and modern web applications that prefer JSON.",
     link: "/utilities/xml-to-json",
   },
+  {
+    title: "Config Doctor",
+    description:
+      "Convert .env files to Netlify, Vercel, or Cloudflare Pages configs with AI-powered security analysis. Detect secrets and deploy safely.",
+    link: "/utilities/config-doctor",
+  },
 ];
