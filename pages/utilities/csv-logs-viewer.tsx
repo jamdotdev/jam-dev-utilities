@@ -286,13 +286,21 @@ function ColumnFilterDropdown({
   );
 }
 
+interface RowWithOriginalIndex {
+  row: LogEntry;
+  originalIndex: number;
+  isMarkedButFiltered?: boolean;
+}
+
 interface LogsTableProps {
-  rows: LogEntry[];
+  rows: RowWithOriginalIndex[];
   headers: string[];
   searchQuery: string;
   facets: Map<string, Facet>;
   filters: ColumnFilter[];
   onFilterChange: (column: string, values: string[]) => void;
+  markedRows: Map<number, number>;
+  onToggleMark: (originalIndex: number) => void;
 }
 
 function LogsTable({
@@ -302,6 +310,8 @@ function LogsTable({
   facets,
   filters,
   onFilterChange,
+  markedRows,
+  onToggleMark,
 }: LogsTableProps) {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
@@ -345,6 +355,12 @@ function LogsTable({
         <table className="w-full border-collapse table-fixed">
           <thead>
             <tr className="bg-muted/50">
+              <th
+                className={cn(tableHeaderStyles, "w-12 text-center")}
+                style={{ width: "48px", minWidth: "48px" }}
+              >
+                #
+              </th>
               {headers.map((header, index) => {
                 const facet = facets.get(header);
                 const selectedValues = getSelectedValues(header);
@@ -376,26 +392,51 @@ function LogsTable({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, index) => {
+            {rows.map(({ row, originalIndex, isMarkedButFiltered }, index) => {
               const logLevel = detectLogLevel(row);
               const isExpanded = expandedRow === index;
+              const markerNumber = markedRows.get(originalIndex);
+              const isMarked = markerNumber !== undefined;
 
               return (
                 <>
                   <tr
-                    key={index}
+                    key={originalIndex}
                     className={cn(
                       tableRowStyles,
-                      getLogLevelColor(logLevel),
-                      index % 2 === 0 && "bg-muted/30"
+                      isMarked
+                        ? "bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50"
+                        : getLogLevelColor(logLevel),
+                      !isMarked && index % 2 === 0 && "bg-muted/30",
+                      isMarkedButFiltered && "opacity-60"
                     )}
                     onClick={() => setExpandedRow(isExpanded ? null : index)}
                   >
+                    <td
+                      className={cn(
+                        tableCellStyles,
+                        "text-center cursor-pointer select-none"
+                      )}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleMark(originalIndex);
+                      }}
+                    >
+                      {isMarked ? (
+                        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-500 text-white text-xs font-medium">
+                          {markerNumber}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full border border-muted-foreground/30 text-muted-foreground/50 text-xs hover:border-blue-500 hover:text-blue-500">
+                          +
+                        </span>
+                      )}
+                    </td>
                     {headers.map((header) => {
                       const value = row[header] || "";
                       const isDate =
                         rows.length > 0 &&
-                        isDateColumn(header, rows[0][header]);
+                        isDateColumn(header, rows[0].row[header]);
                       const displayValue = isDate ? formatDate(value) : value;
                       const isTruncated = value.length > 30;
 
@@ -437,9 +478,9 @@ function LogsTable({
                     })}
                   </tr>
                   {isExpanded && (
-                    <tr key={`${index}-expanded`}>
+                    <tr key={`${originalIndex}-expanded`}>
                       <td
-                        colSpan={headers.length}
+                        colSpan={headers.length + 1}
                         className="border p-4 bg-muted/20"
                       >
                         <div className="space-y-2">
@@ -452,6 +493,11 @@ function LogsTable({
                             >
                               {logLevel.toUpperCase()}
                             </span>
+                            {isMarked && (
+                              <span className="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/50 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300">
+                                Marker #{markerNumber}
+                              </span>
+                            )}
                           </div>
                           {headers.map((header) => (
                             <div key={header} className="flex text-sm">
@@ -493,6 +539,8 @@ export default function CSVLogsViewer() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [filters, setFilters] = useState<ColumnFilter[]>([]);
   const [selectedLogLevels, setSelectedLogLevels] = useState<LogLevel[]>([]);
+  const [markedRows, setMarkedRows] = useState<Map<number, number>>(new Map());
+  const [nextMarkerNumber, setNextMarkerNumber] = useState(1);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -526,6 +574,8 @@ export default function CSVLogsViewer() {
         setStatus("idle");
         setFilters([]);
         setSelectedLogLevels([]);
+        setMarkedRows(new Map());
+        setNextMarkerNumber(1);
       } catch (error) {
         console.error("Error parsing CSV file:", error);
         setStatus("unsupported");
@@ -571,19 +621,60 @@ export default function CSVLogsViewer() {
     return counts;
   }, [csvData]);
 
-  const filteredRows = useMemo(() => {
+  const filteredRowsWithMarkers = useMemo((): RowWithOriginalIndex[] => {
     if (!csvData) return [];
 
-    let result = filterRows(csvData.rows, filters, debouncedSearchQuery);
+    const filteredSet = new Set<number>();
+    let filtered = filterRows(csvData.rows, filters, debouncedSearchQuery);
 
     if (selectedLogLevels.length > 0) {
-      result = result.filter((row) =>
+      filtered = filtered.filter((row) =>
         selectedLogLevels.includes(detectLogLevel(row))
       );
     }
 
+    filtered.forEach((row) => {
+      const originalIndex = csvData.rows.indexOf(row);
+      filteredSet.add(originalIndex);
+    });
+
+    const result: RowWithOriginalIndex[] = [];
+
+    filtered.forEach((row) => {
+      const originalIndex = csvData.rows.indexOf(row);
+      result.push({ row, originalIndex, isMarkedButFiltered: false });
+    });
+
+    markedRows.forEach((_, originalIndex) => {
+      if (!filteredSet.has(originalIndex)) {
+        result.push({
+          row: csvData.rows[originalIndex],
+          originalIndex,
+          isMarkedButFiltered: true,
+        });
+      }
+    });
+
+    result.sort((a, b) => a.originalIndex - b.originalIndex);
+
     return result;
-  }, [csvData, filters, debouncedSearchQuery, selectedLogLevels]);
+  }, [csvData, filters, debouncedSearchQuery, selectedLogLevels, markedRows]);
+
+  const handleToggleMark = useCallback(
+    (originalIndex: number) => {
+      setMarkedRows((prev) => {
+        const newMap = new Map(prev);
+        if (newMap.has(originalIndex)) {
+          newMap.delete(originalIndex);
+        } else {
+          newMap.set(originalIndex, nextMarkerNumber);
+          setNextMarkerNumber((n) => n + 1);
+        }
+        return newMap;
+      });
+    },
+    [nextMarkerNumber]
+  );
 
   const handleFilterChange = useCallback((column: string, values: string[]) => {
     setFilters((prev) => {
@@ -681,7 +772,13 @@ export default function CSVLogsViewer() {
 
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">
-                    Showing {filteredRows.length} of {csvData.rows.length} logs
+                    Showing {filteredRowsWithMarkers.length} of{" "}
+                    {csvData.rows.length} logs
+                    {markedRows.size > 0 && (
+                      <span className="ml-2 text-blue-600 dark:text-blue-400">
+                        ({markedRows.size} marked)
+                      </span>
+                    )}
                   </p>
                   {hasActiveFilters && (
                     <Button
@@ -710,12 +807,14 @@ export default function CSVLogsViewer() {
               />
               <div className="flex-1 overflow-hidden">
                 <LogsTable
-                  rows={filteredRows}
+                  rows={filteredRowsWithMarkers}
                   headers={csvData.headers}
                   searchQuery={debouncedSearchQuery}
                   facets={facets}
                   filters={filters}
                   onFilterChange={handleFilterChange}
+                  markedRows={markedRows}
+                  onToggleMark={handleToggleMark}
                 />
               </div>
             </div>
