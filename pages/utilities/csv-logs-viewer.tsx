@@ -40,6 +40,12 @@ import {
 } from "@/components/ds/CommandMenu";
 import { Checkbox } from "@/components/ds/CheckboxComponent";
 import SearchHighlightText from "@/components/SearchHighlightText";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface FacetSidebarProps {
   facets: Map<string, Facet>;
@@ -334,124 +340,147 @@ function LogsTable({
   };
 
   return (
-    <div className="w-full overflow-x-auto">
-      <table className="w-full border-collapse table-fixed">
-        <thead>
-          <tr className="bg-muted/50">
-            {headers.map((header, index) => {
-              const facet = facets.get(header);
-              const selectedValues = getSelectedValues(header);
-              const width = getColumnWidth(header, index);
+    <TooltipProvider>
+      <div className="w-full overflow-x-auto">
+        <table className="w-full border-collapse table-fixed">
+          <thead>
+            <tr className="bg-muted/50">
+              {headers.map((header, index) => {
+                const facet = facets.get(header);
+                const selectedValues = getSelectedValues(header);
+                const width = getColumnWidth(header, index);
+                return (
+                  <th
+                    key={header}
+                    className={tableHeaderStyles}
+                    style={{
+                      width,
+                      minWidth: width === "auto" ? "200px" : width,
+                    }}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate">{header}</span>
+                      {facet && facet.values.length > 1 && (
+                        <ColumnFilterDropdown
+                          facet={facet}
+                          selectedValues={selectedValues}
+                          onSelectionChange={(values) =>
+                            onFilterChange(header, values)
+                          }
+                        />
+                      )}
+                    </div>
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => {
+              const logLevel = detectLogLevel(row);
+              const isExpanded = expandedRow === index;
+
               return (
-                <th
-                  key={header}
-                  className={tableHeaderStyles}
-                  style={{
-                    width,
-                    minWidth: width === "auto" ? "200px" : width,
-                  }}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="truncate">{header}</span>
-                    {facet && facet.values.length > 1 && (
-                      <ColumnFilterDropdown
-                        facet={facet}
-                        selectedValues={selectedValues}
-                        onSelectionChange={(values) =>
-                          onFilterChange(header, values)
-                        }
-                      />
+                <>
+                  <tr
+                    key={index}
+                    className={cn(
+                      tableRowStyles,
+                      getLogLevelColor(logLevel),
+                      index % 2 === 0 && "bg-muted/30"
                     )}
-                  </div>
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => {
-            const logLevel = detectLogLevel(row);
-            const isExpanded = expandedRow === index;
+                    onClick={() => setExpandedRow(isExpanded ? null : index)}
+                  >
+                    {headers.map((header) => {
+                      const value = row[header] || "";
+                      const isDate =
+                        rows.length > 0 &&
+                        isDateColumn(header, rows[0][header]);
+                      const displayValue = isDate ? formatDate(value) : value;
+                      const isTruncated = value.length > 30;
 
-            return (
-              <>
-                <tr
-                  key={index}
-                  className={cn(
-                    tableRowStyles,
-                    getLogLevelColor(logLevel),
-                    index % 2 === 0 && "bg-muted/30"
-                  )}
-                  onClick={() => setExpandedRow(isExpanded ? null : index)}
-                >
-                  {headers.map((header) => {
-                    const value = row[header] || "";
-                    const isDate =
-                      rows.length > 0 && isDateColumn(header, rows[0][header]);
-                    const displayValue = isDate ? formatDate(value) : value;
-
-                    return (
-                      <td
-                        key={header}
-                        className={cn(tableCellStyles, "max-w-xs truncate")}
-                        title={value}
-                      >
-                        {searchQuery ? (
-                          <SearchHighlightText
-                            text={displayValue}
-                            searchQuery={searchQuery}
-                          />
-                        ) : (
-                          displayValue
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-                {isExpanded && (
-                  <tr key={`${index}-expanded`}>
-                    <td
-                      colSpan={headers.length}
-                      className="border p-4 bg-muted/20"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span
-                            className={cn(
-                              "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
-                              getLogLevelBadgeColor(logLevel)
-                            )}
-                          >
-                            {logLevel.toUpperCase()}
-                          </span>
+                      const cellContent = (
+                        <div className="truncate">
+                          {searchQuery ? (
+                            <SearchHighlightText
+                              text={displayValue}
+                              searchQuery={searchQuery}
+                            />
+                          ) : (
+                            displayValue
+                          )}
                         </div>
-                        {headers.map((header) => (
-                          <div key={header} className="flex text-sm">
-                            <span className="font-medium min-w-[120px] text-muted-foreground">
-                              {header}:
-                            </span>
-                            <span className="flex-1 break-all">
-                              {searchQuery ? (
-                                <SearchHighlightText
-                                  text={row[header] || ""}
-                                  searchQuery={searchQuery}
-                                />
-                              ) : (
-                                row[header] || ""
+                      );
+
+                      return (
+                        <td
+                          key={header}
+                          className={cn(tableCellStyles, "max-w-xs")}
+                        >
+                          {isTruncated ? (
+                            <Tooltip delayDuration={100}>
+                              <TooltipTrigger asChild>
+                                {cellContent}
+                              </TooltipTrigger>
+                              <TooltipContent
+                                side="top"
+                                className="max-w-md break-all"
+                              >
+                                {value}
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
+                            cellContent
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                  {isExpanded && (
+                    <tr key={`${index}-expanded`}>
+                      <td
+                        colSpan={headers.length}
+                        className="border p-4 bg-muted/20"
+                      >
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 mb-3">
+                            <span
+                              className={cn(
+                                "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
+                                getLogLevelBadgeColor(logLevel)
                               )}
+                            >
+                              {logLevel.toUpperCase()}
                             </span>
                           </div>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+                          {headers.map((header) => (
+                            <div key={header} className="flex text-sm">
+                              <span className="font-medium min-w-[120px] text-muted-foreground">
+                                {header}:
+                              </span>
+                              <span className="flex-1 break-all">
+                                {searchQuery ? (
+                                  <SearchHighlightText
+                                    text={row[header] || ""}
+                                    searchQuery={searchQuery}
+                                  />
+                                ) : (
+                                  row[header] || ""
+                                )}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </TooltipProvider>
   );
 }
 
