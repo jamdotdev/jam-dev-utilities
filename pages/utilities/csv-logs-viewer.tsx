@@ -527,24 +527,21 @@ export default function CSVLogsViewer() {
     return result;
   }, [csvData, filters, debouncedSearchQuery, selectedLogLevels]);
 
-  const handleFilterChange = useCallback(
-    (column: string, values: string[]) => {
-      setFilters((prev) => {
-        const existing = prev.find((f) => f.column === column);
-        if (existing) {
-          if (values.length === 0) {
-            return prev.filter((f) => f.column !== column);
-          }
-          return prev.map((f) =>
-            f.column === column ? { ...f, selectedValues: values } : f
-          );
+  const handleFilterChange = useCallback((column: string, values: string[]) => {
+    setFilters((prev) => {
+      const existing = prev.find((f) => f.column === column);
+      if (existing) {
+        if (values.length === 0) {
+          return prev.filter((f) => f.column !== column);
         }
-        if (values.length === 0) return prev;
-        return [...prev, { column, selectedValues: values }];
-      });
-    },
-    []
-  );
+        return prev.map((f) =>
+          f.column === column ? { ...f, selectedValues: values } : f
+        );
+      }
+      if (values.length === 0) return prev;
+      return [...prev, { column, selectedValues: values }];
+    });
+  }, []);
 
   const clearAllFilters = useCallback(() => {
     setFilters([]);
