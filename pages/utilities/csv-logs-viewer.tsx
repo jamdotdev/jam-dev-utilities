@@ -286,6 +286,13 @@ function ColumnFilterDropdown({
   );
 }
 
+type MarkerGroup = "primary" | "secondary";
+
+interface MarkerInfo {
+  group: MarkerGroup;
+  number: number;
+}
+
 interface RowWithOriginalIndex {
   row: LogEntry;
   originalIndex: number;
@@ -299,8 +306,8 @@ interface LogsTableProps {
   facets: Map<string, Facet>;
   filters: ColumnFilter[];
   onFilterChange: (column: string, values: string[]) => void;
-  markedRows: Map<number, number>;
-  onToggleMark: (originalIndex: number) => void;
+  markedRows: Map<number, MarkerInfo>;
+  onToggleMark: (originalIndex: number, group: MarkerGroup) => void;
 }
 
 function LogsTable({
@@ -395,8 +402,20 @@ function LogsTable({
             {rows.map(({ row, originalIndex, isMarkedButFiltered }, index) => {
               const logLevel = detectLogLevel(row);
               const isExpanded = expandedRow === index;
-              const markerNumber = markedRows.get(originalIndex);
-              const isMarked = markerNumber !== undefined;
+              const markerInfo = markedRows.get(originalIndex);
+              const isMarked = markerInfo !== undefined;
+              const isPrimaryMarker = markerInfo?.group === "primary";
+              const isSecondaryMarker = markerInfo?.group === "secondary";
+
+              const getMarkerRowColor = () => {
+                if (isPrimaryMarker) {
+                  return "bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50";
+                }
+                if (isSecondaryMarker) {
+                  return "bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-900/50";
+                }
+                return getLogLevelColor(logLevel);
+              };
 
               return (
                 <>
@@ -404,9 +423,7 @@ function LogsTable({
                     key={originalIndex}
                     className={cn(
                       tableRowStyles,
-                      isMarked
-                        ? "bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50"
-                        : getLogLevelColor(logLevel),
+                      getMarkerRowColor(),
                       !isMarked && index % 2 === 0 && "bg-muted/30",
                       isMarkedButFiltered && "opacity-60"
                     )}
@@ -419,12 +436,19 @@ function LogsTable({
                       )}
                       onClick={(e) => {
                         e.stopPropagation();
-                        onToggleMark(originalIndex);
+                        const group: MarkerGroup =
+                          e.metaKey || e.ctrlKey ? "secondary" : "primary";
+                        onToggleMark(originalIndex, group);
                       }}
                     >
                       {isMarked ? (
-                        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-500 text-white text-xs font-medium">
-                          {markerNumber}
+                        <span
+                          className={cn(
+                            "inline-flex items-center justify-center w-5 h-5 rounded-full text-white text-xs font-medium",
+                            isPrimaryMarker ? "bg-blue-500" : "bg-green-500"
+                          )}
+                        >
+                          {markerInfo.number}
                         </span>
                       ) : (
                         <span className="inline-flex items-center justify-center w-5 h-5 rounded-full border border-muted-foreground/30 text-muted-foreground/50 text-xs hover:border-blue-500 hover:text-blue-500">
@@ -494,8 +518,16 @@ function LogsTable({
                               {logLevel.toUpperCase()}
                             </span>
                             {isMarked && (
-                              <span className="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/50 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300">
-                                Marker #{markerNumber}
+                              <span
+                                className={cn(
+                                  "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+                                  isPrimaryMarker
+                                    ? "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300"
+                                    : "bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300"
+                                )}
+                              >
+                                {isPrimaryMarker ? "Flow A" : "Flow B"} #
+                                {markerInfo.number}
                               </span>
                             )}
                           </div>
@@ -539,8 +571,11 @@ export default function CSVLogsViewer() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [filters, setFilters] = useState<ColumnFilter[]>([]);
   const [selectedLogLevels, setSelectedLogLevels] = useState<LogLevel[]>([]);
-  const [markedRows, setMarkedRows] = useState<Map<number, number>>(new Map());
-  const [nextMarkerNumber, setNextMarkerNumber] = useState(1);
+  const [markedRows, setMarkedRows] = useState<Map<number, MarkerInfo>>(
+    new Map()
+  );
+  const [nextPrimaryMarker, setNextPrimaryMarker] = useState(1);
+  const [nextSecondaryMarker, setNextSecondaryMarker] = useState(1);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -575,7 +610,8 @@ export default function CSVLogsViewer() {
         setFilters([]);
         setSelectedLogLevels([]);
         setMarkedRows(new Map());
-        setNextMarkerNumber(1);
+        setNextPrimaryMarker(1);
+        setNextSecondaryMarker(1);
       } catch (error) {
         console.error("Error parsing CSV file:", error);
         setStatus("unsupported");
@@ -661,19 +697,27 @@ export default function CSVLogsViewer() {
   }, [csvData, filters, debouncedSearchQuery, selectedLogLevels, markedRows]);
 
   const handleToggleMark = useCallback(
-    (originalIndex: number) => {
+    (originalIndex: number, group: MarkerGroup) => {
       setMarkedRows((prev) => {
         const newMap = new Map(prev);
-        if (newMap.has(originalIndex)) {
+        const existing = newMap.get(originalIndex);
+
+        if (existing && existing.group === group) {
           newMap.delete(originalIndex);
         } else {
-          newMap.set(originalIndex, nextMarkerNumber);
-          setNextMarkerNumber((n) => n + 1);
+          const nextNumber =
+            group === "primary" ? nextPrimaryMarker : nextSecondaryMarker;
+          newMap.set(originalIndex, { group, number: nextNumber });
+          if (group === "primary") {
+            setNextPrimaryMarker((n) => n + 1);
+          } else {
+            setNextSecondaryMarker((n) => n + 1);
+          }
         }
         return newMap;
       });
     },
-    [nextMarkerNumber]
+    [nextPrimaryMarker, nextSecondaryMarker]
   );
 
   const handleFilterChange = useCallback((column: string, values: string[]) => {
@@ -775,9 +819,34 @@ export default function CSVLogsViewer() {
                     Showing {filteredRowsWithMarkers.length} of{" "}
                     {csvData.rows.length} logs
                     {markedRows.size > 0 && (
-                      <span className="ml-2 text-blue-600 dark:text-blue-400">
-                        ({markedRows.size} marked)
-                      </span>
+                      <>
+                        {Array.from(markedRows.values()).filter(
+                          (m) => m.group === "primary"
+                        ).length > 0 && (
+                          <span className="ml-2 text-blue-600 dark:text-blue-400">
+                            (
+                            {
+                              Array.from(markedRows.values()).filter(
+                                (m) => m.group === "primary"
+                              ).length
+                            }{" "}
+                            Flow A)
+                          </span>
+                        )}
+                        {Array.from(markedRows.values()).filter(
+                          (m) => m.group === "secondary"
+                        ).length > 0 && (
+                          <span className="ml-2 text-green-600 dark:text-green-400">
+                            (
+                            {
+                              Array.from(markedRows.values()).filter(
+                                (m) => m.group === "secondary"
+                              ).length
+                            }{" "}
+                            Flow B)
+                          </span>
+                        )}
+                      </>
                     )}
                   </p>
                   {hasActiveFilters && (
