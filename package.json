@@ -12,6 +12,7 @@
     "format:check": "prettier --check '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
+    "@mlc-ai/web-llm": "^0.2.78",
     "@cloudflare/speedtest": "^1.6.0",
     "@monaco-editor/react": "^4.6.0",
     "@radix-ui/react-checkbox": "^1.1.1",
