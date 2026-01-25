@@ -168,6 +168,12 @@ export const tools = [
     link: "/utilities/random-string-generator",
   },
   {
+    title: "Chatbot Designer",
+    description:
+      "Design a customizable AI chat UI with live preview and copy-paste React code and JSON config.",
+    link: "/utilities/chatbot-designer",
+  },
+  {
     title: "WCAG Color Contrast Checker",
     description:
       "Check color contrast ratios for WCAG AA and AAA compliance. Ensure your designs meet accessibility standards with our free color contrast checker tool.",
