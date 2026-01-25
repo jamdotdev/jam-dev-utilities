@@ -8,28 +8,23 @@ import {
   DialogTrigger,
 } from "@/components/ds/DialogComponent";
 import { Button } from "@/components/ds/ButtonComponent";
-import { Input } from "@/components/ds/InputComponent";
-import { Label } from "@/components/ds/LabelComponent";
 import { PROVIDERS, ProviderId } from "@/components/utils/ai-eval-schemas";
 import { UseApiKeysReturn } from "@/components/hooks/useApiKeys";
-import { Key, Check, X, Loader2, Eye, EyeOff } from "lucide-react";
+import { Key, Check, X, Loader2, Eye, EyeOff, ExternalLink } from "lucide-react";
 
 interface ApiKeyDialogProps {
   apiKeys: UseApiKeysReturn;
   children?: React.ReactNode;
 }
 
-interface ProviderKeyInputProps {
+interface ProviderKeyRowProps {
   providerId: ProviderId;
   providerName: string;
   apiKeys: UseApiKeysReturn;
+  keyUrl: string;
 }
 
-function ProviderKeyInput({
-  providerId,
-  providerName,
-  apiKeys,
-}: ProviderKeyInputProps) {
+function ProviderKeyRow({ providerId, providerName, apiKeys, keyUrl }: ProviderKeyRowProps) {
   const [value, setValue] = useState(apiKeys.getKey(providerId) || "");
   const [showKey, setShowKey] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -52,13 +47,9 @@ function ProviderKeyInput({
 
   const handleTest = useCallback(async () => {
     if (!value.trim()) return;
-
-    // First save the key
     apiKeys.setKey(providerId, value.trim());
-
     setTesting(true);
     setTestResult(null);
-
     try {
       const result = await apiKeys.testKey(providerId);
       setTestResult(result);
@@ -70,34 +61,43 @@ function ProviderKeyInput({
   }, [apiKeys, providerId, value]);
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <Label className="text-sm font-medium">{providerName}</Label>
-        <div className="flex items-center gap-1">
+    <div className="py-4 border-b border-border last:border-b-0">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium">{providerName}</span>
           {hasKey && testResult === null && (
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Check className="h-3 w-3 text-green-500" />
+            <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+              <Check className="h-3 w-3" />
               Configured
             </span>
           )}
           {testResult === true && (
-            <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+            <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
               <Check className="h-3 w-3" />
               Valid
             </span>
           )}
           {testResult === false && (
-            <span className="text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
+            <span className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
               <X className="h-3 w-3" />
               Invalid
             </span>
           )}
         </div>
+        <a
+          href={keyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Get key
+          <ExternalLink className="h-3 w-3" />
+        </a>
       </div>
 
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Input
+          <input
             type={showKey ? "text" : "password"}
             placeholder={`Enter ${providerName} API key`}
             value={value}
@@ -106,18 +106,14 @@ function ProviderKeyInput({
               setTestResult(null);
             }}
             onBlur={handleSave}
-            className="pr-10 font-mono text-xs"
+            className="w-full h-10 pl-3 pr-10 rounded-lg border border-input bg-background text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
           />
           <button
             type="button"
             onClick={() => setShowKey(!showKey)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
           >
-            {showKey ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
+            {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
 
@@ -126,13 +122,9 @@ function ProviderKeyInput({
           size="sm"
           onClick={handleTest}
           disabled={!value.trim() || testing}
-          className="shrink-0"
+          className="h-10 px-4"
         >
-          {testing ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            "Test"
-          )}
+          {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Test"}
         </Button>
 
         {hasKey && (
@@ -140,7 +132,7 @@ function ProviderKeyInput({
             variant="outline"
             size="sm"
             onClick={handleRemove}
-            className="shrink-0 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+            className="h-10 px-4 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
           >
             Remove
           </Button>
@@ -150,20 +142,24 @@ function ProviderKeyInput({
   );
 }
 
+const PROVIDER_KEY_URLS: Record<ProviderId, string> = {
+  openai: "https://platform.openai.com/api-keys",
+  anthropic: "https://console.anthropic.com/settings/keys",
+  google: "https://aistudio.google.com/app/apikey",
+};
+
 export function ApiKeyDialog({ apiKeys, children }: ApiKeyDialogProps) {
-  const configuredCount = PROVIDERS.filter((p) =>
-    apiKeys.hasKey(p.id)
-  ).length;
+  const configuredCount = PROVIDERS.filter((p) => apiKeys.hasKey(p.id)).length;
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         {children || (
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" className="gap-2 h-10">
             <Key className="h-4 w-4" />
-            API Keys
+            <span>API Keys</span>
             {configuredCount > 0 && (
-              <span className="ml-1 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 text-xs px-1.5 py-0.5 rounded-full">
+              <span className="ml-1 flex items-center justify-center w-5 h-5 text-xs font-medium rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300">
                 {configuredCount}
               </span>
             )}
@@ -171,59 +167,28 @@ export function ApiKeyDialog({ apiKeys, children }: ApiKeyDialogProps) {
         )}
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Key className="h-5 w-5" />
             API Keys
           </DialogTitle>
           <DialogDescription>
-            Your API keys are stored in session storage and cleared when you
-            close the browser. Keys never leave your browser.
+            Keys are stored in session storage and cleared when you close the browser.
+            Your keys never leave your browser.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 mt-4">
+        <div className="mt-2">
           {PROVIDERS.map((provider) => (
-            <ProviderKeyInput
+            <ProviderKeyRow
               key={provider.id}
               providerId={provider.id}
               providerName={provider.name}
               apiKeys={apiKeys}
+              keyUrl={PROVIDER_KEY_URLS[provider.id]}
             />
           ))}
-        </div>
-
-        <div className="mt-6 pt-4 border-t border-border">
-          <p className="text-xs text-muted-foreground">
-            Need API keys?{" "}
-            <a
-              href="https://platform.openai.com/api-keys"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              OpenAI
-            </a>{" "}
-            ·{" "}
-            <a
-              href="https://console.anthropic.com/settings/keys"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Anthropic
-            </a>{" "}
-            ·{" "}
-            <a
-              href="https://aistudio.google.com/app/apikey"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Google AI
-            </a>
-          </p>
         </div>
       </DialogContent>
     </Dialog>
