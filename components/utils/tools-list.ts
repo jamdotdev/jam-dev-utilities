@@ -1,5 +1,11 @@
 export const tools = [
   {
+    title: "AI Eval Playground",
+    description:
+      "Compare AI models and prompts side-by-side with LLM-as-judge scoring. Evaluate GPT-4, Claude, Gemini responses. BYOK - keys stay in your browser.",
+    link: "/utilities/ai-eval",
+  },
+  {
     title: "CSV to JSON",
     description:
       "Easily convert CSV data to JSON format with our free tool. Quickest way to turn tabular data into a JSON format for APIs and data processing.",
