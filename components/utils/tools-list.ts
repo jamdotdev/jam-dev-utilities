@@ -179,4 +179,10 @@ export const tools = [
       "Transform XML data into JSON format instantly. Simplifies working with APIs and modern web applications that prefer JSON.",
     link: "/utilities/xml-to-json",
   },
+  {
+    title: "CSV Logs Viewer",
+    description:
+      "View, search, and filter CSV log files with color-coded severity levels. Quickly scan through logs with Datadog-inspired faceted filtering.",
+    link: "/utilities/csv-logs-viewer",
+  },
 ];
