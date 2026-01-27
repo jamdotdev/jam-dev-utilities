@@ -177,24 +177,30 @@ function parseCSVLine(line: string, delimiter: string): string[] {
 
 export function buildFacets(
   rows: LogEntry[],
-  headers: string[]
+  headers: string[],
+  maxValuesPerFacet: number = 100
 ): Map<string, Facet> {
-  const facets = new Map<string, Facet>();
+  const facetMaps = new Map<string, Map<string, number>>();
+  headers.forEach((header) => facetMaps.set(header, new Map()));
 
-  headers.forEach((header) => {
-    const valueCounts = new Map<string, number>();
-
-    rows.forEach((row) => {
+  for (const row of rows) {
+    for (const header of headers) {
       const value = row[header] || "(empty)";
-      valueCounts.set(value, (valueCounts.get(value) || 0) + 1);
-    });
+      const valueMap = facetMaps.get(header)!;
+      valueMap.set(value, (valueMap.get(value) || 0) + 1);
+    }
+  }
 
-    const values: FacetValue[] = Array.from(valueCounts.entries())
+  const facets = new Map<string, Facet>();
+  for (const header of headers) {
+    const valueMap = facetMaps.get(header)!;
+    const values: FacetValue[] = Array.from(valueMap.entries())
       .map(([value, count]) => ({ value, count }))
-      .sort((a, b) => b.count - a.count);
+      .sort((a, b) => b.count - a.count)
+      .slice(0, maxValuesPerFacet);
 
     facets.set(header, { column: header, values });
-  });
+  }
 
   return facets;
 }
@@ -257,6 +263,45 @@ export function isDateColumn(header: string, sampleValue: string): boolean {
   if (sampleValue) {
     const isoPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
     return isoPattern.test(sampleValue);
+  }
+
+  return false;
+}
+
+export function detectIfLogsFile(headers: string[], rows: LogEntry[]): boolean {
+  const logRelatedHeaders = [
+    "log",
+    "message",
+    "content",
+    "service",
+    "host",
+    "level",
+    "severity",
+    "error",
+    "trace",
+    "span",
+  ];
+
+  const headersLower = headers.map((h) => h.toLowerCase());
+  const hasLogHeaders = headersLower.some((h) =>
+    logRelatedHeaders.some((lh) => h.includes(lh))
+  );
+
+  const hasTimestampColumn =
+    headersLower.some(
+      (h) => h.includes("date") || h.includes("time") || h.includes("timestamp")
+    ) ||
+    (rows.length > 0 &&
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(rows[0][headers[0]] || ""));
+
+  const hasReasonableColumnCount = headers.length <= 8;
+
+  if (hasLogHeaders && hasTimestampColumn) {
+    return true;
+  }
+
+  if (hasTimestampColumn && hasReasonableColumnCount) {
+    return true;
   }
 
   return false;

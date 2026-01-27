@@ -4,6 +4,7 @@ import {
   buildFacets,
   filterRows,
   detectLogLevel,
+  detectIfLogsFile,
   getLogLevelColor,
   getLogLevelBadgeColor,
   formatDate,
@@ -23,7 +24,14 @@ import { Card } from "@/components/ds/CardComponent";
 import UploadIcon from "@/components/icons/UploadIcon";
 import PageHeader from "@/components/PageHeader";
 import CallToActionGrid from "@/components/CallToActionGrid";
-import { Search, X, ChevronDown, ChevronRight, Filter } from "lucide-react";
+import {
+  Search,
+  X,
+  ChevronDown,
+  ChevronRight,
+  Filter,
+  Info,
+} from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -54,6 +62,7 @@ interface FacetSidebarProps {
   logLevelCounts: Map<LogLevel, number>;
   selectedLogLevels: LogLevel[];
   onLogLevelChange: (levels: LogLevel[]) => void;
+  devMode: boolean;
 }
 
 function FacetSidebar({
@@ -63,6 +72,7 @@ function FacetSidebar({
   logLevelCounts,
   selectedLogLevels,
   onLogLevelChange,
+  devMode,
 }: FacetSidebarProps) {
   const [expandedFacets, setExpandedFacets] = useState<Set<string>>(
     new Set(["Status"])
@@ -114,49 +124,53 @@ function FacetSidebar({
         </span>
       </div>
 
-      <div className="mb-4">
-        <button
-          onClick={() => toggleFacet("Status")}
-          className="flex items-center gap-1 w-full text-left text-sm font-medium mb-2"
-        >
-          {expandedFacets.has("Status") ? (
-            <ChevronDown className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
+      {devMode && (
+        <div className="mb-4">
+          <button
+            onClick={() => toggleFacet("Status")}
+            className="flex items-center gap-1 w-full text-left text-sm font-medium mb-2"
+          >
+            {expandedFacets.has("Status") ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
+            Status
+          </button>
+          {expandedFacets.has("Status") && (
+            <div className="ml-5 space-y-1">
+              {logLevels.map(({ level, label }) => {
+                const count = logLevelCounts.get(level) || 0;
+                if (count === 0) return null;
+                return (
+                  <label
+                    key={level}
+                    className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/50 rounded px-1 py-0.5"
+                  >
+                    <Checkbox
+                      checked={selectedLogLevels.includes(level)}
+                      onCheckedChange={() => handleLogLevelToggle(level)}
+                    />
+                    <span
+                      className={cn(
+                        "w-2 h-2 rounded-full",
+                        level === "error" && "bg-red-500",
+                        level === "warning" && "bg-yellow-500",
+                        level === "info" && "bg-blue-500",
+                        level === "debug" && "bg-gray-400"
+                      )}
+                    />
+                    <span className="flex-1">{label}</span>
+                    <span className="text-muted-foreground text-xs">
+                      {count}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
           )}
-          Status
-        </button>
-        {expandedFacets.has("Status") && (
-          <div className="ml-5 space-y-1">
-            {logLevels.map(({ level, label }) => {
-              const count = logLevelCounts.get(level) || 0;
-              if (count === 0) return null;
-              return (
-                <label
-                  key={level}
-                  className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/50 rounded px-1 py-0.5"
-                >
-                  <Checkbox
-                    checked={selectedLogLevels.includes(level)}
-                    onCheckedChange={() => handleLogLevelToggle(level)}
-                  />
-                  <span
-                    className={cn(
-                      "w-2 h-2 rounded-full",
-                      level === "error" && "bg-red-500",
-                      level === "warning" && "bg-yellow-500",
-                      level === "info" && "bg-blue-500",
-                      level === "debug" && "bg-gray-400"
-                    )}
-                  />
-                  <span className="flex-1">{label}</span>
-                  <span className="text-muted-foreground text-xs">{count}</span>
-                </label>
-              );
-            })}
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {Array.from(facets.entries()).map(([column, facet]) => {
         const selectedValues = getSelectedValues(column);
@@ -325,6 +339,7 @@ interface LogsTableProps {
   onToggleMark: (originalIndex: number, group: MarkerGroup) => void;
   primaryDisplayNumbers: Map<number, number>;
   secondaryDisplayNumbers: Map<number, number>;
+  devMode: boolean;
 }
 
 function LogsTable({
@@ -338,6 +353,7 @@ function LogsTable({
   onToggleMark,
   primaryDisplayNumbers,
   secondaryDisplayNumbers,
+  devMode,
 }: LogsTableProps) {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
@@ -438,7 +454,7 @@ function LogsTable({
                 if (isSecondaryMarker) {
                   return "bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-900/50";
                 }
-                return getLogLevelColor(logLevel);
+                return devMode ? getLogLevelColor(logLevel) : "";
               };
 
               return (
@@ -533,14 +549,16 @@ function LogsTable({
                       >
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 mb-3">
-                            <span
-                              className={cn(
-                                "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
-                                getLogLevelBadgeColor(logLevel)
-                              )}
-                            >
-                              {logLevel.toUpperCase()}
-                            </span>
+                            {devMode && (
+                              <span
+                                className={cn(
+                                  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
+                                  getLogLevelBadgeColor(logLevel)
+                                )}
+                              >
+                                {logLevel.toUpperCase()}
+                              </span>
+                            )}
                             {isMarked && (
                               <span
                                 className={cn(
@@ -599,6 +617,7 @@ export default function CSVLogsViewer() {
     new Map()
   );
   const [nextInsertionOrder, setNextInsertionOrder] = useState(1);
+  const [devMode, setDevMode] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -634,6 +653,7 @@ export default function CSVLogsViewer() {
         setSelectedLogLevels([]);
         setMarkedRows(new Map());
         setNextInsertionOrder(1);
+        setDevMode(detectIfLogsFile(parsed.headers, parsed.rows));
       } catch (error) {
         console.error("Error parsing CSV file:", error);
         setStatus("unsupported");
@@ -821,26 +841,55 @@ export default function CSVLogsViewer() {
           <section className="px-6 mb-6">
             <div className="flex flex-col gap-4 mb-4">
               <div className="flex flex-col gap-2">
-                <div className="relative max-w-md">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Search in all columns..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 pr-10"
-                  />
-                  {searchQuery && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
-                      title="Clear search"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
+                <div className="flex items-center gap-4">
+                  <div className="relative max-w-md flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Search in all columns..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 pr-10"
+                    />
+                    {searchQuery && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSearchQuery("")}
+                        className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                        title="Clear search"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <TooltipProvider>
+                    <div className="flex items-center gap-2">
+                      <Tooltip delayDuration={100}>
+                        <TooltipTrigger asChild>
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <Checkbox
+                              checked={devMode}
+                              onCheckedChange={(checked) =>
+                                setDevMode(checked === true)
+                              }
+                            />
+                            <span className="text-sm font-medium">
+                              Dev Mode
+                            </span>
+                            <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                          </label>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-xs">
+                          <p>
+                            Enable log-specific features: color-coded severity
+                            levels (error, warning, info, debug) and status
+                            filtering. Auto-detected based on file structure.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TooltipProvider>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -902,6 +951,7 @@ export default function CSVLogsViewer() {
                 logLevelCounts={logLevelCounts}
                 selectedLogLevels={selectedLogLevels}
                 onLogLevelChange={setSelectedLogLevels}
+                devMode={devMode}
               />
               <div className="flex-1 overflow-hidden">
                 <LogsTable
@@ -915,6 +965,7 @@ export default function CSVLogsViewer() {
                   onToggleMark={handleToggleMark}
                   primaryDisplayNumbers={primaryDisplayNumbers}
                   secondaryDisplayNumbers={secondaryDisplayNumbers}
+                  devMode={devMode}
                 />
               </div>
             </div>
