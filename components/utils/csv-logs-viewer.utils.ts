@@ -306,3 +306,136 @@ export function detectIfLogsFile(headers: string[], rows: LogEntry[]): boolean {
 
   return false;
 }
+
+// High-cardinality column names that shouldn't become facets
+const HIGH_CARDINALITY_PATTERNS = [
+  "content",
+  "message",
+  "body",
+  "description",
+  "text",
+  "log",
+  "details",
+  "payload",
+  "request",
+  "response",
+  "url",
+  "path",
+  "query",
+  "id",
+  "uuid",
+  "guid",
+  "email",
+  "phone",
+  "address",
+  "name",
+  "title",
+  "comment",
+  "note",
+  "website",
+];
+
+// Columns that are good for faceting in logs
+const FACET_FRIENDLY_PATTERNS = [
+  "service",
+  "host",
+  "level",
+  "severity",
+  "status",
+  "type",
+  "category",
+  "source",
+  "environment",
+  "env",
+  "region",
+  "version",
+  "method",
+  "code",
+  "country",
+  "city",
+  "company",
+];
+
+function isHighCardinalityColumn(header: string): boolean {
+  const headerLower = header.toLowerCase();
+  return HIGH_CARDINALITY_PATTERNS.some((pattern) =>
+    headerLower.includes(pattern)
+  );
+}
+
+function isFacetFriendlyColumn(header: string): boolean {
+  const headerLower = header.toLowerCase();
+  return FACET_FRIENDLY_PATTERNS.some((pattern) =>
+    headerLower.includes(pattern)
+  );
+}
+
+export interface SmartFacetResult {
+  facets: Map<string, Facet>;
+  excludedColumns: string[];
+}
+
+export function buildSmartFacets(
+  rows: LogEntry[],
+  headers: string[],
+  maxValuesPerFacet: number = 100
+): SmartFacetResult {
+  const totalRows = rows.length;
+  const excludedColumns: string[] = [];
+
+  // First, build all facets to analyze cardinality
+  const facetMaps = new Map<string, Map<string, number>>();
+  headers.forEach((header) => facetMaps.set(header, new Map()));
+
+  for (const row of rows) {
+    for (const header of headers) {
+      const value = row[header] || "(empty)";
+      const valueMap = facetMaps.get(header)!;
+      valueMap.set(value, (valueMap.get(value) || 0) + 1);
+    }
+  }
+
+  const facets = new Map<string, Facet>();
+
+  for (const header of headers) {
+    const valueMap = facetMaps.get(header)!;
+    const uniqueCount = valueMap.size;
+    const cardinalityRatio = totalRows > 0 ? uniqueCount / totalRows : 1;
+
+    // Determine if this column should be a facet
+    let shouldInclude = false;
+
+    // Always include facet-friendly columns if they have reasonable cardinality
+    if (isFacetFriendlyColumn(header)) {
+      shouldInclude = uniqueCount <= 100 && uniqueCount > 1;
+    }
+    // Exclude high-cardinality pattern columns
+    else if (isHighCardinalityColumn(header)) {
+      shouldInclude = false;
+    }
+    // For other columns, use smart heuristics
+    else {
+      // Include if: low cardinality ratio AND reasonable unique count
+      // - Less than 30% unique values (good for grouping)
+      // - Or less than 50 unique values total
+      // - And more than 1 unique value (otherwise pointless)
+      shouldInclude =
+        uniqueCount > 1 &&
+        (cardinalityRatio < 0.3 || uniqueCount <= 50) &&
+        uniqueCount <= 100;
+    }
+
+    if (shouldInclude) {
+      const values: FacetValue[] = Array.from(valueMap.entries())
+        .map(([value, count]) => ({ value, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, maxValuesPerFacet);
+
+      facets.set(header, { column: header, values });
+    } else if (uniqueCount > 1) {
+      excludedColumns.push(header);
+    }
+  }
+
+  return { facets, excludedColumns };
+}
