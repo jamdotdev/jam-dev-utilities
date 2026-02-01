@@ -52,6 +52,7 @@ Here is the list of all utilities:
 - [SQL Minifer](https://jam.dev/utilities/sql-minifier)
 - [Internet Speed Test](https://jam.dev/utilities/internet-speed-test)
 - [Random String Generator](https://jam.dev/utilities/random-string-generator)
+- [CSV file viewer](https://jam.dev/utilities/csv-file-viewer)
 
 ### Built With
 

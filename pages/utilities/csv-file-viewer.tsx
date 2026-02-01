@@ -1,45 +1,8 @@
-import { useCallback, useMemo, useState, useEffect } from "react";
-import {
-  parseCSV,
-  buildFacets,
-  buildSmartFacets,
-  filterRows,
-  detectLogLevel,
-  detectIfLogsFile,
-  getLogLevelColor,
-  getLogLevelBadgeColor,
-  formatDate,
-  isDateColumn,
-  LogEntry,
-  ParsedCSV,
-  ColumnFilter,
-  Facet,
-  LogLevel,
-} from "@/components/utils/csv-logs-viewer.utils";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ds/ButtonComponent";
-import Meta from "@/components/Meta";
-import Header from "@/components/Header";
-import { CMDK } from "@/components/CMDK";
-import { Card } from "@/components/ds/CardComponent";
-import UploadIcon from "@/components/icons/UploadIcon";
-import PageHeader from "@/components/PageHeader";
 import CallToActionGrid from "@/components/CallToActionGrid";
-import CsvLogsViewerSEO from "@/components/seo/CsvLogsViewerSEO";
-import {
-  Search,
-  X,
-  ChevronDown,
-  ChevronRight,
-  Filter,
-  Info,
-} from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ds/PopoverComponent";
-import { Input } from "@/components/ds/InputComponent";
+import { CMDK } from "@/components/CMDK";
+import { Button } from "@/components/ds/ButtonComponent";
+import { Card } from "@/components/ds/CardComponent";
+import { Checkbox } from "@/components/ds/CheckboxComponent";
 import {
   Command,
   CommandEmpty,
@@ -48,14 +11,51 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ds/CommandMenu";
-import { Checkbox } from "@/components/ds/CheckboxComponent";
+import { Input } from "@/components/ds/InputComponent";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ds/PopoverComponent";
+import Header from "@/components/Header";
+import UploadIcon from "@/components/icons/UploadIcon";
+import Meta from "@/components/Meta";
+import PageHeader from "@/components/PageHeader";
 import SearchHighlightText from "@/components/SearchHighlightText";
+import CsvViewerSEO from "@/components/seo/CsvViewerSEO";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  buildFacets,
+  buildSmartFacets,
+  ColumnFilter,
+  detectIfLogsFile,
+  detectLogLevel,
+  Facet,
+  filterRows,
+  formatDate,
+  getLogLevelBadgeColor,
+  getLogLevelColor,
+  isDateColumn,
+  LogEntry,
+  LogLevel,
+  parseCSV,
+  ParsedCSV,
+} from "@/components/utils/csv-logs-viewer.utils";
+import { cn } from "@/lib/utils";
+import {
+  ChevronDown,
+  ChevronRight,
+  Filter,
+  Info,
+  Search,
+  X,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface FacetSidebarProps {
   facets: Map<string, Facet>;
@@ -823,7 +823,7 @@ export default function CSVLogsViewer() {
       <CMDK />
       <section className="container max-w-2xl mb-12">
         <PageHeader
-          title="CSV Logs Viewer"
+          title="CSV file viewer"
           description="Fast, free, open source, ad-free tools."
         />
       </section>
@@ -1000,7 +1000,7 @@ export default function CSVLogsViewer() {
       )}
 
       <section className="container max-w-2xl mb-12">
-        <CsvLogsViewerSEO />
+        <CsvViewerSEO />
       </section>
 
       <CallToActionGrid />

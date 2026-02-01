@@ -180,9 +180,9 @@ export const tools = [
     link: "/utilities/xml-to-json",
   },
   {
-    title: "CSV Logs Viewer",
+    title: "CSV file viewer (.csv, .tsv, .log)",
     description:
-      "View, search, and filter CSV log files with color-coded severity levels. Quickly scan through logs with Datadog-inspired faceted filtering.",
-    link: "/utilities/csv-logs-viewer",
+      "View, search, and filter CSV, TSV or LOG files with color-coded severity levels. Quickly scan through logs with Datadog-inspired faceted filtering.",
+    link: "/utilities/csv-file-viewer",
   },
 ];

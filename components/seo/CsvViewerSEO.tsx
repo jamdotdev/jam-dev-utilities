@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function CsvLogsViewerSEO() {
+export default function CsvViewerSEO() {
   return (
     <div className="content-wrapper">
       <section>
