@@ -25,6 +25,7 @@ import { Card } from "@/components/ds/CardComponent";
 import UploadIcon from "@/components/icons/UploadIcon";
 import PageHeader from "@/components/PageHeader";
 import CallToActionGrid from "@/components/CallToActionGrid";
+import CsvLogsViewerSEO from "@/components/seo/CsvLogsViewerSEO";
 import {
   Search,
   X,
@@ -815,8 +816,8 @@ export default function CSVLogsViewer() {
   return (
     <main>
       <Meta
-        title="CSV Logs Viewer | Analyze Log Files Online Free"
-        description="View, search, and filter CSV log files online for free. Quickly scan through logs with color-coded severity levels. Open source & ad-free."
+        title="Log File Viewer (.csv, .tsv, .log) | Free Online Tool"
+        description="View, search, and filter log files online for free. Works with CSV, TSV, and log files. Search instantly, filter by columns, trace flows. Open source & ad-free."
       />
       <Header />
       <CMDK />
@@ -997,6 +998,10 @@ export default function CSVLogsViewer() {
           </section>
         </>
       )}
+
+      <section className="container max-w-2xl mb-12">
+        <CsvLogsViewerSEO />
+      </section>
 
       <CallToActionGrid />
     </main>
