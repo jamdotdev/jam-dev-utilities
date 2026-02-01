@@ -697,7 +697,8 @@ export default function CSVLogsViewer() {
 
   // Smart facets for sidebar (only low-cardinality, meaningful columns)
   const smartFacetResult = useMemo(() => {
-    if (!csvData) return { facets: new Map<string, Facet>(), excludedColumns: [] };
+    if (!csvData)
+      return { facets: new Map<string, Facet>(), excludedColumns: [] };
     return buildSmartFacets(csvData.rows, csvData.headers);
   }, [csvData]);
 
