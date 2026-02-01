@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState, useEffect } from "react";
 import {
   parseCSV,
   buildFacets,
+  buildSmartFacets,
   filterRows,
   detectLogLevel,
   detectIfLogsFile,
@@ -225,6 +226,12 @@ function FacetSidebar({
           </div>
         );
       })}
+
+      {facets.size === 0 && !devMode && (
+        <p className="text-xs text-muted-foreground">
+          No filterable columns detected. All columns have high cardinality.
+        </p>
+      )}
     </div>
   );
 }
@@ -418,7 +425,7 @@ function LogsTable({
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="truncate">{header}</span>
-                      {facet && facet.values.length > 1 && (
+                      {devMode && facet && facet.values.length > 1 && (
                         <ColumnFilterDropdown
                           facet={facet}
                           selectedValues={selectedValues}
@@ -682,10 +689,20 @@ export default function CSVLogsViewer() {
     []
   );
 
-  const facets = useMemo(() => {
+  // Build all facets for column filters (used in table headers)
+  const allFacets = useMemo(() => {
     if (!csvData) return new Map<string, Facet>();
     return buildFacets(csvData.rows, csvData.headers);
   }, [csvData]);
+
+  // Smart facets for sidebar (only low-cardinality, meaningful columns)
+  const smartFacetResult = useMemo(() => {
+    if (!csvData) return { facets: new Map<string, Facet>(), excludedColumns: [] };
+    return buildSmartFacets(csvData.rows, csvData.headers);
+  }, [csvData]);
+
+  // Use smart facets in dev mode, all facets otherwise (for column filters)
+  const sidebarFacets = smartFacetResult.facets;
 
   const logLevelCounts = useMemo(() => {
     const counts = new Map<LogLevel, number>();
@@ -882,9 +899,14 @@ export default function CSVLogsViewer() {
                         </TooltipTrigger>
                         <TooltipContent side="bottom" className="max-w-xs">
                           <p>
-                            Enable log-specific features: color-coded severity
-                            levels (error, warning, info, debug) and status
-                            filtering. Auto-detected based on file structure.
+                            <strong>OFF:</strong> Clean table view for generic
+                            CSV files with basic search.
+                          </p>
+                          <p className="mt-1">
+                            <strong>ON:</strong> Log analysis mode with smart
+                            facet filters, color-coded severity levels, and
+                            Datadog-style filtering. Auto-detected for log
+                            files.
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -895,7 +917,7 @@ export default function CSVLogsViewer() {
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">
                     Showing {filteredRowsWithMarkers.length} of{" "}
-                    {csvData.rows.length} logs
+                    {csvData.rows.length} {devMode ? "logs" : "rows"}
                     {markedRows.size > 0 && (
                       <>
                         {Array.from(markedRows.values()).filter(
@@ -944,21 +966,23 @@ export default function CSVLogsViewer() {
 
           <section className="px-6 mb-6">
             <div className="flex gap-6">
-              <FacetSidebar
-                facets={facets}
-                filters={filters}
-                onFilterChange={handleFilterChange}
-                logLevelCounts={logLevelCounts}
-                selectedLogLevels={selectedLogLevels}
-                onLogLevelChange={setSelectedLogLevels}
-                devMode={devMode}
-              />
+              {devMode && (
+                <FacetSidebar
+                  facets={sidebarFacets}
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  logLevelCounts={logLevelCounts}
+                  selectedLogLevels={selectedLogLevels}
+                  onLogLevelChange={setSelectedLogLevels}
+                  devMode={devMode}
+                />
+              )}
               <div className="flex-1 overflow-hidden">
                 <LogsTable
                   rows={filteredRowsWithMarkers}
                   headers={csvData.headers}
                   searchQuery={debouncedSearchQuery}
-                  facets={facets}
+                  facets={allFacets}
                   filters={filters}
                   onFilterChange={handleFilterChange}
                   markedRows={markedRows}
