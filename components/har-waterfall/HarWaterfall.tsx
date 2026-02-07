@@ -1,4 +1,10 @@
 import SearchHighlightText from "@/components/SearchHighlightText";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
   AlertCircle,
@@ -410,6 +416,7 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
               No requests match your current filters.
             </div>
           ) : (
+            <TooltipProvider delayDuration={120}>
             <div
               ref={listRef}
               role="list"
@@ -507,19 +514,24 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
                             const sizeLabel = `${(
                               entry.response.content.size / 1024
                             ).toFixed(1)} KB`;
-                            const tooltip = `${typeMeta.label}`;
                             const ariaLabel = `${typeMeta.label} • ${entry.response.content.mimeType} • ${sizeLabel}`;
                             return (
-                              <span
-                                className={cn(
-                                  "inline-flex h-7 w-7 items-center justify-center rounded-full ring-1",
-                                  typeMeta.className
-                                )}
-                                title={tooltip}
-                                aria-label={ariaLabel}
-                              >
-                                <TypeIcon className="h-3.5 w-3.5" />
-                              </span>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span
+                                    className={cn(
+                                      "inline-flex h-7 w-7 items-center justify-center rounded-full ring-1",
+                                      typeMeta.className
+                                    )}
+                                    aria-label={ariaLabel}
+                                  >
+                                    <TypeIcon className="h-3.5 w-3.5" />
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="text-xs">
+                                  {typeMeta.label}
+                                </TooltipContent>
+                              </Tooltip>
                             );
                           })()}
                         </div>
@@ -602,6 +614,7 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
                 );
               })}
             </div>
+            </TooltipProvider>
           )}
         </div>
       </div>
