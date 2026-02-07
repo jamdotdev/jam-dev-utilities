@@ -1,19 +1,8 @@
 import { cn } from "@/lib/utils";
 import Editor, { BeforeMount } from "@monaco-editor/react";
-import {
-  Check,
-  ChevronDown,
-  ChevronRight,
-  Clock,
-  Code,
-  Copy,
-  Download,
-  FileText,
-  Send,
-} from "lucide-react";
-import React, { useCallback, useId, useState } from "react";
+import { Check, Clock, Copy } from "lucide-react";
+import React, { useCallback, useState } from "react";
 import { Button } from "../ds/ButtonComponent";
-import { Dialog, DialogContent } from "../ds/DialogComponent";
 import { HarEntry } from "../utils/har-utils";
 import { TruncatedText } from "./TruncatedText";
 import {
@@ -25,61 +14,7 @@ import {
 interface WaterfallRequestDetailsProps {
   entry: HarEntry;
   timing: WaterfallTiming;
-  onClose: () => void;
 }
-
-interface SectionProps {
-  title: string;
-  icon?: React.ReactNode;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-  timingChart?: React.ReactNode;
-}
-
-const Section: React.FC<SectionProps> = ({
-  title,
-  icon,
-  defaultOpen = false,
-  children,
-  timingChart,
-}) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  const contentId = useId();
-
-  return (
-    <div className="bg-background border-b border-border last:border-b-0">
-      <button
-        type="button"
-        className="w-full px-4 py-4 flex items-center justify-between hover:bg-muted/30 transition-all duration-200"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
-        aria-controls={contentId}
-      >
-        <div className="flex items-center gap-3 flex-1">
-          {icon && (
-            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-              {icon}
-            </div>
-          )}
-          <span className="font-medium text-sm">{title}</span>
-          {timingChart && (
-            <div className="flex-1 max-w-xs ml-2">{timingChart}</div>
-          )}
-        </div>
-        {isOpen ? (
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-        ) : (
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        )}
-      </button>
-      {isOpen && (
-        <div id={contentId} className="px-4 pb-4">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-};
 
 const CopyButton: React.FC<{ text: string }> = ({ text }) => {
   const [copied, setCopied] = useState(false);
@@ -219,7 +154,7 @@ const ContentEditor: React.FC<{
 
 export const WaterfallRequestDetails: React.FC<
   WaterfallRequestDetailsProps
-> = ({ entry, timing, onClose }) => {
+> = ({ entry, timing }) => {
   const url = new URL(entry.request.url);
   const startedTime = new Date(entry.startedDateTime).toLocaleTimeString(
     "en-US",
@@ -277,115 +212,110 @@ export const WaterfallRequestDetails: React.FC<
   };
 
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 overflow-x-hidden">
-        {/* Header */}
-        <div className="p-6 border-b border-border bg-muted/30">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr),minmax(0,1fr)]">
-            <div className="space-y-4 min-w-0">
-              <div className="flex flex-wrap items-center gap-3">
-                <div
-                  className={cn(
-                    "inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium",
-                    entry.response.status >= 400
-                      ? "bg-red-500/10 text-red-500"
-                      : "bg-emerald-500/10 text-emerald-500"
-                  )}
-                >
-                  <div className="w-2 h-2 rounded-full bg-current" />
-                  {entry.response.status} {entry.response.statusText}
-                </div>
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {entry.request.method}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {protocolLabel}
-                </span>
+    <div className="border-t border-border bg-muted/10">
+      <div className="grid gap-6 px-6 py-6 lg:grid-cols-[minmax(0,1fr),minmax(0,1.2fr)]">
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-border bg-background/80 p-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <div
+                className={cn(
+                  "inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium",
+                  entry.response.status >= 400
+                    ? "bg-red-500/10 text-red-500"
+                    : "bg-emerald-500/10 text-emerald-500"
+                )}
+              >
+                <div className="w-2 h-2 rounded-full bg-current" />
+                {entry.response.status} {entry.response.statusText}
               </div>
-
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <span>{url.hostname}</span>
-                  <span aria-hidden="true">•</span>
-                  <span>{serverIpLabel}</span>
-                </div>
-                <div className="text-lg break-all font-mono font-medium text-foreground">
-                  <TruncatedText
-                    text={url.pathname + url.search}
-                    maxLength={200}
-                    showWarning={false}
-                  />
-                </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <CopyButton text={entry.request.url} />
-                  <span>Copy full URL</span>
-                </div>
-              </div>
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                {entry.request.method}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {protocolLabel}
+              </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <MetricCard label="Size" value={sizeLabel} />
-              <MetricCard
-                label="Total Time"
-                value={formatDuration(timing.totalTime)}
-              />
-              <MetricCard label="Type" value={mimeTypeLabel} />
-              <MetricCard label="Started" value={startedTime} />
-              <MetricCard label="Protocol" value={protocolLabel} />
-              <MetricCard label="Server IP" value={serverIpLabel} />
+            <div className="mt-4 space-y-2">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span>{url.hostname}</span>
+                <span aria-hidden="true">•</span>
+                <span>{serverIpLabel}</span>
+              </div>
+              <div className="text-lg break-all font-mono font-medium text-foreground">
+                <TruncatedText
+                  text={url.pathname + url.search}
+                  maxLength={200}
+                  showWarning={false}
+                />
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <CopyButton text={entry.request.url} />
+                <span>Copy full URL</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="flex-1 min-h-0 bg-muted/20">
-          {/* Timing Breakdown */}
-          <Section
-            title="Timing Breakdown"
-            icon={<Clock className="h-4 w-4 text-muted-foreground" />}
-            timingChart={<TimingChart />}
-          >
-            <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <MetricCard label="Size" value={sizeLabel} />
+            <MetricCard
+              label="Total Time"
+              value={formatDuration(timing.totalTime)}
+            />
+            <MetricCard label="Type" value={mimeTypeLabel} />
+            <MetricCard label="Started" value={startedTime} />
+            <MetricCard label="Protocol" value={protocolLabel} />
+            <MetricCard label="Server IP" value={serverIpLabel} />
+          </div>
+
+          <div className="rounded-2xl border border-border bg-background/80 p-4">
+            <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <Clock className="h-3.5 w-3.5" />
+              Timing Breakdown
+            </div>
+            <div className="mt-3">
+              <TimingChart />
+            </div>
+            <div className="mt-4 space-y-2 text-xs text-muted-foreground">
               {timingBreakdown.map((item, index) => (
                 <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <div
-                      className="w-3 h-3 rounded-sm"
+                      className="h-2 w-2 rounded-sm"
                       style={{ backgroundColor: item.color }}
                     />
-                    <span className="text-sm text-muted-foreground">
-                      {item.label}
-                    </span>
+                    <span>{item.label}</span>
                   </div>
-                  <span className="text-sm font-mono">
+                  <span className="font-mono text-foreground">
                     {formatDuration(item.value)}
                   </span>
                 </div>
               ))}
-              <div className="flex items-center justify-between pt-2 border-t border-border">
-                <span className="text-sm font-medium">Total Time</span>
-                <span className="text-sm font-mono font-medium">
+              <div className="flex items-center justify-between border-t border-border pt-2 text-sm font-medium text-foreground">
+                <span>Total</span>
+                <span className="font-mono">
                   {formatDuration(timing.totalTime)}
                 </span>
               </div>
             </div>
-          </Section>
+          </div>
+        </div>
 
-          {/* Request Headers */}
-          <Section
-            title="Request Headers"
-            icon={<Send className="h-4 w-4 text-muted-foreground" />}
-          >
-            <div className="space-y-1">
+        <div className="space-y-6">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Request Headers
+            </div>
+            <div className="mt-3 space-y-2">
               {entry.request.headers.map((header, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 py-1.5"
+                  className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 text-xs"
                 >
-                  <span className="text-xs break-all font-mono text-muted-foreground">
+                  <span className="break-all font-mono text-muted-foreground">
                     {header.name}:
                   </span>
-                  <div className="text-xs font-mono break-all overflow-hidden">
+                  <div className="font-mono break-all text-foreground">
                     <TruncatedText
                       text={header.value}
                       maxLength={300}
@@ -395,89 +325,86 @@ export const WaterfallRequestDetails: React.FC<
                 </div>
               ))}
             </div>
-          </Section>
+          </div>
 
-          {/* Response Headers */}
-          <Section
-            title="Response Headers"
-            icon={<Download className="h-4 w-4 text-muted-foreground" />}
-          >
-            <div className="space-y-1">
-              {entry.response.headers.map((header, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 py-1.5"
-                >
-                  <span className="text-xs break-all font-mono text-muted-foreground">
-                    {header.name}:
-                  </span>
-                  <div className="text-xs font-mono break-all overflow-hidden">
-                    <TruncatedText
-                      text={header.value}
-                      maxLength={300}
-                      showWarning={header.value.length > 300}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Section>
-
-          {/* Request Body */}
           {entry.request.postData && (
-            <Section
-              title="Request Body"
-              icon={<Code className="h-4 w-4 text-muted-foreground" />}
-            >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted-foreground">
-                    Type: {entry.request.postData.mimeType}
-                  </span>
-                  <CopyButton text={entry.request.postData.text} />
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Request Body
                 </div>
+                <CopyButton text={entry.request.postData.text} />
+              </div>
+              <div className="mt-2 text-xs text-muted-foreground">
+                {entry.request.postData.mimeType}
+              </div>
+              <div className="mt-3">
                 <ContentEditor
                   content={entry.request.postData.text}
                   mimeType={entry.request.postData.mimeType}
-                  height="300px"
+                  height="260px"
                 />
               </div>
-            </Section>
+            </div>
           )}
 
-          {/* Response Content */}
-          {entry.response.content.text && (
-            <Section
-              title="Response Content"
-              icon={<FileText className="h-4 w-4 text-muted-foreground" />}
-            >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted-foreground">
-                    Type: {entry.response.content.mimeType}
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Response Headers
+            </div>
+            <div className="mt-3 space-y-2">
+              {entry.response.headers.map((header, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 text-xs"
+                >
+                  <span className="break-all font-mono text-muted-foreground">
+                    {header.name}:
                   </span>
-                  <CopyButton text={entry.response.content.text} />
+                  <div className="font-mono break-all text-foreground">
+                    <TruncatedText
+                      text={header.value}
+                      maxLength={300}
+                      showWarning={header.value.length > 300}
+                    />
+                  </div>
                 </div>
+              ))}
+            </div>
+          </div>
+
+          {entry.response.content.text && (
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Response Content
+                </div>
+                <CopyButton text={entry.response.content.text} />
+              </div>
+              <div className="mt-2 text-xs text-muted-foreground">
+                {entry.response.content.mimeType}
+              </div>
+              <div className="mt-3">
                 {entry.response.content.mimeType.startsWith("image/") ? (
-                  <div className="flex items-center justify-center p-4 bg-muted rounded-lg">
+                  <div className="flex items-center justify-center rounded-xl border border-border bg-background p-4">
                     <img
                       src={`data:${entry.response.content.mimeType};base64,${entry.response.content.text}`}
-                      alt="Response image"
-                      className="max-w-full max-h-96 object-contain"
+                      alt="Response content"
+                      className="max-h-96 max-w-full object-contain"
                     />
                   </div>
                 ) : (
                   <ContentEditor
                     content={entry.response.content.text}
                     mimeType={entry.response.content.mimeType}
-                    height="400px"
+                    height="320px"
                   />
                 )}
               </div>
-            </Section>
+            </div>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };

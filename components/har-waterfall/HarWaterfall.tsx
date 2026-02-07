@@ -54,10 +54,7 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
   className = "",
   searchQuery = "",
 }) => {
-  const [selectedEntry, setSelectedEntry] = useState<{
-    entry: HarEntry;
-    timing: WaterfallTiming;
-  } | null>(null);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const hoverLabelRef = useRef<HTMLDivElement>(null);
@@ -282,6 +279,10 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
   }, [scheduleHoverUpdate]);
 
   useEffect(() => {
+    setExpandedIndex(null);
+  }, [activeFilter, searchQuery, entries]);
+
+  useEffect(() => {
     return () => {
       if (rafRef.current !== null) {
         window.cancelAnimationFrame(rafRef.current);
@@ -385,114 +386,138 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
                 const segments = getSegments(timing);
                 const lastSegmentIndex = segments.length - 1;
                 const isError = entry.response.status >= 400;
+                const isExpanded = expandedIndex === index;
+                const panelId = `har-waterfall-panel-${index}`;
                 const rowLabel = `${entry.request.method} ${displayPath} ${entry.response.status} ${formatDuration(
                   timing.totalTime
                 )}`;
 
                 return (
-                  <button
+                  <div
                     key={`${entry.request.url}-${entry.startedDateTime}-${index}`}
-                    type="button"
                     role="listitem"
-                    onClick={() => setSelectedEntry({ entry, timing })}
-                    aria-label={`Open request details for ${rowLabel}`}
-                    aria-haspopup="dialog"
-                    className={cn(
-                      "group w-full text-left transition-colors",
-                      index % 2 === 0 ? "bg-muted/15" : "bg-background",
-                      "hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
-                    )}
+                    className="bg-background"
                   >
-                    <div className="grid grid-cols-[120px,110px,minmax(0,1.6fr),minmax(260px,2.4fr),100px] items-center gap-3 px-4 py-2">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={cn(
-                            "h-2 w-2 rounded-full",
-                            isError ? "bg-red-500" : "bg-emerald-500"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedIndex(isExpanded ? null : index)
+                      }
+                      aria-label={`Toggle request details for ${rowLabel}`}
+                      aria-expanded={isExpanded}
+                      aria-controls={panelId}
+                      className={cn(
+                        "group w-full text-left transition-colors",
+                        index % 2 === 0 ? "bg-muted/15" : "bg-background",
+                        "hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
+                      )}
+                    >
+                      <div className="grid grid-cols-[120px,110px,minmax(0,1.6fr),minmax(260px,2.4fr),100px] items-center gap-3 px-4 py-2">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={cn(
+                              "h-2 w-2 rounded-full",
+                              isError ? "bg-red-500" : "bg-emerald-500"
+                            )}
+                          />
+                          <span
+                            className={cn(
+                              "text-[13px] font-semibold tabular-nums",
+                              isError ? "text-red-500" : "text-emerald-500"
+                            )}
+                          >
+                            {entry.response.status}
+                          </span>
+                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                            {entry.request.method}
+                          </span>
+                        </div>
+
+                        <div className="text-[11px] text-muted-foreground tabular-nums">
+                          {new Date(entry.startedDateTime).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour12: false,
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                            }
                           )}
+                        </div>
+
+                        <div className="min-w-0" title={entry.request.url}>
+                          <div className="text-[11px] text-muted-foreground">
+                            {url.hostname}
+                          </div>
+                          <div className="truncate text-[13px] font-medium text-foreground">
+                            {searchQuery ? (
+                              <SearchHighlightText
+                                text={displayPath}
+                                searchQuery={searchQuery}
+                              />
+                            ) : (
+                              displayPath
+                            )}
+                          </div>
+                          <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
+                            <span className="uppercase tracking-wider">
+                              {entry.response.content.mimeType.split(";")[0]}
+                            </span>
+                            <span aria-hidden="true">·</span>
+                            <span className="tabular-nums">
+                              {(entry.response.content.size / 1024).toFixed(1)}{" "}
+                              KB
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="relative">
+                          <div
+                            className="relative h-2.5 rounded-full bg-muted/40"
+                            style={gridStyle}
+                            aria-hidden="true"
+                          >
+                            {segments.map((segment, segmentIndex) => (
+                              <span
+                                key={`${segment.key}-${index}`}
+                                className={cn(
+                                  "absolute h-full",
+                                  segmentIndex === 0 && "rounded-l-full",
+                                  segmentIndex === lastSegmentIndex &&
+                                    "rounded-r-full"
+                                )}
+                                style={{
+                                  left: `${segment.left}%`,
+                                  width: `${segment.width}%`,
+                                  backgroundColor: segment.color,
+                                }}
+                              />
+                            ))}
+                          </div>
+                          <span className="sr-only">
+                            {getTimingLabel(timing)}
+                          </span>
+                        </div>
+
+                        <div className="text-xs tabular-nums text-right text-muted-foreground">
+                          {formatDuration(timing.totalTime)}
+                        </div>
+                      </div>
+                    </button>
+                    {isExpanded && (
+                      <div
+                        id={panelId}
+                        role="region"
+                        aria-label={`Request details for ${displayPath}`}
+                        className="bg-background"
+                      >
+                        <WaterfallRequestDetails
+                          entry={entry}
+                          timing={timing}
                         />
-                        <span
-                          className={cn(
-                            "text-[13px] font-semibold tabular-nums",
-                            isError ? "text-red-500" : "text-emerald-500"
-                          )}
-                        >
-                          {entry.response.status}
-                        </span>
-                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                          {entry.request.method}
-                        </span>
                       </div>
-
-                      <div className="text-[11px] text-muted-foreground tabular-nums">
-                        {new Date(entry.startedDateTime).toLocaleTimeString(
-                          "en-US",
-                          {
-                            hour12: false,
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                          }
-                        )}
-                      </div>
-
-                      <div className="min-w-0" title={entry.request.url}>
-                        <div className="text-[11px] text-muted-foreground">
-                          {url.hostname}
-                        </div>
-                        <div className="truncate text-[13px] font-medium text-foreground">
-                          {searchQuery ? (
-                            <SearchHighlightText
-                              text={displayPath}
-                              searchQuery={searchQuery}
-                            />
-                          ) : (
-                            displayPath
-                          )}
-                        </div>
-                        <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
-                          <span className="uppercase tracking-wider">
-                            {entry.response.content.mimeType.split(";")[0]}
-                          </span>
-                          <span aria-hidden="true">·</span>
-                          <span className="tabular-nums">
-                            {(entry.response.content.size / 1024).toFixed(1)} KB
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="relative">
-                        <div
-                          className="relative h-2.5 rounded-full bg-muted/40"
-                          style={gridStyle}
-                          aria-hidden="true"
-                        >
-                          {segments.map((segment, segmentIndex) => (
-                            <span
-                              key={`${segment.key}-${index}`}
-                              className={cn(
-                                "absolute h-full",
-                                segmentIndex === 0 && "rounded-l-full",
-                                segmentIndex === lastSegmentIndex && "rounded-r-full"
-                              )}
-                              style={{
-                                left: `${segment.left}%`,
-                                width: `${segment.width}%`,
-                                backgroundColor: segment.color,
-                              }}
-                            />
-                          ))}
-                        </div>
-                        <span className="sr-only">
-                          {getTimingLabel(timing)}
-                        </span>
-                      </div>
-
-                      <div className="text-xs tabular-nums text-right text-muted-foreground">
-                        {formatDuration(timing.totalTime)}
-                      </div>
-                    </div>
-                  </button>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -500,13 +525,6 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
         </div>
       </div>
 
-      {selectedEntry && (
-        <WaterfallRequestDetails
-          entry={selectedEntry.entry}
-          timing={selectedEntry.timing}
-          onClose={() => setSelectedEntry(null)}
-        />
-      )}
     </div>
   );
 };
