@@ -1,13 +1,7 @@
 import { cn } from "@/lib/utils";
 import Editor, { BeforeMount } from "@monaco-editor/react";
 import { Check, Clock, Copy } from "lucide-react";
-import React, {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { Button } from "../ds/ButtonComponent";
 import { HarEntry } from "../utils/har-utils";
 import { TruncatedText } from "./TruncatedText";
@@ -267,7 +261,7 @@ export const WaterfallRequestDetails: React.FC<
   };
 
   return (
-    <div className="border-t border-border bg-background">
+    <div className="border-t border-border bg-foreground/5">
       <div className="grid gap-6 px-6 py-6 lg:grid-cols-[minmax(0,1fr),minmax(0,1.2fr)]">
         <div className="space-y-4">
           <div className="rounded-2xl border border-border bg-background/80 p-4">
@@ -505,7 +499,6 @@ export const WaterfallRequestDetails: React.FC<
                 )}
             </div>
           </div>
-
         </div>
       </div>
     </div>

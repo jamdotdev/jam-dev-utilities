@@ -1,20 +1,35 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import SearchHighlightText from "@/components/SearchHighlightText";
+import { cn } from "@/lib/utils";
 import {
-  HarEntry,
+  AlertCircle,
+  ArrowLeftRight,
+  FileCode,
+  Film,
+  Image,
+  Package,
+  Palette,
+} from "lucide-react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
   FilterType,
   getFilterType,
+  HarEntry,
   isBase64,
 } from "../utils/har-utils";
-import { WaterfallLegend } from "./WaterfallLegend";
-import { WaterfallRequestDetails } from "./WaterfallRequestDetails";
 import {
   calculateTimings,
   formatDuration,
   getTimingColor,
   WaterfallTiming,
 } from "./waterfall-utils";
-import { cn } from "@/lib/utils";
-import SearchHighlightText from "@/components/SearchHighlightText";
+import { WaterfallLegend } from "./WaterfallLegend";
+import { WaterfallRequestDetails } from "./WaterfallRequestDetails";
 
 interface HarWaterfallProps {
   entries: HarEntry[];
@@ -28,6 +43,12 @@ type WaterfallSegment = {
   label: string;
   time: number;
   color: string;
+};
+
+type TypeMeta = {
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  className: string;
 };
 
 const segmentDefinitions: WaterfallSegment[] = [
@@ -47,6 +68,49 @@ const segmentDefinitions: WaterfallSegment[] = [
     color: getTimingColor("receive"),
   },
 ];
+
+const typeMetaMap: Record<FilterType, TypeMeta> = {
+  All: {
+    label: "All",
+    icon: Package,
+    className: "bg-slate-500/10 text-slate-600 ring-slate-500/20",
+  },
+  XHR: {
+    label: "XHR",
+    icon: ArrowLeftRight,
+    className: "bg-sky-500/10 text-sky-600 ring-sky-500/20",
+  },
+  JS: {
+    label: "JS",
+    icon: FileCode,
+    className: "bg-amber-500/10 text-amber-600 ring-amber-500/20",
+  },
+  CSS: {
+    label: "CSS",
+    icon: Palette,
+    className: "bg-indigo-500/10 text-indigo-600 ring-indigo-500/20",
+  },
+  Img: {
+    label: "Image",
+    icon: Image,
+    className: "bg-emerald-500/10 text-emerald-600 ring-emerald-500/20",
+  },
+  Media: {
+    label: "Media",
+    icon: Film,
+    className: "bg-pink-500/10 text-pink-600 ring-pink-500/20",
+  },
+  Other: {
+    label: "Other",
+    icon: Package,
+    className: "bg-slate-500/10 text-slate-600 ring-slate-500/20",
+  },
+  Errors: {
+    label: "Error",
+    icon: AlertCircle,
+    className: "bg-red-500/10 text-red-600 ring-red-500/20",
+  },
+};
 
 export const HarWaterfall: React.FC<HarWaterfallProps> = ({
   entries,
@@ -305,10 +369,11 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
         role="region"
         aria-label="HAR waterfall timeline"
       >
-        <div className="min-w-[980px] relative overflow-visible">
+        <div className="min-w-[1040px] relative overflow-visible">
           <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border overflow-visible">
-            <div className="grid grid-cols-[120px,110px,minmax(0,1.6fr),minmax(260px,2.4fr),100px] gap-3 px-4 py-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground overflow-visible">
+            <div className="grid grid-cols-[110px,56px,90px,minmax(0,1.6fr),minmax(260px,2.4fr),80px] gap-2 px-4 py-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground overflow-visible">
               <div>Status</div>
+              <div>Type</div>
               <div>Started</div>
               <div>Request</div>
               <div
@@ -409,28 +474,54 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
                       className={cn(
                         "group w-full text-left transition-colors",
                         index % 2 === 0 ? "bg-muted/15" : "bg-background",
-                        "hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
+                        "hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
                       )}
                     >
-                      <div className="grid grid-cols-[120px,110px,minmax(0,1.6fr),minmax(260px,2.4fr),100px] items-center gap-3 px-4 py-2">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={cn(
-                              "h-2 w-2 rounded-full",
-                              isError ? "bg-red-500" : "bg-emerald-500"
-                            )}
-                          />
-                          <span
-                            className={cn(
-                              "text-[13px] font-semibold tabular-nums",
-                              isError ? "text-red-500" : "text-emerald-500"
-                            )}
-                          >
-                            {entry.response.status}
-                          </span>
+                      <div className="grid grid-cols-[110px,56px,90px,minmax(0,1.6fr),minmax(260px,2.4fr),80px] items-center gap-2 px-4 py-2">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={cn(
+                                "h-2 w-2 rounded-full",
+                                isError ? "bg-red-500" : "bg-emerald-500"
+                              )}
+                            />
+                            <span
+                              className={cn(
+                                "text-[13px] font-semibold tabular-nums",
+                                isError ? "text-red-500" : "text-emerald-500"
+                              )}
+                            >
+                              {entry.response.status}
+                            </span>
+                          </div>
                           <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
                             {entry.request.method}
                           </span>
+                        </div>
+
+                        <div className="flex items-center justify-start">
+                          {(() => {
+                            const typeMeta = typeMetaMap[getFilterType(entry)];
+                            const TypeIcon = typeMeta.icon;
+                            const sizeLabel = `${(
+                              entry.response.content.size / 1024
+                            ).toFixed(1)} KB`;
+                            const tooltip = `${typeMeta.label}`;
+                            const ariaLabel = `${typeMeta.label} • ${entry.response.content.mimeType} • ${sizeLabel}`;
+                            return (
+                              <span
+                                className={cn(
+                                  "inline-flex h-7 w-7 items-center justify-center rounded-full ring-1",
+                                  typeMeta.className
+                                )}
+                                title={tooltip}
+                                aria-label={ariaLabel}
+                              >
+                                <TypeIcon className="h-3.5 w-3.5" />
+                              </span>
+                            );
+                          })()}
                         </div>
 
                         <div className="text-[11px] text-muted-foreground tabular-nums">
@@ -459,21 +550,11 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
                               displayPath
                             )}
                           </div>
-                          <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
-                            <span className="uppercase tracking-wider">
-                              {entry.response.content.mimeType.split(";")[0]}
-                            </span>
-                            <span aria-hidden="true">·</span>
-                            <span className="tabular-nums">
-                              {(entry.response.content.size / 1024).toFixed(1)}{" "}
-                              KB
-                            </span>
-                          </div>
                         </div>
 
                         <div className="relative">
                           <div
-                            className="relative h-2.5 rounded-full bg-muted/40"
+                            className="relative h-2.5 rounded-full bg-muted/40 transition-colors group-hover:bg-muted/60"
                             style={gridStyle}
                             aria-hidden="true"
                           >
@@ -524,7 +605,6 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
           )}
         </div>
       </div>
-
     </div>
   );
 };
