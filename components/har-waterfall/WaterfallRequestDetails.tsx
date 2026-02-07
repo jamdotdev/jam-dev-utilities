@@ -1,26 +1,26 @@
-import React, { useState, useCallback } from "react";
+import { cn } from "@/lib/utils";
+import Editor, { BeforeMount } from "@monaco-editor/react";
+import {
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  Code,
+  Copy,
+  Download,
+  FileText,
+  Send,
+} from "lucide-react";
+import React, { useCallback, useId, useState } from "react";
+import { Button } from "../ds/ButtonComponent";
+import { Dialog, DialogContent } from "../ds/DialogComponent";
 import { HarEntry } from "../utils/har-utils";
+import { TruncatedText } from "./TruncatedText";
 import {
   WaterfallTiming,
   formatDuration,
   getTimingColor,
 } from "./waterfall-utils";
-import {
-  ChevronDown,
-  ChevronRight,
-  Copy,
-  Check,
-  Clock,
-  FileText,
-  Send,
-  Download,
-  Code,
-} from "lucide-react";
-import { Button } from "../ds/ButtonComponent";
-import { cn } from "@/lib/utils";
-import { TruncatedText } from "./TruncatedText";
-import { Dialog, DialogContent } from "../ds/DialogComponent";
-import Editor, { BeforeMount } from "@monaco-editor/react";
 
 interface WaterfallRequestDetailsProps {
   entry: HarEntry;
@@ -44,12 +44,16 @@ const Section: React.FC<SectionProps> = ({
   timingChart,
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const contentId = useId();
 
   return (
     <div className="bg-background border-b border-border last:border-b-0">
       <button
+        type="button"
         className="w-full px-4 py-4 flex items-center justify-between hover:bg-muted/30 transition-all duration-200"
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-controls={contentId}
       >
         <div className="flex items-center gap-3 flex-1">
           {icon && (
@@ -68,7 +72,11 @@ const Section: React.FC<SectionProps> = ({
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         )}
       </button>
-      {isOpen && <div className="px-4 pb-4">{children}</div>}
+      {isOpen && (
+        <div id={contentId} className="px-4 pb-4">
+          {children}
+        </div>
+      )}
     </div>
   );
 };
@@ -95,6 +103,26 @@ const CopyButton: React.FC<{ text: string }> = ({ text }) => {
         <Copy className="h-3 w-3" />
       )}
     </Button>
+  );
+};
+
+const MetricCard: React.FC<{
+  label: string;
+  value: React.ReactNode;
+  helper?: React.ReactNode;
+}> = ({ label, value, helper }) => {
+  return (
+    <div className="rounded-xl border border-border bg-background/80 p-3">
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
+      <div className="mt-1 text-sm font-semibold text-foreground tabular-nums">
+        {value}
+      </div>
+      {helper && (
+        <div className="mt-1 text-[11px] text-muted-foreground">{helper}</div>
+      )}
+    </div>
   );
 };
 
@@ -193,6 +221,21 @@ export const WaterfallRequestDetails: React.FC<
   WaterfallRequestDetailsProps
 > = ({ entry, timing, onClose }) => {
   const url = new URL(entry.request.url);
+  const startedTime = new Date(entry.startedDateTime).toLocaleTimeString(
+    "en-US",
+    {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      fractionalSecondDigits: 3,
+    }
+  );
+  const sizeLabel = `${(entry.response.content.size / 1024).toFixed(1)} KB`;
+  const protocolLabel = entry.request.httpVersion || "Not provided";
+  const serverIpLabel = entry.serverIPAddress || "Server IP unavailable";
+  const mimeTypeLabel =
+    entry.response.content.mimeType?.split(";")[0] || "Unknown";
 
   const timingBreakdown = [
     { label: "DNS Lookup", value: timing.dns, color: getTimingColor("dns") },
@@ -235,19 +278,18 @@ export const WaterfallRequestDetails: React.FC<
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-x-hidden">
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 overflow-x-hidden">
         {/* Header */}
         <div className="p-6 border-b border-border bg-muted/30">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              {/* Status Badge */}
-              <div className="flex items-center gap-3 mb-3">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr),minmax(0,1fr)]">
+            <div className="space-y-4 min-w-0">
+              <div className="flex flex-wrap items-center gap-3">
                 <div
                   className={cn(
                     "inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium",
                     entry.response.status >= 400
                       ? "bg-red-500/10 text-red-500"
-                      : "bg-green-500/10 text-green-500"
+                      : "bg-emerald-500/10 text-emerald-500"
                   )}
                 >
                   <div className="w-2 h-2 rounded-full bg-current" />
@@ -256,15 +298,16 @@ export const WaterfallRequestDetails: React.FC<
                 <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   {entry.request.method}
                 </span>
+                <span className="text-xs text-muted-foreground">
+                  {protocolLabel}
+                </span>
               </div>
 
-              {/* URL Section */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm text-muted-foreground">
-                    {url.hostname}
-                  </p>
-                  <CopyButton text={entry.request.url} />
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  <span>{url.hostname}</span>
+                  <span aria-hidden="true">•</span>
+                  <span>{serverIpLabel}</span>
                 </div>
                 <div className="text-lg break-all font-mono font-medium text-foreground">
                   <TruncatedText
@@ -273,62 +316,23 @@ export const WaterfallRequestDetails: React.FC<
                     showWarning={false}
                   />
                 </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <CopyButton text={entry.request.url} />
+                  <span>Copy full URL</span>
+                </div>
               </div>
+            </div>
 
-              {/* Metrics */}
-              <div className="flex flex-wrap items-center gap-4 mt-4">
-                <div className="flex items-center gap-3 px-3 py-2 bg-background/60 rounded-lg border border-border/50">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                      Size
-                    </span>
-                    <span className="text-sm font-semibold tabular-nums">
-                      {(entry.response.content.size / 1024).toFixed(1)} KB
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 px-3 py-2 bg-background/60 rounded-lg border border-border/50">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                      Duration
-                    </span>
-                    <span className="text-sm font-semibold tabular-nums">
-                      {formatDuration(timing.totalTime)}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 px-3 py-2 bg-background/60 rounded-lg border border-border/50">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                      Type
-                    </span>
-                    <span className="text-sm font-medium">
-                      {entry.response.content.mimeType
-                        .split("/")[1]
-                        ?.toUpperCase() || "Unknown"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 px-3 py-2 bg-background/60 rounded-lg border border-border/50">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                      Started
-                    </span>
-                    <span className="text-sm font-medium tabular-nums">
-                      {new Date(entry.startedDateTime).toLocaleTimeString(
-                        "en-US",
-                        {
-                          hour12: false,
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                          fractionalSecondDigits: 3,
-                        }
-                      )}
-                    </span>
-                  </div>
-                </div>
-              </div>
+            <div className="grid grid-cols-2 gap-3">
+              <MetricCard label="Size" value={sizeLabel} />
+              <MetricCard
+                label="Total Time"
+                value={formatDuration(timing.totalTime)}
+              />
+              <MetricCard label="Type" value={mimeTypeLabel} />
+              <MetricCard label="Started" value={startedTime} />
+              <MetricCard label="Protocol" value={protocolLabel} />
+              <MetricCard label="Server IP" value={serverIpLabel} />
             </div>
           </div>
         </div>
