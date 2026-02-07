@@ -446,7 +446,7 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
                 <div
                   ref={hoverLabelRef}
                   aria-hidden="true"
-                  className="pointer-events-none absolute z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-[10px] font-medium tabular-nums text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.18)] ring-1 ring-slate-200 transition-opacity"
+                  className="pointer-events-none absolute z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-[10px] font-medium tabular-nums text-slate-700 shadow-sm transition-opacity"
                   style={{
                     left: "var(--hover-label-x)",
                     top: "var(--hover-label-y)",

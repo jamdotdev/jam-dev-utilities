@@ -403,7 +403,7 @@ export const WaterfallRequestDetails: React.FC<
                       key={tab.key}
                       value={tab.key}
                       className={cn(
-                        "rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-wider",
+                        "rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-wider shadow-none ring-0 data-[state=active]:shadow-none data-[state=active]:ring-0",
                         "data-[state=active]:bg-foreground data-[state=active]:text-background",
                         "data-[state=inactive]:bg-muted/40 data-[state=inactive]:text-muted-foreground",
                         "data-[state=inactive]:hover:bg-muted/60 data-[state=inactive]:hover:text-foreground"
@@ -458,6 +458,7 @@ export const WaterfallRequestDetails: React.FC<
                               text={header.value}
                               maxLength={300}
                               showWarning={header.value.length > 300}
+                              showCopy={false}
                             />
                           )}
                         </div>
@@ -527,6 +528,7 @@ export const WaterfallRequestDetails: React.FC<
                               text={header.value}
                               maxLength={300}
                               showWarning={header.value.length > 300}
+                              showCopy={false}
                             />
                           )}
                         </div>
