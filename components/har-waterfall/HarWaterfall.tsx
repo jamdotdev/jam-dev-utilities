@@ -363,7 +363,7 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
             >
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 w-px bg-foreground/20 transition-opacity"
+                className="pointer-events-none absolute inset-y-0 z-10 w-px bg-foreground/20 transition-opacity"
                 style={{
                   left: "var(--hover-x)",
                   opacity: "var(--hover-opacity)",
@@ -509,7 +509,7 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
                         id={panelId}
                         role="region"
                         aria-label={`Request details for ${displayPath}`}
-                        className="bg-background"
+                        className="relative z-20 bg-background"
                       >
                         <WaterfallRequestDetails
                           entry={entry}

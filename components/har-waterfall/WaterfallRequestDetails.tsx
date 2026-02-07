@@ -1,7 +1,13 @@
 import { cn } from "@/lib/utils";
 import Editor, { BeforeMount } from "@monaco-editor/react";
 import { Check, Clock, Copy } from "lucide-react";
-import React, { useCallback, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useState,
+} from "react";
 import { Button } from "../ds/ButtonComponent";
 import { HarEntry } from "../utils/har-utils";
 import { TruncatedText } from "./TruncatedText";
@@ -15,6 +21,12 @@ interface WaterfallRequestDetailsProps {
   entry: HarEntry;
   timing: WaterfallTiming;
 }
+
+type DetailTabKey =
+  | "request-headers"
+  | "request-body"
+  | "response-headers"
+  | "response-content";
 
 const CopyButton: React.FC<{ text: string }> = ({ text }) => {
   const [copied, setCopied] = useState(false);
@@ -171,6 +183,49 @@ export const WaterfallRequestDetails: React.FC<
   const serverIpLabel = entry.serverIPAddress || "Server IP unavailable";
   const mimeTypeLabel =
     entry.response.content.mimeType?.split(";")[0] || "Unknown";
+  const tabsId = useId();
+
+  const tabs = useMemo(
+    () =>
+      [
+        {
+          key: "request-headers" as const,
+          label: "Request Headers",
+          visible: entry.request.headers.length > 0,
+        },
+        {
+          key: "request-body" as const,
+          label: "Request Body",
+          visible: Boolean(entry.request.postData?.text),
+        },
+        {
+          key: "response-headers" as const,
+          label: "Response Headers",
+          visible: entry.response.headers.length > 0,
+        },
+        {
+          key: "response-content" as const,
+          label: "Response Content",
+          visible: Boolean(entry.response.content.text),
+        },
+      ].filter((tab) => tab.visible),
+    [
+      entry.request.headers.length,
+      entry.request.postData?.text,
+      entry.response.headers.length,
+      entry.response.content.text,
+    ]
+  );
+
+  const [activeTab, setActiveTab] = useState<DetailTabKey>(
+    tabs[0]?.key ?? "request-headers"
+  );
+
+  useEffect(() => {
+    if (!tabs.find((tab) => tab.key === activeTab)) {
+      setActiveTab(tabs[0]?.key ?? "request-headers");
+    }
+  }, [activeTab, tabs]);
 
   const timingBreakdown = [
     { label: "DNS Lookup", value: timing.dns, color: getTimingColor("dns") },
@@ -212,7 +267,7 @@ export const WaterfallRequestDetails: React.FC<
   };
 
   return (
-    <div className="border-t border-border bg-muted/10">
+    <div className="border-t border-border bg-background">
       <div className="grid gap-6 px-6 py-6 lg:grid-cols-[minmax(0,1fr),minmax(0,1.2fr)]">
         <div className="space-y-4">
           <div className="rounded-2xl border border-border bg-background/80 p-4">
@@ -302,107 +357,155 @@ export const WaterfallRequestDetails: React.FC<
         </div>
 
         <div className="space-y-6">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Request Headers
+          <div className="rounded-2xl border border-border bg-background/80">
+            <div
+              className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-2"
+              role="tablist"
+              aria-label="Request and response data"
+            >
+              {tabs.map((tab) => {
+                const tabId = `${tabsId}-tab-${tab.key}`;
+                const panelId = `${tabsId}-panel-${tab.key}`;
+                const isActive = activeTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    role="tab"
+                    id={tabId}
+                    aria-selected={isActive}
+                    aria-controls={panelId}
+                    tabIndex={isActive ? 0 : -1}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={cn(
+                      "rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-wider transition",
+                      isActive
+                        ? "bg-foreground text-background"
+                        : "bg-muted/40 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                    )}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
-            <div className="mt-3 space-y-2">
-              {entry.request.headers.map((header, index) => (
+
+            <div className="p-4">
+              {activeTab === "request-headers" && (
                 <div
-                  key={index}
-                  className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 text-xs"
+                  role="tabpanel"
+                  id={`${tabsId}-panel-request-headers`}
+                  aria-labelledby={`${tabsId}-tab-request-headers`}
+                  className="space-y-2"
                 >
-                  <span className="break-all font-mono text-muted-foreground">
-                    {header.name}:
-                  </span>
-                  <div className="font-mono break-all text-foreground">
-                    <TruncatedText
-                      text={header.value}
-                      maxLength={300}
-                      showWarning={header.value.length > 300}
-                    />
-                  </div>
+                  {entry.request.headers.map((header, index) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 text-xs"
+                    >
+                      <span className="break-all font-mono text-muted-foreground">
+                        {header.name}:
+                      </span>
+                      <div className="font-mono break-all text-foreground">
+                        <TruncatedText
+                          text={header.value}
+                          maxLength={300}
+                          showWarning={header.value.length > 300}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
+              )}
 
-          {entry.request.postData && (
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Request Body
-                </div>
-                <CopyButton text={entry.request.postData.text} />
-              </div>
-              <div className="mt-2 text-xs text-muted-foreground">
-                {entry.request.postData.mimeType}
-              </div>
-              <div className="mt-3">
-                <ContentEditor
-                  content={entry.request.postData.text}
-                  mimeType={entry.request.postData.mimeType}
-                  height="260px"
-                />
-              </div>
-            </div>
-          )}
-
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Response Headers
-            </div>
-            <div className="mt-3 space-y-2">
-              {entry.response.headers.map((header, index) => (
+              {activeTab === "request-body" && entry.request.postData && (
                 <div
-                  key={index}
-                  className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 text-xs"
+                  role="tabpanel"
+                  id={`${tabsId}-panel-request-body`}
+                  aria-labelledby={`${tabsId}-tab-request-body`}
+                  className="space-y-3"
                 >
-                  <span className="break-all font-mono text-muted-foreground">
-                    {header.name}:
-                  </span>
-                  <div className="font-mono break-all text-foreground">
-                    <TruncatedText
-                      text={header.value}
-                      maxLength={300}
-                      showWarning={header.value.length > 300}
-                    />
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Request Body
+                    </div>
+                    <CopyButton text={entry.request.postData.text} />
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {entry.response.content.text && (
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Response Content
-                </div>
-                <CopyButton text={entry.response.content.text} />
-              </div>
-              <div className="mt-2 text-xs text-muted-foreground">
-                {entry.response.content.mimeType}
-              </div>
-              <div className="mt-3">
-                {entry.response.content.mimeType.startsWith("image/") ? (
-                  <div className="flex items-center justify-center rounded-xl border border-border bg-background p-4">
-                    <img
-                      src={`data:${entry.response.content.mimeType};base64,${entry.response.content.text}`}
-                      alt="Response content"
-                      className="max-h-96 max-w-full object-contain"
-                    />
+                  <div className="text-xs text-muted-foreground">
+                    {entry.request.postData.mimeType}
                   </div>
-                ) : (
                   <ContentEditor
-                    content={entry.response.content.text}
-                    mimeType={entry.response.content.mimeType}
-                    height="320px"
+                    content={entry.request.postData.text}
+                    mimeType={entry.request.postData.mimeType}
+                    height="260px"
                   />
+                </div>
+              )}
+
+              {activeTab === "response-headers" && (
+                <div
+                  role="tabpanel"
+                  id={`${tabsId}-panel-response-headers`}
+                  aria-labelledby={`${tabsId}-tab-response-headers`}
+                  className="space-y-2"
+                >
+                  {entry.response.headers.map((header, index) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 text-xs"
+                    >
+                      <span className="break-all font-mono text-muted-foreground">
+                        {header.name}:
+                      </span>
+                      <div className="font-mono break-all text-foreground">
+                        <TruncatedText
+                          text={header.value}
+                          maxLength={300}
+                          showWarning={header.value.length > 300}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === "response-content" &&
+                entry.response.content.text && (
+                  <div
+                    role="tabpanel"
+                    id={`${tabsId}-panel-response-content`}
+                    aria-labelledby={`${tabsId}-tab-response-content`}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        Response Content
+                      </div>
+                      <CopyButton text={entry.response.content.text} />
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {entry.response.content.mimeType}
+                    </div>
+                    {entry.response.content.mimeType.startsWith("image/") ? (
+                      <div className="flex items-center justify-center rounded-xl border border-border bg-background p-4">
+                        <img
+                          src={`data:${entry.response.content.mimeType};base64,${entry.response.content.text}`}
+                          alt="Response content"
+                          className="max-h-96 max-w-full object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <ContentEditor
+                        content={entry.response.content.text}
+                        mimeType={entry.response.content.mimeType}
+                        height="320px"
+                      />
+                    )}
+                  </div>
                 )}
-              </div>
             </div>
-          )}
+          </div>
+
         </div>
       </div>
     </div>
