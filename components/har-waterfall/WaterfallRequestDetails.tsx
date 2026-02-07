@@ -3,7 +3,8 @@ import Editor, { BeforeMount } from "@monaco-editor/react";
 import { Check, Clock, Copy } from "lucide-react";
 import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { Button } from "../ds/ButtonComponent";
-import { HarEntry } from "../utils/har-utils";
+import SearchHighlightText from "../SearchHighlightText";
+import { HarEntry, getMatchCategories } from "../utils/har-utils";
 import { TruncatedText } from "./TruncatedText";
 import {
   WaterfallTiming,
@@ -14,6 +15,7 @@ import {
 interface WaterfallRequestDetailsProps {
   entry: HarEntry;
   timing: WaterfallTiming;
+  searchQuery?: string;
 }
 
 type DetailTabKey =
@@ -166,7 +168,7 @@ const ContentEditor: React.FC<{
 
 export const WaterfallRequestDetails: React.FC<
   WaterfallRequestDetailsProps
-> = ({ entry, timing }) => {
+> = ({ entry, timing, searchQuery = "" }) => {
   const url = new URL(entry.request.url);
   const startedTime = new Date(entry.startedDateTime).toLocaleTimeString(
     "en-US",
@@ -184,6 +186,14 @@ export const WaterfallRequestDetails: React.FC<
   const mimeTypeLabel =
     entry.response.content.mimeType?.split(";")[0] || "Unknown";
   const tabsId = useId();
+
+  const matchInfo = useMemo(
+    () =>
+      searchQuery
+        ? getMatchCategories(entry, searchQuery)
+        : { categories: [], hasMatch: false },
+    [entry, searchQuery]
+  );
 
   const tabs = useMemo(
     () =>
@@ -215,6 +225,26 @@ export const WaterfallRequestDetails: React.FC<
       entry.response.headers.length,
       entry.response.content.text,
     ]
+  );
+
+  const tabMatch = useMemo(
+    () => ({
+      "request-headers": matchInfo.categories.includes("headers"),
+      "request-body": matchInfo.categories.includes("request"),
+      "response-headers": matchInfo.categories.includes("headers"),
+      "response-content": matchInfo.categories.includes("response"),
+    }),
+    [matchInfo]
+  );
+
+  const tabDotColor: Record<DetailTabKey, string> = useMemo(
+    () => ({
+      "request-headers": "bg-purple-500",
+      "request-body": "bg-orange-500",
+      "response-headers": "bg-purple-500",
+      "response-content": "bg-green-500",
+    }),
+    []
   );
 
   const [activeTab, setActiveTab] = useState<DetailTabKey>(
@@ -367,6 +397,8 @@ export const WaterfallRequestDetails: React.FC<
                 const tabId = `${tabsId}-tab-${tab.key}`;
                 const panelId = `${tabsId}-panel-${tab.key}`;
                 const isActive = activeTab === tab.key;
+                const showDot =
+                  Boolean(searchQuery) && tabMatch[tab.key] === true;
                 return (
                   <button
                     key={tab.key}
@@ -384,7 +416,17 @@ export const WaterfallRequestDetails: React.FC<
                         : "bg-muted/40 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                     )}
                   >
-                    {tab.label}
+                    <span className="flex items-center gap-2">
+                      {tab.label}
+                      {showDot && (
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full",
+                            tabDotColor[tab.key]
+                          )}
+                        />
+                      )}
+                    </span>
                   </button>
                 );
               })}
@@ -407,15 +449,30 @@ export const WaterfallRequestDetails: React.FC<
                       )}
                     >
                       <span className="flex items-center break-all font-mono text-muted-foreground">
-                        {header.name}:
+                        {searchQuery ? (
+                          <SearchHighlightText
+                            text={header.name}
+                            searchQuery={searchQuery}
+                          />
+                        ) : (
+                          header.name
+                        )}
+                        :
                       </span>
                       <div className="flex min-w-0 items-center gap-2">
                         <div className="min-w-0 flex-1 font-mono break-all text-foreground">
-                          <TruncatedText
-                            text={header.value}
-                            maxLength={300}
-                            showWarning={header.value.length > 300}
-                          />
+                          {searchQuery ? (
+                            <SearchHighlightText
+                              text={header.value}
+                              searchQuery={searchQuery}
+                            />
+                          ) : (
+                            <TruncatedText
+                              text={header.value}
+                              maxLength={300}
+                              showWarning={header.value.length > 300}
+                            />
+                          )}
                         </div>
                         <CopyButton
                           text={header.value}
@@ -468,15 +525,30 @@ export const WaterfallRequestDetails: React.FC<
                       )}
                     >
                       <span className="flex items-center break-all font-mono text-muted-foreground">
-                        {header.name}:
+                        {searchQuery ? (
+                          <SearchHighlightText
+                            text={header.name}
+                            searchQuery={searchQuery}
+                          />
+                        ) : (
+                          header.name
+                        )}
+                        :
                       </span>
                       <div className="flex min-w-0 items-center gap-2">
                         <div className="min-w-0 flex-1 font-mono break-all text-foreground">
-                          <TruncatedText
-                            text={header.value}
-                            maxLength={300}
-                            showWarning={header.value.length > 300}
-                          />
+                          {searchQuery ? (
+                            <SearchHighlightText
+                              text={header.value}
+                              searchQuery={searchQuery}
+                            />
+                          ) : (
+                            <TruncatedText
+                              text={header.value}
+                              maxLength={300}
+                              showWarning={header.value.length > 300}
+                            />
+                          )}
                         </div>
                         <CopyButton
                           text={header.value}

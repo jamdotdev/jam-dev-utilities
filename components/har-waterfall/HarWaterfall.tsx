@@ -1,3 +1,4 @@
+import MatchIndicators from "@/components/MatchIndicators";
 import SearchHighlightText from "@/components/SearchHighlightText";
 import {
   Tooltip,
@@ -25,6 +26,7 @@ import React, {
 import {
   FilterType,
   getFilterType,
+  getMatchCategories,
   HarEntry,
   isBase64,
 } from "../utils/har-utils";
@@ -417,203 +419,226 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
             </div>
           ) : (
             <TooltipProvider delayDuration={120}>
-            <div
-              ref={listRef}
-              role="list"
-              className="relative divide-y divide-border"
-              style={
-                {
-                  "--hover-x": "0px",
-                  "--hover-y": "0px",
-                  "--hover-label-x": "0px",
-                  "--hover-label-y": "0px",
-                  "--hover-opacity": "0",
-                } as React.CSSProperties
-              }
-              onPointerMove={handlePointerMove}
-              onPointerLeave={handlePointerLeave}
-            >
               <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 z-10 w-px bg-foreground/20 transition-opacity"
-                style={{
-                  left: "var(--hover-x)",
-                  opacity: "var(--hover-opacity)",
-                }}
-              />
-              <div
-                ref={hoverLabelRef}
-                aria-hidden="true"
-                className="pointer-events-none absolute z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-[10px] font-medium tabular-nums text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.18)] ring-1 ring-slate-200 transition-opacity"
-                style={{
-                  left: "var(--hover-label-x)",
-                  top: "var(--hover-label-y)",
-                  opacity: "var(--hover-opacity)",
-                }}
-              />
-              {filteredEntries.map((entry, index) => {
-                const timing = timings[index];
-                const url = new URL(entry.request.url);
-                const displayPath = url.pathname + url.search;
-                const segments = getSegments(timing);
-                const lastSegmentIndex = segments.length - 1;
-                const isError = entry.response.status >= 400;
-                const isExpanded = expandedIndex === index;
-                const panelId = `har-waterfall-panel-${index}`;
-                const rowLabel = `${entry.request.method} ${displayPath} ${entry.response.status} ${formatDuration(
-                  timing.totalTime
-                )}`;
+                ref={listRef}
+                role="list"
+                className="relative divide-y divide-border"
+                style={
+                  {
+                    "--hover-x": "0px",
+                    "--hover-y": "0px",
+                    "--hover-label-x": "0px",
+                    "--hover-label-y": "0px",
+                    "--hover-opacity": "0",
+                  } as React.CSSProperties
+                }
+                onPointerMove={handlePointerMove}
+                onPointerLeave={handlePointerLeave}
+              >
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 z-10 w-px bg-foreground/20 transition-opacity"
+                  style={{
+                    left: "var(--hover-x)",
+                    opacity: "var(--hover-opacity)",
+                  }}
+                />
+                <div
+                  ref={hoverLabelRef}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-[10px] font-medium tabular-nums text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.18)] ring-1 ring-slate-200 transition-opacity"
+                  style={{
+                    left: "var(--hover-label-x)",
+                    top: "var(--hover-label-y)",
+                    opacity: "var(--hover-opacity)",
+                  }}
+                />
+                {filteredEntries.map((entry, index) => {
+                  const timing = timings[index];
+                  const url = new URL(entry.request.url);
+                  const displayPath = url.pathname + url.search;
+                  const segments = getSegments(timing);
+                  const lastSegmentIndex = segments.length - 1;
+                  const isError = entry.response.status >= 400;
+                  const isExpanded = expandedIndex === index;
+                  const panelId = `har-waterfall-panel-${index}`;
+                  const matchInfo = searchQuery
+                    ? getMatchCategories(entry, searchQuery)
+                    : { categories: [], hasMatch: false };
+                  const rowLabel = `${entry.request.method} ${displayPath} ${entry.response.status} ${formatDuration(
+                    timing.totalTime
+                  )}`;
 
-                return (
-                  <div
-                    key={`${entry.request.url}-${entry.startedDateTime}-${index}`}
-                    role="listitem"
-                    className="bg-background"
-                  >
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setExpandedIndex(isExpanded ? null : index)
-                      }
-                      aria-label={`Toggle request details for ${rowLabel}`}
-                      aria-expanded={isExpanded}
-                      aria-controls={panelId}
-                      className={cn(
-                        "group w-full text-left transition-colors",
-                        index % 2 === 0 ? "bg-muted/15" : "bg-background",
-                        "hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
-                      )}
+                  return (
+                    <div
+                      key={`${entry.request.url}-${entry.startedDateTime}-${index}`}
+                      role="listitem"
+                      className="bg-background"
                     >
-                      <div className="grid grid-cols-[110px,56px,90px,minmax(0,1.6fr),minmax(260px,2.4fr),80px] items-center gap-2 px-4 py-2">
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={cn(
-                                "h-2 w-2 rounded-full",
-                                isError ? "bg-red-500" : "bg-emerald-500"
-                              )}
-                            />
-                            <span
-                              className={cn(
-                                "text-[13px] font-semibold tabular-nums",
-                                isError ? "text-red-500" : "text-emerald-500"
-                              )}
-                            >
-                              {entry.response.status}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExpandedIndex(isExpanded ? null : index)
+                        }
+                        aria-label={`Toggle request details for ${rowLabel}`}
+                        aria-expanded={isExpanded}
+                        aria-controls={panelId}
+                        className={cn(
+                          "group w-full text-left transition-colors",
+                          index % 2 === 0 ? "bg-muted/15" : "bg-background",
+                          "hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
+                        )}
+                      >
+                        <div className="grid grid-cols-[110px,56px,90px,minmax(0,1.6fr),minmax(260px,2.4fr),80px] items-center gap-2 px-4 py-2">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={cn(
+                                  "h-2 w-2 rounded-full",
+                                  isError ? "bg-red-500" : "bg-emerald-500"
+                                )}
+                              />
+                              <span
+                                className={cn(
+                                  "text-[13px] font-semibold tabular-nums",
+                                  isError ? "text-red-500" : "text-emerald-500"
+                                )}
+                              >
+                                {entry.response.status}
+                              </span>
+                            </div>
+                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                              {entry.request.method}
                             </span>
                           </div>
-                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                            {entry.request.method}
-                          </span>
-                        </div>
 
-                        <div className="flex items-center justify-start">
-                          {(() => {
-                            const typeMeta = typeMetaMap[getFilterType(entry)];
-                            const TypeIcon = typeMeta.icon;
-                            const sizeLabel = `${(
-                              entry.response.content.size / 1024
-                            ).toFixed(1)} KB`;
-                            const ariaLabel = `${typeMeta.label} • ${entry.response.content.mimeType} • ${sizeLabel}`;
-                            return (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <span
-                                    className={cn(
-                                      "inline-flex h-7 w-7 items-center justify-center rounded-full ring-1",
-                                      typeMeta.className
-                                    )}
-                                    aria-label={ariaLabel}
+                          <div className="flex items-center justify-start">
+                            {(() => {
+                              const typeMeta =
+                                typeMetaMap[getFilterType(entry)];
+                              const TypeIcon = typeMeta.icon;
+                              const sizeLabel = `${(
+                                entry.response.content.size / 1024
+                              ).toFixed(1)} KB`;
+                              const ariaLabel = `${typeMeta.label} • ${entry.response.content.mimeType} • ${sizeLabel}`;
+                              return (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span
+                                      className={cn(
+                                        "inline-flex h-7 w-7 items-center justify-center rounded-full ring-1",
+                                        typeMeta.className
+                                      )}
+                                      aria-label={ariaLabel}
+                                    >
+                                      <TypeIcon className="h-3.5 w-3.5" />
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent
+                                    side="top"
+                                    className="text-xs"
                                   >
-                                    <TypeIcon className="h-3.5 w-3.5" />
-                                  </span>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="text-xs">
-                                  {typeMeta.label}
-                                </TooltipContent>
-                              </Tooltip>
-                            );
-                          })()}
-                        </div>
-
-                        <div className="text-[11px] text-muted-foreground tabular-nums">
-                          {new Date(entry.startedDateTime).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour12: false,
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              second: "2-digit",
-                            }
-                          )}
-                        </div>
-
-                        <div className="min-w-0" title={entry.request.url}>
-                          <div className="text-[11px] text-muted-foreground">
-                            {url.hostname}
+                                    {typeMeta.label}
+                                  </TooltipContent>
+                                </Tooltip>
+                              );
+                            })()}
                           </div>
-                          <div className="truncate text-[13px] font-medium text-foreground">
-                            {searchQuery ? (
-                              <SearchHighlightText
-                                text={displayPath}
-                                searchQuery={searchQuery}
-                              />
-                            ) : (
-                              displayPath
+
+                          <div className="text-[11px] text-muted-foreground tabular-nums">
+                            {new Date(entry.startedDateTime).toLocaleTimeString(
+                              "en-US",
+                              {
+                                hour12: false,
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                              }
                             )}
                           </div>
-                        </div>
 
-                        <div className="relative">
-                          <div
-                            className="relative h-2.5 rounded-full bg-muted/40 transition-colors group-hover:bg-muted/60"
-                            style={gridStyle}
-                            aria-hidden="true"
-                          >
-                            {segments.map((segment, segmentIndex) => (
-                              <span
-                                key={`${segment.key}-${index}`}
-                                className={cn(
-                                  "absolute h-full",
-                                  segmentIndex === 0 && "rounded-l-full",
-                                  segmentIndex === lastSegmentIndex &&
-                                    "rounded-r-full"
+                          <div className="min-w-0" title={entry.request.url}>
+                            <div className="text-[11px] text-muted-foreground">
+                              {searchQuery ? (
+                                <SearchHighlightText
+                                  text={url.hostname}
+                                  searchQuery={searchQuery}
+                                />
+                              ) : (
+                                url.hostname
+                              )}
+                            </div>
+                            <div className="flex min-w-0 items-center gap-2">
+                              <span className="truncate text-[13px] font-medium text-foreground">
+                                {searchQuery ? (
+                                  <SearchHighlightText
+                                    text={displayPath}
+                                    searchQuery={searchQuery}
+                                  />
+                                ) : (
+                                  displayPath
                                 )}
-                                style={{
-                                  left: `${segment.left}%`,
-                                  width: `${segment.width}%`,
-                                  backgroundColor: segment.color,
-                                }}
-                              />
-                            ))}
+                              </span>
+                              {searchQuery && matchInfo.hasMatch && (
+                                <MatchIndicators
+                                  categories={matchInfo.categories}
+                                  className="flex-shrink-0"
+                                />
+                              )}
+                            </div>
                           </div>
-                          <span className="sr-only">
-                            {getTimingLabel(timing)}
-                          </span>
-                        </div>
 
-                        <div className="text-xs tabular-nums text-right text-muted-foreground">
-                          {formatDuration(timing.totalTime)}
+                          <div className="relative">
+                            <div
+                              className="relative h-2.5 rounded-full bg-muted/40 transition-colors group-hover:bg-muted/60"
+                              style={gridStyle}
+                              aria-hidden="true"
+                            >
+                              {segments.map((segment, segmentIndex) => (
+                                <span
+                                  key={`${segment.key}-${index}`}
+                                  className={cn(
+                                    "absolute h-full",
+                                    segmentIndex === 0 && "rounded-l-full",
+                                    segmentIndex === lastSegmentIndex &&
+                                      "rounded-r-full"
+                                  )}
+                                  style={{
+                                    left: `${segment.left}%`,
+                                    width: `${segment.width}%`,
+                                    backgroundColor: segment.color,
+                                  }}
+                                />
+                              ))}
+                            </div>
+                            <span className="sr-only">
+                              {getTimingLabel(timing)}
+                            </span>
+                          </div>
+
+                          <div className="text-xs tabular-nums text-right text-muted-foreground">
+                            {formatDuration(timing.totalTime)}
+                          </div>
                         </div>
-                      </div>
-                    </button>
-                    {isExpanded && (
-                      <div
-                        id={panelId}
-                        role="region"
-                        aria-label={`Request details for ${displayPath}`}
-                        className="relative z-20 bg-background"
-                      >
-                        <WaterfallRequestDetails
-                          entry={entry}
-                          timing={timing}
-                        />
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                      </button>
+                      {isExpanded && (
+                        <div
+                          id={panelId}
+                          role="region"
+                          aria-label={`Request details for ${displayPath}`}
+                          className="relative z-20 bg-background"
+                        >
+                          <WaterfallRequestDetails
+                            entry={entry}
+                            timing={timing}
+                            searchQuery={searchQuery}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </TooltipProvider>
           )}
         </div>
