@@ -1,35 +1,8 @@
-import { useCallback, useMemo, useState, Fragment, useEffect } from "react";
-import { BeforeMount, Editor } from "@monaco-editor/react";
-import {
-  FilterType,
-  getColorForTime,
-  getFilterType,
-  HarData,
-  HarEntry,
-  HarTableProps,
-  isBase64,
-  tryParseJSON,
-  getMatchCategories,
-  MatchCategory,
-} from "@/components/utils/har-utils";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ds/ButtonComponent";
-import Meta from "@/components/Meta";
-import Header from "@/components/Header";
-import { CMDK } from "@/components/CMDK";
-import { Card } from "@/components/ds/CardComponent";
-import UploadIcon from "@/components/icons/UploadIcon";
-import PageHeader from "@/components/PageHeader";
 import CallToActionGrid from "@/components/CallToActionGrid";
-import HarFileViewerSEO from "@/components/seo/HarFileViewerSEO";
-import { HarWaterfall } from "@/components/har-waterfall";
-import { Table, BarChart3, Filter, Search, X } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ds/PopoverComponent";
-import { Input } from "@/components/ds/InputComponent";
+import { CMDK } from "@/components/CMDK";
+import { Button } from "@/components/ds/ButtonComponent";
+import { Card } from "@/components/ds/CardComponent";
+import { Checkbox } from "@/components/ds/CheckboxComponent";
 import {
   Command,
   CommandEmpty,
@@ -38,10 +11,38 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ds/CommandMenu";
-import { Checkbox } from "@/components/ds/CheckboxComponent";
-import SearchHighlightText from "@/components/SearchHighlightText";
+import { Input } from "@/components/ds/InputComponent";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ds/PopoverComponent";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ds/TabsComponent";
+import { HarWaterfall } from "@/components/har-waterfall";
+import Header from "@/components/Header";
+import UploadIcon from "@/components/icons/UploadIcon";
 import MatchIndicators from "@/components/MatchIndicators";
 import MatchSummaryPills from "@/components/MatchSummaryPills";
+import Meta from "@/components/Meta";
+import PageHeader from "@/components/PageHeader";
+import SearchHighlightText from "@/components/SearchHighlightText";
+import HarFileViewerSEO from "@/components/seo/HarFileViewerSEO";
+import {
+  FilterType,
+  getColorForTime,
+  getFilterType,
+  getMatchCategories,
+  HarData,
+  HarEntry,
+  HarTableProps,
+  isBase64,
+  MatchCategory,
+  tryParseJSON,
+} from "@/components/utils/har-utils";
+import { cn } from "@/lib/utils";
+import { BeforeMount, Editor } from "@monaco-editor/react";
+import { BarChart3, Filter, Search, Table, X } from "lucide-react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 
 interface MultiSelectComboboxProps {
   data: { value: string; label: string }[];
@@ -114,7 +115,7 @@ export default function HARFileViewer() {
   );
   const [harData, setHarData] = useState<HarData | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
-  const [viewMode, setViewMode] = useState<"table" | "waterfall">("table");
+  const [viewMode, setViewMode] = useState<"table" | "waterfall">("waterfall");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -385,29 +386,23 @@ export default function HARFileViewer() {
                     </Button>
                   ))}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant={viewMode === "waterfall" ? "default" : "outline"}
-                    onClick={() => setViewMode("waterfall")}
-                    className="h-8 relative"
-                  >
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    Waterfall
-                    <span className="ml-2 inline-flex items-center rounded-full bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-600 dark:text-green-400">
-                      New
-                    </span>
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={viewMode === "table" ? "default" : "outline"}
-                    onClick={() => setViewMode("table")}
-                    className="h-8"
-                  >
-                    <Table className="h-4 w-4 mr-2" />
-                    Table view
-                  </Button>
-                </div>
+                <Tabs
+                  value={viewMode}
+                  onValueChange={(value) =>
+                    setViewMode(value as "table" | "waterfall")
+                  }
+                >
+                  <TabsList className="h-8">
+                    <TabsTrigger value="waterfall" className="h-7 px-3 text-xs">
+                      <BarChart3 className="mr-2 h-3.5 w-3.5" />
+                      Waterfall
+                    </TabsTrigger>
+                    <TabsTrigger value="table" className="h-7 px-3 text-xs">
+                      <Table className="mr-2 h-3.5 w-3.5" />
+                      Table view
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
             </div>
           </section>

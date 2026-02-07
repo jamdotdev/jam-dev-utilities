@@ -1,79 +1,35 @@
-import React, { useState, useCallback } from "react";
-import { HarEntry } from "../utils/har-utils";
+import { cn } from "@/lib/utils";
+import Editor, { BeforeMount } from "@monaco-editor/react";
+import { Check, Clock, Copy } from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Button } from "../ds/ButtonComponent";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ds/TabsComponent";
+import SearchHighlightText from "../SearchHighlightText";
+import { HarEntry, getMatchCategories } from "../utils/har-utils";
+import { TruncatedText } from "./TruncatedText";
 import {
   WaterfallTiming,
   formatDuration,
   getTimingColor,
 } from "./waterfall-utils";
-import {
-  ChevronDown,
-  ChevronRight,
-  Copy,
-  Check,
-  Clock,
-  FileText,
-  Send,
-  Download,
-  Code,
-} from "lucide-react";
-import { Button } from "../ds/ButtonComponent";
-import { cn } from "@/lib/utils";
-import { TruncatedText } from "./TruncatedText";
-import { Dialog, DialogContent } from "../ds/DialogComponent";
-import Editor, { BeforeMount } from "@monaco-editor/react";
 
 interface WaterfallRequestDetailsProps {
   entry: HarEntry;
   timing: WaterfallTiming;
-  onClose: () => void;
+  searchQuery?: string;
 }
 
-interface SectionProps {
-  title: string;
-  icon?: React.ReactNode;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-  timingChart?: React.ReactNode;
-}
+type DetailTabKey =
+  | "request-headers"
+  | "request-body"
+  | "response-headers"
+  | "response-content";
 
-const Section: React.FC<SectionProps> = ({
-  title,
-  icon,
-  defaultOpen = false,
-  children,
-  timingChart,
-}) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
-  return (
-    <div className="bg-background border-b border-border last:border-b-0">
-      <button
-        className="w-full px-4 py-4 flex items-center justify-between hover:bg-muted/30 transition-all duration-200"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <div className="flex items-center gap-3 flex-1">
-          {icon && (
-            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-              {icon}
-            </div>
-          )}
-          <span className="font-medium text-sm">{title}</span>
-          {timingChart && (
-            <div className="flex-1 max-w-xs ml-2">{timingChart}</div>
-          )}
-        </div>
-        {isOpen ? (
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-        ) : (
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        )}
-      </button>
-      {isOpen && <div className="px-4 pb-4">{children}</div>}
-    </div>
-  );
-};
-
-const CopyButton: React.FC<{ text: string }> = ({ text }) => {
+const CopyButton: React.FC<{
+  text: string;
+  className?: string;
+  label?: string;
+}> = ({ text, className, label }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -86,8 +42,10 @@ const CopyButton: React.FC<{ text: string }> = ({ text }) => {
     <Button
       size="sm"
       variant="ghost"
-      className="h-6 w-6 p-0"
+      className={cn("h-6 w-6 p-0", className)}
       onClick={handleCopy}
+      aria-label={label ?? "Copy"}
+      title={label ?? "Copy"}
     >
       {copied ? (
         <Check className="h-3 w-3 text-green-500" />
@@ -95,6 +53,26 @@ const CopyButton: React.FC<{ text: string }> = ({ text }) => {
         <Copy className="h-3 w-3" />
       )}
     </Button>
+  );
+};
+
+const MetricCard: React.FC<{
+  label: string;
+  value: React.ReactNode;
+  helper?: React.ReactNode;
+}> = ({ label, value, helper }) => {
+  return (
+    <div className="rounded-xl border border-border bg-background/80 p-3">
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
+      <div className="mt-1 text-sm font-semibold text-foreground tabular-nums">
+        {value}
+      </div>
+      {helper && (
+        <div className="mt-1 text-[11px] text-muted-foreground">{helper}</div>
+      )}
+    </div>
   );
 };
 
@@ -191,8 +169,92 @@ const ContentEditor: React.FC<{
 
 export const WaterfallRequestDetails: React.FC<
   WaterfallRequestDetailsProps
-> = ({ entry, timing, onClose }) => {
+> = ({ entry, timing, searchQuery = "" }) => {
   const url = new URL(entry.request.url);
+  const startedTime = new Date(entry.startedDateTime).toLocaleTimeString(
+    "en-US",
+    {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      fractionalSecondDigits: 3,
+    }
+  );
+  const sizeLabel = `${(entry.response.content.size / 1024).toFixed(1)} KB`;
+  const protocolLabel = entry.request.httpVersion || "Not provided";
+  const serverIpLabel = entry.serverIPAddress || "Server IP unavailable";
+  const mimeTypeLabel =
+    entry.response.content.mimeType?.split(";")[0] || "Unknown";
+  const matchInfo = useMemo(
+    () =>
+      searchQuery
+        ? getMatchCategories(entry, searchQuery)
+        : { categories: [], hasMatch: false },
+    [entry, searchQuery]
+  );
+
+  const tabs = useMemo(
+    () =>
+      [
+        {
+          key: "request-headers" as const,
+          label: "Request Headers",
+          visible: entry.request.headers.length > 0,
+        },
+        {
+          key: "request-body" as const,
+          label: "Request Body",
+          visible: Boolean(entry.request.postData?.text),
+        },
+        {
+          key: "response-headers" as const,
+          label: "Response Headers",
+          visible: entry.response.headers.length > 0,
+        },
+        {
+          key: "response-content" as const,
+          label: "Response Content",
+          visible: Boolean(entry.response.content.text),
+        },
+      ].filter((tab) => tab.visible),
+    [
+      entry.request.headers.length,
+      entry.request.postData?.text,
+      entry.response.headers.length,
+      entry.response.content.text,
+    ]
+  );
+
+  const tabMatch = useMemo(
+    () => ({
+      "request-headers": matchInfo.categories.includes("headers"),
+      "request-body": matchInfo.categories.includes("request"),
+      "response-headers": matchInfo.categories.includes("headers"),
+      "response-content": matchInfo.categories.includes("response"),
+    }),
+    [matchInfo]
+  );
+
+  const tabDotColor: Record<DetailTabKey, string> = useMemo(
+    () => ({
+      "request-headers": "bg-purple-500",
+      "request-body": "bg-orange-500",
+      "response-headers": "bg-purple-500",
+      "response-content": "bg-green-500",
+    }),
+    []
+  );
+
+  const [activeTab, setActiveTab] = useState<DetailTabKey>(
+    tabs[0]?.key ?? "request-headers"
+  );
+
+  useEffect(() => {
+    if (!tabs.find((tab) => tab.key === activeTab)) {
+      setActiveTab(tabs[0]?.key ?? "request-headers");
+    }
+  }, [activeTab, tabs]);
 
   const timingBreakdown = [
     { label: "DNS Lookup", value: timing.dns, color: getTimingColor("dns") },
@@ -234,246 +296,290 @@ export const WaterfallRequestDetails: React.FC<
   };
 
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-x-hidden">
-        {/* Header */}
-        <div className="p-6 border-b border-border bg-muted/30">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              {/* Status Badge */}
-              <div className="flex items-center gap-3 mb-3">
-                <div
-                  className={cn(
-                    "inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium",
-                    entry.response.status >= 400
-                      ? "bg-red-500/10 text-red-500"
-                      : "bg-green-500/10 text-green-500"
-                  )}
-                >
-                  <div className="w-2 h-2 rounded-full bg-current" />
-                  {entry.response.status} {entry.response.statusText}
+    <div className="border-t border-border bg-foreground/5">
+      <div className="grid gap-6 px-6 py-6 lg:grid-cols-[minmax(0,0.9fr),minmax(0,1.35fr)]">
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-border bg-background/80 p-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <div
+                className={cn(
+                  "inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium",
+                  entry.response.status >= 400
+                    ? "bg-red-500/10 text-red-500"
+                    : "bg-emerald-500/10 text-emerald-500"
+                )}
+              >
+                <div className="w-2 h-2 rounded-full bg-current" />
+                {entry.response.status} {entry.response.statusText}
+              </div>
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                {entry.request.method}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {protocolLabel}
+              </span>
+            </div>
+
+            <div className="mt-4 space-y-2">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span>{url.hostname}</span>
+                <span aria-hidden="true">•</span>
+                <span>{serverIpLabel}</span>
+              </div>
+              <div className="text-lg break-all font-mono font-medium text-foreground">
+                <TruncatedText
+                  text={url.pathname + url.search}
+                  maxLength={200}
+                  showWarning={false}
+                />
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <CopyButton text={entry.request.url} />
+                <span>Copy full URL</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <MetricCard label="Size" value={sizeLabel} />
+            <MetricCard
+              label="Total Time"
+              value={formatDuration(timing.totalTime)}
+            />
+            <MetricCard label="Type" value={mimeTypeLabel} />
+            <MetricCard label="Started" value={startedTime} />
+            <MetricCard label="Protocol" value={protocolLabel} />
+            <MetricCard label="Server IP" value={serverIpLabel} />
+          </div>
+
+          <div className="rounded-2xl border border-border bg-background/80 p-4">
+            <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <Clock className="h-3.5 w-3.5" />
+              Timing Breakdown
+            </div>
+            <div className="mt-3">
+              <TimingChart />
+            </div>
+            <div className="mt-4 space-y-2 text-xs text-muted-foreground">
+              {timingBreakdown.map((item, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="h-2 w-2 rounded-sm"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span>{item.label}</span>
+                  </div>
+                  <span className="font-mono text-foreground">
+                    {formatDuration(item.value)}
+                  </span>
                 </div>
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {entry.request.method}
+              ))}
+              <div className="flex items-center justify-between border-t border-border pt-2 text-sm font-medium text-foreground">
+                <span>Total</span>
+                <span className="font-mono">
+                  {formatDuration(timing.totalTime)}
                 </span>
-              </div>
-
-              {/* URL Section */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm text-muted-foreground">
-                    {url.hostname}
-                  </p>
-                  <CopyButton text={entry.request.url} />
-                </div>
-                <div className="text-lg break-all font-mono font-medium text-foreground">
-                  <TruncatedText
-                    text={url.pathname + url.search}
-                    maxLength={200}
-                    showWarning={false}
-                  />
-                </div>
-              </div>
-
-              {/* Metrics */}
-              <div className="flex flex-wrap items-center gap-4 mt-4">
-                <div className="flex items-center gap-3 px-3 py-2 bg-background/60 rounded-lg border border-border/50">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                      Size
-                    </span>
-                    <span className="text-sm font-semibold tabular-nums">
-                      {(entry.response.content.size / 1024).toFixed(1)} KB
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 px-3 py-2 bg-background/60 rounded-lg border border-border/50">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                      Duration
-                    </span>
-                    <span className="text-sm font-semibold tabular-nums">
-                      {formatDuration(timing.totalTime)}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 px-3 py-2 bg-background/60 rounded-lg border border-border/50">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                      Type
-                    </span>
-                    <span className="text-sm font-medium">
-                      {entry.response.content.mimeType
-                        .split("/")[1]
-                        ?.toUpperCase() || "Unknown"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 px-3 py-2 bg-background/60 rounded-lg border border-border/50">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                      Started
-                    </span>
-                    <span className="text-sm font-medium tabular-nums">
-                      {new Date(entry.startedDateTime).toLocaleTimeString(
-                        "en-US",
-                        {
-                          hour12: false,
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                          fractionalSecondDigits: 3,
-                        }
-                      )}
-                    </span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 min-h-0 bg-muted/20">
-          {/* Timing Breakdown */}
-          <Section
-            title="Timing Breakdown"
-            icon={<Clock className="h-4 w-4 text-muted-foreground" />}
-            timingChart={<TimingChart />}
-          >
-            <div className="space-y-3">
-              {timingBreakdown.map((item, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+        <div className="space-y-6">
+          <div className="rounded-2xl border border-border bg-background/80">
+            <Tabs
+              value={activeTab}
+              onValueChange={(value) => setActiveTab(value as DetailTabKey)}
+            >
+              <TabsList
+                className="flex flex-wrap items-center gap-2 bg-transparent p-0 px-4 py-2 rounded-none border-0 border-b border-border"
+                aria-label="Request and response data"
+              >
+                {tabs.map((tab) => {
+                  const showDot =
+                    Boolean(searchQuery) && tabMatch[tab.key] === true;
+                  return (
+                    <TabsTrigger
+                      key={tab.key}
+                      value={tab.key}
+                      className={cn(
+                        "rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-wider shadow-none ring-0 data-[state=active]:shadow-none data-[state=active]:ring-0",
+                        "data-[state=active]:bg-foreground data-[state=active]:text-background",
+                        "data-[state=inactive]:bg-muted/40 data-[state=inactive]:text-muted-foreground",
+                        "data-[state=inactive]:hover:bg-muted/60 data-[state=inactive]:hover:text-foreground"
+                      )}
+                    >
+                      <span className="flex items-center gap-2">
+                        {tab.label}
+                        {showDot && (
+                          <span
+                            className={cn(
+                              "h-1.5 w-1.5 rounded-full",
+                              tabDotColor[tab.key]
+                            )}
+                          />
+                        )}
+                      </span>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+
+              <div className="p-4">
+                <TabsContent value="request-headers" className="mt-0 space-y-2">
+                  {entry.request.headers.map((header, index) => (
                     <div
-                      className="w-3 h-3 rounded-sm"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="text-sm text-muted-foreground">
-                      {item.label}
-                    </span>
-                  </div>
-                  <span className="text-sm font-mono">
-                    {formatDuration(item.value)}
-                  </span>
-                </div>
-              ))}
-              <div className="flex items-center justify-between pt-2 border-t border-border">
-                <span className="text-sm font-medium">Total Time</span>
-                <span className="text-sm font-mono font-medium">
-                  {formatDuration(timing.totalTime)}
-                </span>
-              </div>
-            </div>
-          </Section>
+                      key={index}
+                      className={cn(
+                        "group grid grid-cols-[240px,minmax(0,1fr)] gap-4 rounded-md px-2 py-1.5 text-xs",
+                        index % 2 === 1 ? "bg-muted/60" : "bg-transparent"
+                      )}
+                    >
+                      <span className="flex items-center break-all font-mono text-muted-foreground">
+                        {searchQuery ? (
+                          <SearchHighlightText
+                            text={header.name}
+                            searchQuery={searchQuery}
+                          />
+                        ) : (
+                          header.name
+                        )}
+                        :
+                      </span>
+                      <div className="flex min-w-0 items-center gap-2">
+                        <div className="min-w-0 flex-1 font-mono break-all text-foreground">
+                          {searchQuery ? (
+                            <SearchHighlightText
+                              text={header.value}
+                              searchQuery={searchQuery}
+                            />
+                          ) : (
+                            <TruncatedText
+                              text={header.value}
+                              maxLength={300}
+                              showWarning={header.value.length > 300}
+                              showCopy={false}
+                            />
+                          )}
+                        </div>
+                        <CopyButton
+                          text={header.value}
+                          label="Copy header value"
+                          className="opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </TabsContent>
 
-          {/* Request Headers */}
-          <Section
-            title="Request Headers"
-            icon={<Send className="h-4 w-4 text-muted-foreground" />}
-          >
-            <div className="space-y-1">
-              {entry.request.headers.map((header, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 py-1.5"
+                <TabsContent value="request-body" className="mt-0 space-y-3">
+                  {entry.request.postData && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          Request Body
+                        </div>
+                        <CopyButton text={entry.request.postData.text} />
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {entry.request.postData.mimeType}
+                      </div>
+                      <ContentEditor
+                        content={entry.request.postData.text}
+                        mimeType={entry.request.postData.mimeType}
+                        height="260px"
+                      />
+                    </>
+                  )}
+                </TabsContent>
+
+                <TabsContent
+                  value="response-headers"
+                  className="mt-0 space-y-2"
                 >
-                  <span className="text-xs break-all font-mono text-muted-foreground">
-                    {header.name}:
-                  </span>
-                  <div className="text-xs font-mono break-all overflow-hidden">
-                    <TruncatedText
-                      text={header.value}
-                      maxLength={300}
-                      showWarning={header.value.length > 300}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Section>
+                  {entry.response.headers.map((header, index) => (
+                    <div
+                      key={index}
+                      className={cn(
+                        "group grid grid-cols-[240px,minmax(0,1fr)] gap-4 rounded-md px-2 py-1.5 text-xs",
+                        index % 2 === 1 ? "bg-muted/60" : "bg-transparent"
+                      )}
+                    >
+                      <span className="flex items-center break-all font-mono text-muted-foreground">
+                        {searchQuery ? (
+                          <SearchHighlightText
+                            text={header.name}
+                            searchQuery={searchQuery}
+                          />
+                        ) : (
+                          header.name
+                        )}
+                        :
+                      </span>
+                      <div className="flex min-w-0 items-center gap-2">
+                        <div className="min-w-0 flex-1 font-mono break-all text-foreground">
+                          {searchQuery ? (
+                            <SearchHighlightText
+                              text={header.value}
+                              searchQuery={searchQuery}
+                            />
+                          ) : (
+                            <TruncatedText
+                              text={header.value}
+                              maxLength={300}
+                              showWarning={header.value.length > 300}
+                              showCopy={false}
+                            />
+                          )}
+                        </div>
+                        <CopyButton
+                          text={header.value}
+                          label="Copy header value"
+                          className="opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </TabsContent>
 
-          {/* Response Headers */}
-          <Section
-            title="Response Headers"
-            icon={<Download className="h-4 w-4 text-muted-foreground" />}
-          >
-            <div className="space-y-1">
-              {entry.response.headers.map((header, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 py-1.5"
+                <TabsContent
+                  value="response-content"
+                  className="mt-0 space-y-3"
                 >
-                  <span className="text-xs break-all font-mono text-muted-foreground">
-                    {header.name}:
-                  </span>
-                  <div className="text-xs font-mono break-all overflow-hidden">
-                    <TruncatedText
-                      text={header.value}
-                      maxLength={300}
-                      showWarning={header.value.length > 300}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Section>
-
-          {/* Request Body */}
-          {entry.request.postData && (
-            <Section
-              title="Request Body"
-              icon={<Code className="h-4 w-4 text-muted-foreground" />}
-            >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted-foreground">
-                    Type: {entry.request.postData.mimeType}
-                  </span>
-                  <CopyButton text={entry.request.postData.text} />
-                </div>
-                <ContentEditor
-                  content={entry.request.postData.text}
-                  mimeType={entry.request.postData.mimeType}
-                  height="300px"
-                />
+                  {entry.response.content.text && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          Response Content
+                        </div>
+                        <CopyButton text={entry.response.content.text} />
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {entry.response.content.mimeType}
+                      </div>
+                      {entry.response.content.mimeType.startsWith("image/") ? (
+                        <div className="flex items-center justify-center rounded-xl border border-border bg-background p-4">
+                          <img
+                            src={`data:${entry.response.content.mimeType};base64,${entry.response.content.text}`}
+                            alt="Response content"
+                            className="max-h-96 max-w-full object-contain"
+                          />
+                        </div>
+                      ) : (
+                        <ContentEditor
+                          content={entry.response.content.text}
+                          mimeType={entry.response.content.mimeType}
+                          height="320px"
+                        />
+                      )}
+                    </>
+                  )}
+                </TabsContent>
               </div>
-            </Section>
-          )}
-
-          {/* Response Content */}
-          {entry.response.content.text && (
-            <Section
-              title="Response Content"
-              icon={<FileText className="h-4 w-4 text-muted-foreground" />}
-            >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted-foreground">
-                    Type: {entry.response.content.mimeType}
-                  </span>
-                  <CopyButton text={entry.response.content.text} />
-                </div>
-                {entry.response.content.mimeType.startsWith("image/") ? (
-                  <div className="flex items-center justify-center p-4 bg-muted rounded-lg">
-                    <img
-                      src={`data:${entry.response.content.mimeType};base64,${entry.response.content.text}`}
-                      alt="Response image"
-                      className="max-w-full max-h-96 object-contain"
-                    />
-                  </div>
-                ) : (
-                  <ContentEditor
-                    content={entry.response.content.text}
-                    mimeType={entry.response.content.mimeType}
-                    height="400px"
-                  />
-                )}
-              </div>
-            </Section>
-          )}
+            </Tabs>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
