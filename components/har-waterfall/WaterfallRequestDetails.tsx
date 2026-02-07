@@ -22,7 +22,11 @@ type DetailTabKey =
   | "response-headers"
   | "response-content";
 
-const CopyButton: React.FC<{ text: string }> = ({ text }) => {
+const CopyButton: React.FC<{
+  text: string;
+  className?: string;
+  label?: string;
+}> = ({ text, className, label }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -35,8 +39,10 @@ const CopyButton: React.FC<{ text: string }> = ({ text }) => {
     <Button
       size="sm"
       variant="ghost"
-      className="h-6 w-6 p-0"
+      className={cn("h-6 w-6 p-0", className)}
       onClick={handleCopy}
+      aria-label={label ?? "Copy"}
+      title={label ?? "Copy"}
     >
       {copied ? (
         <Check className="h-3 w-3 text-green-500" />
@@ -262,7 +268,7 @@ export const WaterfallRequestDetails: React.FC<
 
   return (
     <div className="border-t border-border bg-foreground/5">
-      <div className="grid gap-6 px-6 py-6 lg:grid-cols-[minmax(0,1fr),minmax(0,1.2fr)]">
+      <div className="grid gap-6 px-6 py-6 lg:grid-cols-[minmax(0,0.9fr),minmax(0,1.35fr)]">
         <div className="space-y-4">
           <div className="rounded-2xl border border-border bg-background/80 p-4">
             <div className="flex flex-wrap items-center gap-3">
@@ -395,16 +401,26 @@ export const WaterfallRequestDetails: React.FC<
                   {entry.request.headers.map((header, index) => (
                     <div
                       key={index}
-                      className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 text-xs"
+                      className={cn(
+                        "group grid grid-cols-[240px,minmax(0,1fr)] gap-4 rounded-md px-2 py-1.5 text-xs",
+                        index % 2 === 1 ? "bg-muted" : "bg-transparent"
+                      )}
                     >
-                      <span className="break-all font-mono text-muted-foreground">
+                      <span className="flex items-center break-all font-mono text-muted-foreground">
                         {header.name}:
                       </span>
-                      <div className="font-mono break-all text-foreground">
-                        <TruncatedText
+                      <div className="flex min-w-0 items-center gap-2">
+                        <div className="min-w-0 flex-1 font-mono break-all text-foreground">
+                          <TruncatedText
+                            text={header.value}
+                            maxLength={300}
+                            showWarning={header.value.length > 300}
+                          />
+                        </div>
+                        <CopyButton
                           text={header.value}
-                          maxLength={300}
-                          showWarning={header.value.length > 300}
+                          label="Copy header value"
+                          className="opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100"
                         />
                       </div>
                     </div>
@@ -446,16 +462,26 @@ export const WaterfallRequestDetails: React.FC<
                   {entry.response.headers.map((header, index) => (
                     <div
                       key={index}
-                      className="grid grid-cols-[minmax(0,200px),minmax(0,1fr)] gap-4 text-xs"
+                      className={cn(
+                        "group grid grid-cols-[240px,minmax(0,1fr)] gap-4 rounded-md px-2 py-1.5 text-xs",
+                        index % 2 === 1 ? "bg-muted/60" : "bg-transparent"
+                      )}
                     >
-                      <span className="break-all font-mono text-muted-foreground">
+                      <span className="flex items-center break-all font-mono text-muted-foreground">
                         {header.name}:
                       </span>
-                      <div className="font-mono break-all text-foreground">
-                        <TruncatedText
+                      <div className="flex min-w-0 items-center gap-2">
+                        <div className="min-w-0 flex-1 font-mono break-all text-foreground">
+                          <TruncatedText
+                            text={header.value}
+                            maxLength={300}
+                            showWarning={header.value.length > 300}
+                          />
+                        </div>
+                        <CopyButton
                           text={header.value}
-                          maxLength={300}
-                          showWarning={header.value.length > 300}
+                          label="Copy header value"
+                          className="opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100"
                         />
                       </div>
                     </div>
