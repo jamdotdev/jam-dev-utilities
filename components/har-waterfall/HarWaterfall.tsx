@@ -120,6 +120,9 @@ const typeMetaMap: Record<FilterType, TypeMeta> = {
   },
 };
 
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
 export const HarWaterfall: React.FC<HarWaterfallProps> = ({
   entries,
   activeFilter,
@@ -258,9 +261,6 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
 
     return `${parts.join(", ")}. Total ${formatDuration(timing.totalTime)}.`;
   };
-
-  const clamp = (value: number, min: number, max: number) =>
-    Math.min(Math.max(value, min), max);
 
   const scheduleHoverUpdate = useCallback(
     (
@@ -489,24 +489,22 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
                           "hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
                         )}
                       >
-                        <div className="grid grid-cols-[110px,56px,90px,minmax(0,1.6fr),minmax(260px,2.4fr),80px] items-center gap-2 px-4 py-2">
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={cn(
-                                  "h-2 w-2 rounded-full",
-                                  isError ? "bg-red-500" : "bg-emerald-500"
-                                )}
-                              />
-                              <span
-                                className={cn(
-                                  "text-[13px] font-semibold tabular-nums",
-                                  isError ? "text-red-500" : "text-emerald-500"
-                                )}
-                              >
-                                {entry.response.status}
-                              </span>
-                            </div>
+                        <div className="grid grid-cols-[110px,56px,90px,minmax(0,1.6fr),minmax(260px,2.4fr),80px] items-center gap-2 px-4 py-1">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={cn(
+                                "h-2 w-2 rounded-full",
+                                isError ? "bg-red-500" : "bg-emerald-500"
+                              )}
+                            />
+                            <span
+                              className={cn(
+                                "text-[13px] font-semibold tabular-nums",
+                                isError ? "text-red-500" : "text-emerald-500"
+                              )}
+                            >
+                              {entry.response.status}
+                            </span>
                             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
                               {entry.request.method}
                             </span>
@@ -526,17 +524,17 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
                                   <TooltipTrigger asChild>
                                     <span
                                       className={cn(
-                                        "inline-flex h-7 w-7 items-center justify-center rounded-full ring-1",
+                                        "inline-flex h-6 w-6 items-center justify-center rounded-full ring-1",
                                         typeMeta.className
                                       )}
                                       aria-label={ariaLabel}
                                     >
-                                      <TypeIcon className="h-3.5 w-3.5" />
+                                      <TypeIcon className="h-3 w-3" />
                                     </span>
                                   </TooltipTrigger>
                                   <TooltipContent
                                     side="top"
-                                    className="text-xs"
+                                    className="text-xs text-center"
                                   >
                                     {typeMeta.label}
                                   </TooltipContent>
@@ -558,34 +556,36 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
                           </div>
 
                           <div className="min-w-0" title={entry.request.url}>
-                            <div className="text-[11px] text-muted-foreground">
-                              {searchQuery ? (
-                                <SearchHighlightText
-                                  text={url.hostname}
-                                  searchQuery={searchQuery}
-                                />
-                              ) : (
-                                url.hostname
-                              )}
-                            </div>
-                            <div className="flex min-w-0 items-center gap-2">
-                              <span className="truncate text-[13px] font-medium text-foreground">
+                            <>
+                              <div className="text-[10px] tracking-wide text-muted-foreground">
                                 {searchQuery ? (
                                   <SearchHighlightText
-                                    text={displayPath}
+                                    text={url.hostname}
                                     searchQuery={searchQuery}
                                   />
                                 ) : (
-                                  displayPath
+                                  url.hostname
                                 )}
-                              </span>
-                              {searchQuery && matchInfo.hasMatch && (
-                                <MatchIndicators
-                                  categories={matchInfo.categories}
-                                  className="flex-shrink-0"
-                                />
-                              )}
-                            </div>
+                              </div>
+                              <div className="flex min-w-0 items-center gap-2">
+                                <span className="truncate text-[12px] font-medium text-foreground">
+                                  {searchQuery ? (
+                                    <SearchHighlightText
+                                      text={displayPath}
+                                      searchQuery={searchQuery}
+                                    />
+                                  ) : (
+                                    displayPath
+                                  )}
+                                </span>
+                                {searchQuery && matchInfo.hasMatch && (
+                                  <MatchIndicators
+                                    categories={matchInfo.categories}
+                                    className="flex-shrink-0"
+                                  />
+                                )}
+                              </div>
+                            </>
                           </div>
 
                           <div className="relative">
@@ -599,9 +599,9 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
                                   key={`${segment.key}-${index}`}
                                   className={cn(
                                     "absolute h-full",
-                                    segmentIndex === 0 && "rounded-l-full",
+                                    segmentIndex === 0 && "rounded-l-[3px]",
                                     segmentIndex === lastSegmentIndex &&
-                                      "rounded-r-full"
+                                      "rounded-r-[3px]"
                                   )}
                                   style={{
                                     left: `${segment.left}%`,
