@@ -5,38 +5,34 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - check: "install"
+            name: Install dependencies
+          - check: "run format:check"
+            name: Run Prettier
+          - check: "run lint"
+            name: Run ESLint
+          - check: "run build"
+            name: Build project
+          - check: "test"
+            name: Run tests
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Cache Node.js modules
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6.2.0
         with:
           node-version: 20.9.0
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run Prettier
-        run: npm run format:check
-
-      - name: Run ESLint
-        run: npm run lint
-
-      - name: Build project
-        run: npm run build
-
-      - name: Run tests
-        run: npm test
+      - name: ${{ matrix.name }}
+        run: npm ${{ matrix.check }}
