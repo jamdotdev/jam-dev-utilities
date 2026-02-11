@@ -11,6 +11,17 @@ Thanks for contributing! Any contributions you make are greatly appreciated (and
 5. Write tests to cover your changes and ensure they pass by running `npm run test`.
 6. Commit your changes with a clear and concise commit message. Follow good Git commit message practices, such as using prefixes like `fix`, `feat`, `chore`, `test`, etc.
 
+## Testing
+
+- Unit/UI tests: `npm run test`
+- E2E tests (Playwright): `npm run test:e2e`
+- Optional UI runner: `npm run test:e2e:ui`
+
+When adding a new utility, prefer:
+- One Jest UI smoke test (render + heading).
+- One unit test for the conversion utility (if it lives in `components/utils`).
+- One Playwright E2E flow using fixtures under `tests/fixtures`.
+
 ## Submitting a Pull Request
 
 1. Push your branch to your forked repository.
