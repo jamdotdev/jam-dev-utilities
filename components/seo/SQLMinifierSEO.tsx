@@ -6,9 +6,11 @@ export default function SQLMinifierSEO() {
         <p>
           Transform your SQL queries with our free online SQL minifier tool.
           Instantly remove comments, unnecessary whitespace, and line breaks to
-          create compact, optimized SQL code. Perfect for reducing query size by
-          up to 50% while maintaining full functionality. Works with MySQL,
-          PostgreSQL, SQL Server, Oracle, and SQLite.
+          create compact, optimized SQL code. Generate AI-assisted summaries and
+          risk flags to quickly understand what a query does before you ship it.
+          Perfect for reducing query size by up to 50% while maintaining full
+          functionality. Works with MySQL, PostgreSQL, SQL Server, Oracle, and
+          SQLite.
         </p>
       </section>
 
@@ -39,6 +41,12 @@ export default function SQLMinifierSEO() {
             SQL minification removes all unnecessary characters including
             comments (-- and /* */), extra spaces, tabs, and line breaks while
             preserving the exact query logic and results.
+          </li>
+          <li>
+            <b>Can I get a plain-English summary of my SQL?</b>
+            <br />
+            Yes. Add your API key and generate a concise human summary plus
+            common risk flags like missing WHERE clauses or expensive joins.
           </li>
           <li>
             <b>How much can SQL minification improve performance?</b>
