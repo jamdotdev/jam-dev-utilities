@@ -18,6 +18,12 @@ export const tools = [
     link: "/utilities/json-formatter",
   },
   {
+    title: "JSONL Validator",
+    description:
+      "Validate JSON Lines instantly, find broken rows by line number, and convert valid records to a clean JSON array.",
+    link: "/utilities/jsonl-validator",
+  },
+  {
     title: "YAML to JSON",
     description:
       "Easily convert YAML to JSON with our converter. Useful when you're working with configuration files and need to switch between them.",

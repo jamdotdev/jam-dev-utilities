@@ -53,6 +53,7 @@ Here is the list of all utilities:
 - [Internet Speed Test](https://jam.dev/utilities/internet-speed-test)
 - [Random String Generator](https://jam.dev/utilities/random-string-generator)
 - [CSV file viewer](https://jam.dev/utilities/csv-file-viewer)
+- [JSONL Validator](https://jam.dev/utilities/jsonl-validator)
 
 ### Built With
 
