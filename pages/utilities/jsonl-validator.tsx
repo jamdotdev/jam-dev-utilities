@@ -169,7 +169,7 @@ export default function JsonlValidator() {
       <section className="container max-w-4xl mb-12">
         <PageHeader
           title="JSONL Validator"
-          description="Validate JSONL for AI datasets, logs, and event streams. Fix broken rows fast and export clean JSON."
+          description="Validate JSONL for AI datasets, logs, and event streams."
         />
       </section>
 
