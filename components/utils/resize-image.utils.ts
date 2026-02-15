@@ -244,15 +244,44 @@ export function calculateCropDimensions(
   currentImageRef: HTMLImageElement,
   cropRect: { x: number; y: number; width: number; height: number }
 ): CropDimensions {
-  const scaleX = img.width / currentImageRef.clientWidth;
-  const scaleY = img.height / currentImageRef.clientHeight;
+  const imageRect = currentImageRef.getBoundingClientRect();
+  const renderedWidth = imageRect.width || currentImageRef.clientWidth;
+  const renderedHeight = imageRect.height || currentImageRef.clientHeight;
 
-  const x = Math.min(cropRect.x, cropRect.x + cropRect.width) * scaleX;
-  const y = Math.min(cropRect.y, cropRect.y + cropRect.height) * scaleY;
-  const width = Math.abs(cropRect.width) * scaleX;
-  const height = Math.abs(cropRect.height) * scaleY;
+  const sourceWidth =
+    img.naturalWidth || currentImageRef.naturalWidth || img.width;
+  const sourceHeight =
+    img.naturalHeight || currentImageRef.naturalHeight || img.height;
 
-  return { x, y, width, height };
+  if (!renderedWidth || !renderedHeight || !sourceWidth || !sourceHeight) {
+    return { x: 0, y: 0, width: 0, height: 0 };
+  }
+
+  const scaleX = sourceWidth / renderedWidth;
+  const scaleY = sourceHeight / renderedHeight;
+
+  const normalizedX = Math.min(cropRect.x, cropRect.x + cropRect.width);
+  const normalizedY = Math.min(cropRect.y, cropRect.y + cropRect.height);
+  const normalizedWidth = Math.abs(cropRect.width);
+  const normalizedHeight = Math.abs(cropRect.height);
+
+  const x = Math.max(0, Math.min(normalizedX * scaleX, sourceWidth));
+  const y = Math.max(0, Math.min(normalizedY * scaleY, sourceHeight));
+  const width = Math.max(
+    0,
+    Math.min(normalizedWidth * scaleX, sourceWidth - x)
+  );
+  const height = Math.max(
+    0,
+    Math.min(normalizedHeight * scaleY, sourceHeight - y)
+  );
+
+  return {
+    x: Math.round(x),
+    y: Math.round(y),
+    width: Math.round(width),
+    height: Math.round(height),
+  };
 }
 interface CropRect {
   x: number;

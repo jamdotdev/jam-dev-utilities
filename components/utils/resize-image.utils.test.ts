@@ -171,6 +171,8 @@ describe("Image Processing Functions", () => {
 
   it("should calculate the crop dimensions correctly", () => {
     const imgMock = {
+      naturalWidth: 1000,
+      naturalHeight: 500,
       width: 1000,
       height: 500,
     } as HTMLImageElement;
@@ -178,7 +180,11 @@ describe("Image Processing Functions", () => {
     const currentImageRefMock = {
       clientWidth: 500,
       clientHeight: 250,
-    } as HTMLImageElement;
+      getBoundingClientRect: jest.fn(() => ({
+        width: 500,
+        height: 250,
+      })),
+    } as unknown as HTMLImageElement;
 
     const cropRect = { x: 50, y: 50, width: 100, height: 50 };
 
@@ -198,6 +204,8 @@ describe("Image Processing Functions", () => {
 
   it("should handle negative width and height values in cropRect", () => {
     const imgMock = {
+      naturalWidth: 1000,
+      naturalHeight: 500,
       width: 1000,
       height: 500,
     } as HTMLImageElement;
@@ -205,7 +213,11 @@ describe("Image Processing Functions", () => {
     const currentImageRefMock = {
       clientWidth: 500,
       clientHeight: 250,
-    } as HTMLImageElement;
+      getBoundingClientRect: jest.fn(() => ({
+        width: 500,
+        height: 250,
+      })),
+    } as unknown as HTMLImageElement;
 
     const cropRect = { x: 150, y: 150, width: -100, height: -50 };
 
@@ -220,6 +232,39 @@ describe("Image Processing Functions", () => {
       y: 200,
       width: 200,
       height: 100,
+    });
+  });
+
+  it("should clamp crop dimensions to image boundaries", () => {
+    const imgMock = {
+      naturalWidth: 1000,
+      naturalHeight: 500,
+      width: 1000,
+      height: 500,
+    } as HTMLImageElement;
+
+    const currentImageRefMock = {
+      clientWidth: 500,
+      clientHeight: 250,
+      getBoundingClientRect: jest.fn(() => ({
+        width: 500,
+        height: 250,
+      })),
+    } as unknown as HTMLImageElement;
+
+    const cropRect = { x: -10, y: -20, width: 600, height: 400 };
+
+    const result = calculateCropDimensions(
+      imgMock,
+      currentImageRefMock,
+      cropRect
+    );
+
+    expect(result).toEqual({
+      x: 0,
+      y: 0,
+      width: 1000,
+      height: 500,
     });
   });
 
