@@ -108,6 +108,12 @@ export const tools = [
     link: "/utilities/regex-tester",
   },
   {
+    title: "AI Regex Generator",
+    description:
+      "Generate regex patterns from natural language with your own API key. Get explanations and examples instantly.",
+    link: "/utilities/ai-regex-generator",
+  },
+  {
     title: "CSS Units Converter",
     description:
       "Easily convert px to rem with our simple CSS unit converter. Quickly transform pixel values to rem units for better scalability and accessibility.",

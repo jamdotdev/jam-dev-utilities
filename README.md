@@ -41,6 +41,7 @@ Here is the list of all utilities:
 - [Number Base Changer](https://jam.dev/utilities/number-base-changer)
 - [CSS Inliner for Email](https://jam.dev/utilities/css-inliner-for-email)
 - [Regex Tester](https://jam.dev/utilities/regex-tester)
+- [AI Regex Generator](https://jam.dev/utilities/ai-regex-generator)
 - [Image Resizer](https://jam.dev/utilities/image-resizer)
 - [CSS Units Converter](https://jam.dev/utilities/css-units-converter)
 - [JWT Parser](https://jam.dev/utilities/jwt-parser)
