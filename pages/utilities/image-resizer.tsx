@@ -122,7 +122,6 @@ export default function ImageResize() {
 
   const [isCropping, setIsCropping] = useState(false);
   const [cropRect, setCropRect] = useState<CropRect | null>(null);
-  const [isOriginalOutput, setIsOriginalOutput] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const animationTimeoutRef = useRef<number | null>(null);
   const outputObjectUrlRef = useRef<string | null>(null);
@@ -208,7 +207,6 @@ export default function ImageResize() {
           height: originalHeight,
           format: undefined,
         });
-        setIsOriginalOutput(true);
         setOutputAndShowAnimation(objectUrl);
       };
       img.onerror = () => {
@@ -285,13 +283,24 @@ export default function ImageResize() {
       if (nextOutput.startsWith("blob:")) {
         outputObjectUrlRef.current = nextOutput;
       }
-      setIsOriginalOutput(false);
       setOutputAndShowAnimation(nextOutput);
     },
     [releaseOutputObjectUrl, setOutputAndShowAnimation]
   );
 
-  const handleResize = useCallback(() => {
+  const triggerDownload = useCallback(
+    (url: string) => {
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `resized-image.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
+    [format]
+  );
+
+  const handleResizeAndDownload = useCallback(() => {
     if (output) {
       handleResizeImage({
         source: output,
@@ -300,9 +309,10 @@ export default function ImageResize() {
         preserveAspectRatio,
         quality,
         width,
-        setOutput: (output) => {
-          commitTransformedOutput(output);
+        setOutput: (resizedOutput) => {
+          commitTransformedOutput(resizedOutput);
           setResizedImageInfo({ width, height, format, quality });
+          triggerDownload(resizedOutput);
         },
       });
     }
@@ -314,6 +324,7 @@ export default function ImageResize() {
     format,
     quality,
     preserveAspectRatio,
+    triggerDownload,
   ]);
 
   const resizedLabel = (() => {
@@ -777,25 +788,6 @@ export default function ImageResize() {
     ]
   );
 
-  const cropSelectionLabel = (() => {
-    if (!cropRect) {
-      return "";
-    }
-
-    return `x:${Math.round(cropRect.x)} y:${Math.round(cropRect.y)}  ${Math.round(
-      cropRect.width
-    )}x${Math.round(cropRect.height)}`;
-  })();
-
-  const downloadExtension = (() => {
-    if (!isOriginalOutput || !imageFile) {
-      return format;
-    }
-
-    const fileNamePart = imageFile.name.split(".").pop()?.toLowerCase();
-    return fileNamePart || format;
-  })();
-
   return (
     <main>
       <Meta
@@ -898,14 +890,6 @@ export default function ImageResize() {
             <div
               className={cn(imageFile && "mb-4", "flex w-full flex-wrap gap-3")}
             >
-              <Button
-                className="flex flex-1 min-w-[140px]"
-                onClick={handleResize}
-                disabled={!imageFile || isCropping}
-              >
-                Resize
-              </Button>
-
               {!isCropping && (
                 <Button
                   className="flex flex-1 min-w-[140px]"
@@ -919,39 +903,24 @@ export default function ImageResize() {
               )}
 
               {isCropping && (
-                <>
-                  <Button
-                    className="flex flex-1 min-w-[140px]"
-                    onClick={handleCropModeToggle}
-                    variant="outline"
-                  >
-                    Exit Crop Mode
-                  </Button>
-                </>
+                <Button
+                  className="flex flex-1 min-w-[140px]"
+                  onClick={handleCropModeToggle}
+                  variant="outline"
+                >
+                  Exit Crop Mode
+                </Button>
               )}
 
               <Button
-                disabled={!imageFile}
-                variant="outline"
                 className="flex flex-1 min-w-[140px]"
+                onClick={handleResizeAndDownload}
+                disabled={!imageFile || isCropping}
               >
                 <DownloadIcon className="h-4 w-4 mr-2" />
-                <a
-                  className={cn(!imageFile && "pointer-events-none")}
-                  href={output}
-                  download={`resized-image.${downloadExtension}`}
-                >
-                  Download Image
-                </a>
+                Resize & Download
               </Button>
             </div>
-            {isCropping && (
-              <p className="mb-4 text-sm text-muted-foreground">
-                Crop mode is active. Drag inside the box to move it, use handles
-                to resize, then click Done in the crop box.
-                {cropSelectionLabel ? ` Current: ${cropSelectionLabel}` : ""}
-              </p>
-            )}
 
             {output && (
               <>
@@ -983,6 +952,7 @@ export default function ImageResize() {
                       {isCropping && cropRect && (
                         <CropOverlayComponent
                           cropRect={cropRect}
+                          onCancel={handleCropModeToggle}
                           onDone={handleApplyCrop}
                         />
                       )}

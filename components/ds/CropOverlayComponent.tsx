@@ -2,11 +2,13 @@
 interface CropOverlayProps {
   cropRect: { x: number; y: number; width: number; height: number } | null;
   onDone?: () => void;
+  onCancel?: () => void;
 }
 
 const CropOverlayComponent: React.FC<CropOverlayProps> = ({
   cropRect,
   onDone,
+  onCancel,
 }) => {
   if (!cropRect) return null;
 
@@ -38,19 +40,37 @@ const CropOverlayComponent: React.FC<CropOverlayProps> = ({
         className="absolute inset-0 pointer-events-auto cursor-move bg-transparent"
       />
 
-      {onDone && (
-        <button
-          type="button"
-          data-crop-action="done"
-          onPointerDown={(event) => event.stopPropagation()}
-          onClick={(event) => {
-            event.stopPropagation();
-            onDone();
-          }}
-          className="absolute right-2 top-2 pointer-events-auto rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          Done
-        </button>
+      {(onCancel || onDone) && (
+        <div className="absolute right-2 top-2 pointer-events-auto flex gap-1.5">
+          {onCancel && (
+            <button
+              type="button"
+              data-crop-action="cancel"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onCancel();
+              }}
+              className="rounded-md bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground shadow-sm hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Cancel
+            </button>
+          )}
+          {onDone && (
+            <button
+              type="button"
+              data-crop-action="done"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onDone();
+              }}
+              className="rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Done
+            </button>
+          )}
+        </div>
       )}
 
       <div
