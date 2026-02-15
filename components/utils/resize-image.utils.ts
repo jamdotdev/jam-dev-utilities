@@ -8,6 +8,25 @@ interface ResizeImageOptions {
   preserveAspectRatio?: boolean;
 }
 
+const canvasToObjectUrl = (
+  canvas: HTMLCanvasElement,
+  format: Format,
+  quality?: number
+) =>
+  new Promise<string>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error("Canvas blob generation failed"));
+          return;
+        }
+        resolve(URL.createObjectURL(blob));
+      },
+      `image/${format}`,
+      quality
+    );
+  });
+
 export function resizeImage({
   img,
   format,
@@ -17,15 +36,15 @@ export function resizeImage({
   width,
 }: ResizeImageOptions): Promise<string> {
   return new Promise((resolve, reject) => {
+    const normalizedFormat: Format = format ?? "png";
+
     if (format === "svg") {
       const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="${width || img.width}" height="${height || img.height}" viewBox="0 0 ${img.width} ${img.height}">
           <image href="${img.src}" width="${img.width}" height="${img.height}" />
         </svg>`;
       const svgBlob = new Blob([svg], { type: "image/svg+xml" });
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.readAsDataURL(svgBlob);
+      resolve(URL.createObjectURL(svgBlob));
       return;
     }
 
@@ -66,13 +85,14 @@ export function resizeImage({
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    const dataURL = canvas.toDataURL(`image/${format}`, quality);
-    resolve(dataURL);
+    canvasToObjectUrl(canvas, normalizedFormat, quality)
+      .then(resolve)
+      .catch(reject);
   });
 }
 
 interface ProcessImageFileOptions {
-  file: File;
+  source: File;
   setWidth: (width: number) => void;
   setHeight: (height: number) => void;
   setOutput: (output: string) => void;
@@ -83,7 +103,7 @@ interface ProcessImageFileOptions {
 }
 
 export const processImageFile = ({
-  file,
+  source,
   format,
   preserveAspectRatio,
   quality,
@@ -92,73 +112,104 @@ export const processImageFile = ({
   setWidth,
   done,
 }: ProcessImageFileOptions) => {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.src = e.target?.result as string;
-    img.onload = () => {
-      setWidth(img.width);
-      setHeight(img.height);
-      resizeImage({
-        img,
-        width: img.width,
-        height: img.height,
-        format,
-        quality,
-        preserveAspectRatio,
-      })
-        .then(setOutput)
-        .catch((error) => console.error(error))
-        .finally(() => {
-          if (done) {
-            done();
-          }
-        });
-    };
+  const img = new Image();
+  const handleLoad = () => {
+    setWidth(img.width);
+    setHeight(img.height);
+    resizeImage({
+      img,
+      width: img.width,
+      height: img.height,
+      format,
+      quality,
+      preserveAspectRatio,
+    })
+      .then(setOutput)
+      .catch((error) => console.error(error))
+      .finally(() => {
+        if (done) {
+          done();
+        }
+      });
   };
-  reader.readAsDataURL(file);
+
+  if (typeof source === "string") {
+    img.src = source;
+    img.onload = handleLoad;
+  } else {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.src = e.target?.result as string;
+      img.onload = handleLoad;
+    };
+    reader.readAsDataURL(source);
+  }
 };
 
 interface UpdateWidthOptions {
   height: number;
-  file: File;
+  source: File | string;
   setWidth: (width: number) => void;
 }
 
-export const updateWidth = ({ file, height, setWidth }: UpdateWidthOptions) => {
+export const updateWidth = ({
+  source,
+  height,
+  setWidth,
+}: UpdateWidthOptions) => {
   const img = new Image();
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    img.src = e.target?.result as string;
-    img.onload = () => {
-      const newWidth = Math.round(height * (img.width / img.height));
-      setWidth(newWidth);
-    };
+
+  const handleLoad = () => {
+    const newWidth = Math.round(height * (img.width / img.height));
+    setWidth(newWidth);
   };
-  reader.readAsDataURL(file);
+
+  if (typeof source === "string") {
+    img.src = source;
+    img.onload = handleLoad;
+  } else {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.src = e.target?.result as string;
+      img.onload = handleLoad;
+    };
+    reader.readAsDataURL(source);
+  }
 };
 
-interface UpdateWidthOption {
+interface UpdateHeightOptions {
   width: number;
-  file: File;
+  source: File | string;
   setHeight: (height: number) => void;
 }
 
-export const updateHeight = ({ file, setHeight, width }: UpdateWidthOption) => {
+export const updateHeight = ({
+  source,
+  setHeight,
+  width,
+}: UpdateHeightOptions) => {
   const img = new Image();
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    img.src = e.target?.result as string;
-    img.onload = () => {
-      const newHeight = Math.round(width / (img.width / img.height));
-      setHeight(newHeight);
-    };
+
+  const handleLoad = () => {
+    const newHeight = Math.round(width / (img.width / img.height));
+    setHeight(newHeight);
   };
-  reader.readAsDataURL(file);
+
+  if (typeof source === "string") {
+    img.src = source;
+    img.onload = handleLoad;
+  } else {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.src = e.target?.result as string;
+      img.onload = handleLoad;
+    };
+    reader.readAsDataURL(source);
+  }
 };
 
 interface HandleResizeImage {
-  file: File;
+  source: File | string;
   width: number | undefined;
   height: number | undefined;
   format: Format;
@@ -168,7 +219,7 @@ interface HandleResizeImage {
 }
 
 export const handleResizeImage = ({
-  file,
+  source,
   format,
   height,
   preserveAspectRatio,
@@ -176,20 +227,97 @@ export const handleResizeImage = ({
   setOutput,
   width,
 }: HandleResizeImage) => {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.src = e.target?.result as string;
-    img.onload = () => {
-      resizeImage({
-        img,
-        width,
-        height,
-        format,
-        quality,
-        preserveAspectRatio,
-      }).then(setOutput);
-    };
+  const img = new Image();
+  const handleLoad = () => {
+    resizeImage({
+      img,
+      width,
+      height,
+      format,
+      quality,
+      preserveAspectRatio,
+    }).then(setOutput);
   };
-  reader.readAsDataURL(file);
+
+  if (typeof source === "string") {
+    img.src = source;
+    img.onload = handleLoad;
+  } else {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.src = e.target?.result as string;
+      img.onload = handleLoad;
+    };
+    reader.readAsDataURL(source);
+  }
 };
+
+interface CropDimensions {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export function calculateCropDimensions(
+  img: HTMLImageElement,
+  currentImageRef: HTMLImageElement,
+  cropRect: { x: number; y: number; width: number; height: number }
+): CropDimensions {
+  const imageRect = currentImageRef.getBoundingClientRect();
+  const renderedWidth = imageRect.width || currentImageRef.clientWidth;
+  const renderedHeight = imageRect.height || currentImageRef.clientHeight;
+
+  const sourceWidth =
+    img.naturalWidth || currentImageRef.naturalWidth || img.width;
+  const sourceHeight =
+    img.naturalHeight || currentImageRef.naturalHeight || img.height;
+
+  if (!renderedWidth || !renderedHeight || !sourceWidth || !sourceHeight) {
+    return { x: 0, y: 0, width: 0, height: 0 };
+  }
+
+  const scaleX = sourceWidth / renderedWidth;
+  const scaleY = sourceHeight / renderedHeight;
+
+  const normalizedX = Math.min(cropRect.x, cropRect.x + cropRect.width);
+  const normalizedY = Math.min(cropRect.y, cropRect.y + cropRect.height);
+  const normalizedWidth = Math.abs(cropRect.width);
+  const normalizedHeight = Math.abs(cropRect.height);
+
+  const x = Math.max(0, Math.min(normalizedX * scaleX, sourceWidth));
+  const y = Math.max(0, Math.min(normalizedY * scaleY, sourceHeight));
+  const width = Math.max(
+    0,
+    Math.min(normalizedWidth * scaleX, sourceWidth - x)
+  );
+  const height = Math.max(
+    0,
+    Math.min(normalizedHeight * scaleY, sourceHeight - y)
+  );
+
+  return {
+    x: Math.round(x),
+    y: Math.round(y),
+    width: Math.round(width),
+    height: Math.round(height),
+  };
+}
+interface CropRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export function isPointInCropRect(
+  x: number,
+  y: number,
+  cropRect: CropRect
+): boolean {
+  const rectLeft = Math.min(cropRect.x, cropRect.x + cropRect.width);
+  const rectTop = Math.min(cropRect.y, cropRect.y + cropRect.height);
+  const rectRight = rectLeft + Math.abs(cropRect.width);
+  const rectBottom = rectTop + Math.abs(cropRect.height);
+  return x >= rectLeft && x <= rectRight && y >= rectTop && y <= rectBottom;
+}

@@ -1,5 +1,7 @@
 import {
+  calculateCropDimensions,
   handleResizeImage,
+  isPointInCropRect,
   processImageFile,
   resizeImage,
   updateHeight,
@@ -15,11 +17,19 @@ describe("Image Processing Functions", () => {
     canvasMock = document.createElement("canvas");
     ctxMock = {
       drawImage: jest.fn(),
-      toDataURL: jest.fn().mockReturnValue("data:image/png;base64,MOCK_DATA"),
     } as unknown as CanvasRenderingContext2D;
 
     jest.spyOn(document, "createElement").mockReturnValue(canvasMock);
     jest.spyOn(canvasMock, "getContext").mockReturnValue(ctxMock);
+    jest
+      .spyOn(canvasMock, "toBlob")
+      .mockImplementation((callback: BlobCallback) => {
+        callback(new Blob(["MOCK_DATA"], { type: "image/png" }));
+      });
+    Object.defineProperty(URL, "createObjectURL", {
+      writable: true,
+      value: jest.fn(() => "blob:mock-url"),
+    });
 
     jest.spyOn(window, "FileReader").mockImplementation(
       () =>
@@ -59,7 +69,7 @@ describe("Image Processing Functions", () => {
       quality: 1,
     });
 
-    expect(result).toMatch(/^data:image\/png;base64,/);
+    expect(result).toMatch(/^blob:/);
     expect(ctxMock.drawImage).toHaveBeenCalledWith(img, 0, 0, 500, 250);
   });
 
@@ -74,7 +84,7 @@ describe("Image Processing Functions", () => {
       quality: 0.8,
     });
 
-    expect(result).toMatch(/^data:image\/jpeg;base64,/);
+    expect(result).toMatch(/^blob:/);
     expect(ctxMock.drawImage).toHaveBeenCalledWith(img, 0, 0, 500, 250);
   });
 
@@ -97,7 +107,7 @@ describe("Image Processing Functions", () => {
     const setOutput = jest.fn();
 
     processImageFile({
-      file: mockFile,
+      source: mockFile,
       format: "jpeg",
       preserveAspectRatio: true,
       quality: 0.8,
@@ -107,9 +117,7 @@ describe("Image Processing Functions", () => {
       done: () => {
         expect(setWidth).toHaveBeenCalledWith(1000);
         expect(setHeight).toHaveBeenCalledWith(500);
-        expect(setOutput).toHaveBeenCalledWith(
-          expect.stringMatching(/^data:image\/jpeg;base64,/)
-        );
+        expect(setOutput).toHaveBeenCalledWith(expect.stringMatching(/^blob:/));
         done();
       },
     });
@@ -121,7 +129,7 @@ describe("Image Processing Functions", () => {
     });
     const setWidth = jest.fn();
 
-    updateWidth({ file: mockFile, height: 200, setWidth });
+    updateWidth({ source: mockFile, height: 200, setWidth });
 
     setTimeout(() => {
       expect(setWidth).toHaveBeenCalledWith(400);
@@ -135,7 +143,7 @@ describe("Image Processing Functions", () => {
     });
     const setHeight = jest.fn();
 
-    updateHeight({ file: mockFile, width: 300, setHeight });
+    updateHeight({ source: mockFile, width: 300, setHeight });
 
     setTimeout(() => {
       expect(setHeight).toHaveBeenCalledWith(150);
@@ -150,7 +158,7 @@ describe("Image Processing Functions", () => {
     const setOutput = jest.fn();
 
     handleResizeImage({
-      file: mockFile,
+      source: mockFile,
       format: "jpeg",
       height: 400,
       width: 600,
@@ -160,10 +168,128 @@ describe("Image Processing Functions", () => {
     });
 
     setTimeout(() => {
-      expect(setOutput).toHaveBeenCalledWith(
-        expect.stringMatching(/^data:image\/jpeg;base64,/)
-      );
+      expect(setOutput).toHaveBeenCalledWith(expect.stringMatching(/^blob:/));
       done();
     }, 0);
+  });
+
+  it("should calculate the crop dimensions correctly", () => {
+    const imgMock = {
+      naturalWidth: 1000,
+      naturalHeight: 500,
+      width: 1000,
+      height: 500,
+    } as HTMLImageElement;
+
+    const currentImageRefMock = {
+      clientWidth: 500,
+      clientHeight: 250,
+      getBoundingClientRect: jest.fn(() => ({
+        width: 500,
+        height: 250,
+      })),
+    } as unknown as HTMLImageElement;
+
+    const cropRect = { x: 50, y: 50, width: 100, height: 50 };
+
+    const result = calculateCropDimensions(
+      imgMock,
+      currentImageRefMock,
+      cropRect
+    );
+
+    expect(result).toEqual({
+      x: 100,
+      y: 100,
+      width: 200,
+      height: 100,
+    });
+  });
+
+  it("should handle negative width and height values in cropRect", () => {
+    const imgMock = {
+      naturalWidth: 1000,
+      naturalHeight: 500,
+      width: 1000,
+      height: 500,
+    } as HTMLImageElement;
+
+    const currentImageRefMock = {
+      clientWidth: 500,
+      clientHeight: 250,
+      getBoundingClientRect: jest.fn(() => ({
+        width: 500,
+        height: 250,
+      })),
+    } as unknown as HTMLImageElement;
+
+    const cropRect = { x: 150, y: 150, width: -100, height: -50 };
+
+    const result = calculateCropDimensions(
+      imgMock,
+      currentImageRefMock,
+      cropRect
+    );
+
+    expect(result).toEqual({
+      x: 100,
+      y: 200,
+      width: 200,
+      height: 100,
+    });
+  });
+
+  it("should clamp crop dimensions to image boundaries", () => {
+    const imgMock = {
+      naturalWidth: 1000,
+      naturalHeight: 500,
+      width: 1000,
+      height: 500,
+    } as HTMLImageElement;
+
+    const currentImageRefMock = {
+      clientWidth: 500,
+      clientHeight: 250,
+      getBoundingClientRect: jest.fn(() => ({
+        width: 500,
+        height: 250,
+      })),
+    } as unknown as HTMLImageElement;
+
+    const cropRect = { x: -10, y: -20, width: 600, height: 400 };
+
+    const result = calculateCropDimensions(
+      imgMock,
+      currentImageRefMock,
+      cropRect
+    );
+
+    expect(result).toEqual({
+      x: 0,
+      y: 0,
+      width: 1000,
+      height: 500,
+    });
+  });
+
+  const cropRect = { x: 50, y: 50, width: 100, height: 50 };
+
+  it("should return true for a point inside the crop rectangle", () => {
+    const result = isPointInCropRect(75, 75, cropRect);
+    expect(result).toBe(true);
+  });
+
+  it("should return false for a point outside the crop rectangle", () => {
+    const result = isPointInCropRect(200, 200, cropRect);
+    expect(result).toBe(false);
+  });
+
+  it("should handle negative width and height in crop rectangle", () => {
+    const cropRectNegative = { x: 150, y: 150, width: -100, height: -50 };
+    const result = isPointInCropRect(75, 75, cropRectNegative);
+    expect(result).toBe(false);
+
+    const resultInside = isPointInCropRect(125, 125, cropRectNegative);
+    expect(resultInside).toBe(true);
   });
 });
