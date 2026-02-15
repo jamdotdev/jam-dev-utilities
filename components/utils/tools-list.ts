@@ -185,4 +185,10 @@ export const tools = [
       "View, search, and filter CSV, TSV or LOG files with color-coded severity levels. Quickly scan through logs with Datadog-inspired faceted filtering.",
     link: "/utilities/csv-file-viewer",
   },
+  {
+    title: "JSON to TypeScript",
+    description:
+      "Instantly generate TypeScript interfaces and types from any JSON. Paste an API response and get clean, ready-to-use TypeScript types.",
+    link: "/utilities/json-to-typescript",
+  },
 ];
