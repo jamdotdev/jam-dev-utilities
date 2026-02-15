@@ -108,6 +108,12 @@ export const tools = [
     link: "/utilities/regex-tester",
   },
   {
+    title: "Prompt Migrator",
+    description:
+      "Convert prompts across OpenAI, Anthropic, Gemini, Mistral, and Azure OpenAI formats with optional BYOK AI rewrite.",
+    link: "/utilities/prompt-migrator",
+  },
+  {
     title: "CSS Units Converter",
     description:
       "Easily convert px to rem with our simple CSS unit converter. Quickly transform pixel values to rem units for better scalability and accessibility.",
