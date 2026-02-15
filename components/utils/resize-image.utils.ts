@@ -8,6 +8,25 @@ interface ResizeImageOptions {
   preserveAspectRatio?: boolean;
 }
 
+const canvasToObjectUrl = (
+  canvas: HTMLCanvasElement,
+  format: Format,
+  quality?: number
+) =>
+  new Promise<string>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error("Canvas blob generation failed"));
+          return;
+        }
+        resolve(URL.createObjectURL(blob));
+      },
+      `image/${format}`,
+      quality
+    );
+  });
+
 export function resizeImage({
   img,
   format,
@@ -17,15 +36,15 @@ export function resizeImage({
   width,
 }: ResizeImageOptions): Promise<string> {
   return new Promise((resolve, reject) => {
+    const normalizedFormat: Format = format ?? "png";
+
     if (format === "svg") {
       const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="${width || img.width}" height="${height || img.height}" viewBox="0 0 ${img.width} ${img.height}">
           <image href="${img.src}" width="${img.width}" height="${img.height}" />
         </svg>`;
       const svgBlob = new Blob([svg], { type: "image/svg+xml" });
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.readAsDataURL(svgBlob);
+      resolve(URL.createObjectURL(svgBlob));
       return;
     }
 
@@ -66,8 +85,9 @@ export function resizeImage({
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    const dataURL = canvas.toDataURL(`image/${format}`, quality);
-    resolve(dataURL);
+    canvasToObjectUrl(canvas, normalizedFormat, quality)
+      .then(resolve)
+      .catch(reject);
   });
 }
 

@@ -17,11 +17,19 @@ describe("Image Processing Functions", () => {
     canvasMock = document.createElement("canvas");
     ctxMock = {
       drawImage: jest.fn(),
-      toDataURL: jest.fn().mockReturnValue("data:image/png;base64,MOCK_DATA"),
     } as unknown as CanvasRenderingContext2D;
 
     jest.spyOn(document, "createElement").mockReturnValue(canvasMock);
     jest.spyOn(canvasMock, "getContext").mockReturnValue(ctxMock);
+    jest
+      .spyOn(canvasMock, "toBlob")
+      .mockImplementation((callback: BlobCallback) => {
+        callback(new Blob(["MOCK_DATA"], { type: "image/png" }));
+      });
+    Object.defineProperty(URL, "createObjectURL", {
+      writable: true,
+      value: jest.fn(() => "blob:mock-url"),
+    });
 
     jest.spyOn(window, "FileReader").mockImplementation(
       () =>
@@ -61,7 +69,7 @@ describe("Image Processing Functions", () => {
       quality: 1,
     });
 
-    expect(result).toMatch(/^data:image\/png;base64,/);
+    expect(result).toMatch(/^blob:/);
     expect(ctxMock.drawImage).toHaveBeenCalledWith(img, 0, 0, 500, 250);
   });
 
@@ -76,7 +84,7 @@ describe("Image Processing Functions", () => {
       quality: 0.8,
     });
 
-    expect(result).toMatch(/^data:image\/jpeg;base64,/);
+    expect(result).toMatch(/^blob:/);
     expect(ctxMock.drawImage).toHaveBeenCalledWith(img, 0, 0, 500, 250);
   });
 
@@ -109,9 +117,7 @@ describe("Image Processing Functions", () => {
       done: () => {
         expect(setWidth).toHaveBeenCalledWith(1000);
         expect(setHeight).toHaveBeenCalledWith(500);
-        expect(setOutput).toHaveBeenCalledWith(
-          expect.stringMatching(/^data:image\/jpeg;base64,/)
-        );
+        expect(setOutput).toHaveBeenCalledWith(expect.stringMatching(/^blob:/));
         done();
       },
     });
@@ -162,9 +168,7 @@ describe("Image Processing Functions", () => {
     });
 
     setTimeout(() => {
-      expect(setOutput).toHaveBeenCalledWith(
-        expect.stringMatching(/^data:image\/jpeg;base64,/)
-      );
+      expect(setOutput).toHaveBeenCalledWith(expect.stringMatching(/^blob:/));
       done();
     }, 0);
   });

@@ -281,8 +281,9 @@ export default function ImageResize() {
 
   const commitTransformedOutput = useCallback(
     (nextOutput: string) => {
-      if (outputObjectUrlRef.current) {
-        releaseOutputObjectUrl();
+      releaseOutputObjectUrl();
+      if (nextOutput.startsWith("blob:")) {
+        outputObjectUrlRef.current = nextOutput;
       }
       setIsOriginalOutput(false);
       setOutputAndShowAnimation(nextOutput);
@@ -664,12 +665,8 @@ export default function ImageResize() {
         <image href="${img.src}" x="-${x}" y="-${y}" width="${sourceWidth}" height="${sourceHeight}" />
       </svg>`;
       const svgBlob = new Blob([svg], { type: "image/svg+xml" });
-      const reader = new FileReader();
-      reader.onload = () => {
-        const croppedDataUrl = reader.result as string;
-        applyCroppedOutput(croppedDataUrl, width, height);
-      };
-      reader.readAsDataURL(svgBlob);
+      const croppedObjectUrl = URL.createObjectURL(svgBlob);
+      applyCroppedOutput(croppedObjectUrl, width, height);
     },
     [applyCroppedOutput]
   );
@@ -703,8 +700,17 @@ export default function ImageResize() {
           canvas.width,
           canvas.height
         );
-        const croppedDataUrl = canvas.toDataURL(`image/${format}`, quality);
-        applyCroppedOutput(croppedDataUrl, canvas.width, canvas.height);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              return;
+            }
+            const croppedObjectUrl = URL.createObjectURL(blob);
+            applyCroppedOutput(croppedObjectUrl, canvas.width, canvas.height);
+          },
+          `image/${format}`,
+          quality
+        );
       }
     },
     [applyCroppedOutput, format, quality]
@@ -968,6 +974,7 @@ export default function ImageResize() {
                         src={output}
                         alt="Resized output"
                         ref={imageRef}
+                        decoding="async"
                         draggable={false}
                         className={`block w-auto h-auto max-h-[640px] rounded-sm select-none ${
                           showAnimation ? "animate-grow-from-center" : ""
