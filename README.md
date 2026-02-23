@@ -25,6 +25,7 @@ Open-source data conversion utils for devs who don't like ads. Simple, lightweig
 Here is the list of all utilities:
 
 - [CSV to JSON](https://jam.dev/utilities/csv-to-json)
+- [TSV to JSON](https://jam.dev/utilities/tsv-to-json)
 - [Base64 Encode/Decode](https://jam.dev/utilities/base-64-encoder)
 - [JSON Formatter](https://jam.dev/utilities/json-formatter)
 - [YAML to JSON](https://jam.dev/utilities/yaml-to-json)
@@ -36,6 +37,7 @@ Here is the list of all utilities:
 - [Image to Base64 Converter](https://jam.dev/utilities/image-to-base64)
 - [Base64 to Image Converter](https://jam.dev/utilities/base64-to-image)
 - [JSON to CSV](https://jam.dev/utilities/json-to-csv)
+- [JSON to TSV](https://jam.dev/utilities/json-to-tsv)
 - [HAR file viewer](https://jam.dev/utilities/har-file-viewer)
 - [JSON to YAML](https://jam.dev/utilities/json-to-yaml)
 - [Number Base Changer](https://jam.dev/utilities/number-base-changer)
