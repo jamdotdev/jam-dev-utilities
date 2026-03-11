@@ -34,6 +34,15 @@ describe("json-to-tsv.utils", () => {
     );
   });
 
+  it("should convert a single JSON object string to TSV", () => {
+    const jsonString = '{"name":"John","age":30}';
+    const expectedTSV = "name\tage\nJohn\t30";
+
+    expect(normalizeTSV(convertJSONtoTSV(jsonString))).toBe(
+      normalizeTSV(expectedTSV)
+    );
+  });
+
   it("should handle empty input", () => {
     expect(normalizeTSV(convertJSONtoTSV([]))).toBe("");
     expect(normalizeTSV(convertJSONtoTSV({}))).toBe("");
@@ -46,8 +55,7 @@ describe("json-to-tsv.utils", () => {
       { name: "John", hobbies: ["reading", "swimming"] },
       { name: "Jane", hobbies: ["painting"] },
     ];
-    const expectedTSV =
-      "name\thobbies\nJohn\treading,swimming\nJane\tpainting";
+    const expectedTSV = "name\thobbies\nJohn\treading,swimming\nJane\tpainting";
 
     expect(normalizeTSV(convertJSONtoTSV(jsonArray))).toBe(
       normalizeTSV(expectedTSV)

@@ -5,7 +5,8 @@ export function convertJSONtoTSV(input: string | object): string {
     let data: object[] = [];
 
     if (typeof input === "string") {
-      data = JSON.parse(input);
+      const parsed = JSON.parse(input);
+      data = Array.isArray(parsed) ? parsed : [parsed];
     } else if (Array.isArray(input)) {
       data = input;
     } else if (typeof input === "object") {
@@ -27,7 +28,7 @@ export function convertJSONtoTSV(input: string | object): string {
     return tsv;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw error;
     } else {
       throw new Error("Failed to convert JSON to TSV: Unknown error");
     }

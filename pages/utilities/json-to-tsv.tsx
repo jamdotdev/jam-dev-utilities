@@ -30,8 +30,8 @@ export default function JSONtoTSV() {
       try {
         const tsv = convertJSONtoTSV(value.trim());
         setOutput(tsv);
-      } catch (errorMessage: unknown) {
-        setOutput(errorMessage as string);
+      } catch (error: unknown) {
+        setOutput((error as Error).message);
       }
     },
     []

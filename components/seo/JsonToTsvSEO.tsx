@@ -90,8 +90,9 @@ export default function JsonToTsvSEO() {
           </li>
           <li>
             <b>What is the difference between TSV and CSV?</b> <br /> TSV uses
-            tabs to separate values while CSV uses commas. TSV is often preferred
-            when data fields contain commas, as it avoids quoting complexities.
+            tabs to separate values while CSV uses commas. TSV is often
+            preferred when data fields contain commas, as it avoids quoting
+            complexities.
           </li>
           <li>
             <b>How accurate is the converter?</b> <br /> Our tool handles both

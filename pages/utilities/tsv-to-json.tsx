@@ -40,8 +40,8 @@ Bob\t35\tUK`;
       try {
         const json = convertTSVtoJSON(value.trim(), lowercase);
         setOutput(json);
-      } catch (errorMessage: unknown) {
-        setOutput(errorMessage as string);
+      } catch (error: unknown) {
+        setOutput((error as Error).message);
       }
     },
     [lowercase]
@@ -52,7 +52,7 @@ Bob\t35\tUK`;
     handleChange({
       currentTarget: { value: SAMPLE_DATA },
     } as React.ChangeEvent<HTMLTextAreaElement>);
-  }, []);
+  }, [handleChange]);
 
   const toggleLowercase = useCallback(() => {
     setLowercase((prevValue) => {
@@ -89,8 +89,8 @@ Bob\t35\tUK`;
         try {
           const json = convertTSVtoJSON(content, lowercase);
           setOutput(json);
-        } catch (errorMessage: unknown) {
-          setOutput(errorMessage as string);
+        } catch (error: unknown) {
+          setOutput((error as Error).message);
         }
       };
       reader.readAsText(file);
