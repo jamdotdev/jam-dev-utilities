@@ -6,6 +6,12 @@ export const tools = [
     link: "/utilities/csv-to-json",
   },
   {
+    title: "TSV to JSON",
+    description:
+      "Easily convert TSV data to JSON format with our free tool. Quickest way to turn tab-separated data into a JSON format for APIs and data processing.",
+    link: "/utilities/tsv-to-json",
+  },
+  {
     title: "Base64 Encode/Decode",
     description:
       "Easily encode and decode Base64 data with our online utility, so you can transmit your data safely or decode Base64-encoded strings.",
@@ -76,6 +82,12 @@ export const tools = [
     description:
       "Transform your JSON data into sleek CSV format with Jam's free online converter. Simply paste your JSON and watch the magic happen!",
     link: "/utilities/json-to-csv",
+  },
+  {
+    title: "JSON to TSV",
+    description:
+      "Transform your JSON data into TSV format with Jam's free online converter. Simply paste your JSON and get tab-separated output instantly.",
+    link: "/utilities/json-to-tsv",
   },
   {
     title: "HAR file viewer",
