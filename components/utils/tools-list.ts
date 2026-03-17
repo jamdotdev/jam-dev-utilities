@@ -8,7 +8,7 @@ export const tools = [
   {
     title: "TSV to JSON",
     description:
-      "Easily convert TSV data to JSON format with our free tool. Quickest way to turn tab-separated data into a JSON format for APIs and data processing.",
+      "Transform tab-separated values into structured JSON. Ideal for spreadsheet exports, database dumps, and scientific datasets with no delimiter conflicts.",
     link: "/utilities/tsv-to-json",
   },
   {

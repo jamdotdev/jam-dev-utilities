@@ -149,7 +149,7 @@ Bob\t35\tUK`;
     <main>
       <Meta
         title="TSV to JSON Converter | Free, Open Source & Ad-free"
-        description="Convert TSV files to JSON format quickly and easily with Jam's free online TSV to JSON converter. Upload your TSV file or paste its content and get the JSON result. That's it."
+        description="Convert tab-separated values to JSON instantly. Paste or upload your TSV file and get structured JSON output — perfect for turning spreadsheet exports and database dumps into API-ready data."
       />
       <Header />
       <CMDK />
@@ -157,7 +157,7 @@ Bob\t35\tUK`;
       <section className="container max-w-2xl mb-12">
         <PageHeader
           title="TSV to JSON Converter"
-          description="Fast, free, open source, ad-free tools."
+          description="Turn tab-separated data into structured JSON. Paste, upload, or drag and drop."
         />
       </section>
 
