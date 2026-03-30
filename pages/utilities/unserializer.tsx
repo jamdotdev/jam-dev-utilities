@@ -100,8 +100,8 @@ export default function Unserializer() {
         <Card className="flex flex-col p-6 hover:shadow-none shadow-none rounded-xl">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label>Serialized Input</Label>
-              <Button variant="outline" onClick={loadExample}>
+              <Label className="mb-0">Serialized Input</Label>
+              <Button size="sm" variant="outline" onClick={loadExample}>
                 Load Example
               </Button>
             </div>
