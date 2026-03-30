@@ -24,6 +24,12 @@ export const tools = [
     link: "/utilities/json-formatter",
   },
   {
+    title: "Unserializer",
+    description:
+      "Parse serialized strings and render readable output in print_r() or var_dump() format. Useful for debugging WordPress database values.",
+    link: "/utilities/unserializer",
+  },
+  {
     title: "JSONL Validator",
     description:
       "Validate JSON Lines instantly, find broken rows by line number, and convert valid records to a clean JSON array.",
