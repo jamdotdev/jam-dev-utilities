@@ -9,7 +9,7 @@ import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import CallToActionGrid from "@/components/CallToActionGrid";
 import Meta from "@/components/Meta";
-import { decodeJWT } from "@/components/utils/jwt-parser.utils";
+import { decodeJWT, State } from "@/components/utils/jwt-parser.utils";
 import GitHubContribution from "@/components/GitHubContribution";
 import { DividerComponent } from "../../components/ds/DividerComponent";
 
@@ -18,6 +18,10 @@ export default function JWTParser() {
   const [header, setHeader] = useState("");
   const [payload, setPayload] = useState("");
   const [signature, setSignature] = useState("");
+  const [validity, setValidity] = useState({
+    message: "Validity check",
+    state: State.Unknown,
+  });
 
   const { buttonText: headerText, handleCopy: handleCopyHeader } =
     useCopyToClipboard();
@@ -26,22 +30,41 @@ export default function JWTParser() {
   const { buttonText: signatureText, handleCopy: handleCopySignature } =
     useCopyToClipboard();
 
+  const stateColors: Record<State, string> = {
+    [State.NotYetValid]: "yellow",
+    [State.Valid]: "green",
+    [State.Expired]: "red",
+    [State.NeverValid]: "red",
+    [State.Unknown]: "gray",
+  };
+
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       const value = event.currentTarget.value;
       setInput(value);
 
       try {
-        const { header, payload, signature } = decodeJWT(value.trim());
-        setHeader(JSON.stringify(header, null, 2));
-        setPayload(JSON.stringify(payload, null, 2));
-        setSignature(signature || "");
+        if (!value) {
+          setHeader("");
+          setPayload("");
+          setSignature("");
+          setValidity({ message: "Validity check", state: State.Unknown });
+        } else {
+          const { header, payload, signature, validity } = decodeJWT(
+            value.trim()
+          );
+          setHeader(JSON.stringify(header, null, 2));
+          setPayload(JSON.stringify(payload, null, 2));
+          setSignature(signature || "");
+          setValidity(validity || { message: "", state: State.Unknown });
+        }
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Invalid Input.";
         setHeader(errorMessage);
         setPayload(errorMessage);
         setSignature(errorMessage);
+        setValidity({ message: errorMessage, state: State.Unknown });
       }
     },
     []
@@ -76,6 +99,12 @@ export default function JWTParser() {
             />
 
             <DividerComponent margin="medium" />
+
+            <div
+              className={`p-4 bg-${stateColors[validity.state]}-200 dark:bg-${stateColors[validity.state]}-800 rounded-xl mb-6`}
+            >
+              <Label className="m-0">{validity.message}</Label>
+            </div>
 
             <div>
               <Label>Decoded Header</Label>
