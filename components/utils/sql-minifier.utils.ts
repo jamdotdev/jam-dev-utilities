@@ -151,7 +151,12 @@ export function minifySQL(sql: string): string {
     return result.trim();
   } catch (error) {
     throw new Error(
-      `Failed to minify SQL: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to minify SQL: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
+      {
+        cause: error,
+      }
     );
   }
 }

@@ -30,7 +30,9 @@ export function convertJSONtoTSV(input: string | object): string {
     if (error instanceof Error) {
       throw error;
     } else {
-      throw new Error("Failed to convert JSON to TSV: Unknown error");
+      throw new Error("Failed to convert JSON to TSV: Unknown error", {
+        cause: error,
+      });
     }
   }
 }

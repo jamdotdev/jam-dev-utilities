@@ -1,4 +1,5 @@
 "use client";
+import type { ReactElement } from "react";
 import { DragEvent, useCallback, useMemo, useRef, useState } from "react";
 import UploadIcon from "@/components/icons/UploadIcon";
 
@@ -115,7 +116,7 @@ const StatusComponent = ({
   </div>
 );
 
-const statusComponents: Record<Status, (maxSize: string) => JSX.Element> = {
+const statusComponents: Record<Status, (maxSize: string) => ReactElement> = {
   idle: (maxSize) => (
     <StatusComponent
       title="Drag and drop your image here, or click to select"

@@ -31,8 +31,10 @@ export const generateHash = (
 
     return hash.update(data).digest(encoding);
   } catch (error) {
-    throw new Error(
-      `Failed to generate hash: ${error instanceof Error ? error.message : "An unknown error occurred"}`
-    );
+    const message =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    throw new Error(message, {
+      cause: error,
+    });
   }
 };

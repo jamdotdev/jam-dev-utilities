@@ -29,7 +29,7 @@ export default function URLEncoder() {
             ? encodeURIComponent(value)
             : decodeURIComponent(value);
         setOutput(output);
-      } catch (error) {
+      } catch {
         setOutput("Invalid input");
       }
     },

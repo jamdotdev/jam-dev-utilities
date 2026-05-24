@@ -71,7 +71,7 @@ export function getFilterType(entry: HarEntry): FilterType {
     return "Errors";
   }
 
-  const { mimeType } = entry.response.content;
+  const mimeType = entry.response.content.mimeType ?? "";
 
   if (
     entry.request.url.includes("xhr") ||
@@ -100,7 +100,7 @@ export function getFilterType(entry: HarEntry): FilterType {
 export function isBase64(str: string) {
   try {
     return btoa(atob(str)) === str;
-  } catch (err) {
+  } catch {
     return false;
   }
 }
@@ -108,7 +108,7 @@ export function isBase64(str: string) {
 export function tryParseJSON(str: string) {
   try {
     return JSON.parse(str);
-  } catch (e) {
+  } catch {
     return str;
   }
 }
@@ -171,7 +171,7 @@ export function getMatchCategories(
     if (isBase64(contentToSearch)) {
       try {
         contentToSearch = atob(contentToSearch);
-      } catch (e) {
+      } catch {
         // If decode fails, search in original
       }
     }

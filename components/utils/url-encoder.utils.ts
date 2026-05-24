@@ -28,7 +28,7 @@ export function decode(input: string): string {
     } else {
       return decodeURIComponent(input);
     }
-  } catch (error) {
+  } catch {
     return "Failed to decode string";
   }
 }

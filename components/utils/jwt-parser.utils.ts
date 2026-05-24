@@ -6,7 +6,7 @@ function base64UrlDecode(str: string): string {
     const decoded = fromBase64(base64);
     if (!decoded) throw new Error();
     return decoded;
-  } catch (error) {
+  } catch {
     throw new Error("Invalid token");
   }
 }
@@ -28,7 +28,7 @@ function decodeJWT(token: string): {
       payload: JSON.parse(base64UrlDecode(payload)),
       signature,
     };
-  } catch (error) {
+  } catch {
     throw new Error("Invalid token");
   }
 }

@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import {
   HoverCard,
   HoverCardContent,
@@ -14,7 +15,7 @@ export default function RegexHighlightText(props: RegexHighlightTextProps) {
     return <pre className="whitespace-pre-wrap break-words">{props.text}</pre>;
   }
 
-  const parts: JSX.Element[] = [];
+  const parts: ReactElement[] = [];
   const newLine = (
     <>
       ↵<br />

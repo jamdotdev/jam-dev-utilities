@@ -68,7 +68,7 @@ export default function CSSUnitsConverter() {
       return;
     }
 
-    let convertedValue: string | number = "Invalid conversion";
+    let convertedValue: string | number;
 
     if (conversionFunction) {
       if (["px-vw", "vw-px"].includes(conversionKey)) {

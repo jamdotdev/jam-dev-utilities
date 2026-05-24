@@ -120,8 +120,8 @@ export const createRegex = (pattern: string): RegExp => {
     throw new Error("Pattern must be a non-empty string");
   }
 
-  let patternBody = "";
-  let flags = "";
+  let patternBody: string;
+  let flags: string = "";
 
   if (pattern.startsWith("/")) {
     const lastSlashIndex = pattern.lastIndexOf("/");
@@ -152,7 +152,7 @@ export const createRegex = (pattern: string): RegExp => {
     return new RegExp(patternBody, flags);
   } catch (error) {
     if (error instanceof SyntaxError) {
-      throw new Error(error.message);
+      throw new Error(error.message, { cause: error });
     }
     throw error;
   }
@@ -398,7 +398,7 @@ export const explainPattern = (pattern: string): PatternComponent[] => {
       while (j < patternBody.length && patternBody[j] !== "}") j++;
       const quantifier = patternBody.slice(i, j + 1);
       const inner = quantifier.slice(1, -1);
-      let explanation = "";
+      let explanation: string;
 
       if (inner.includes(",")) {
         const [min, max] = inner.split(",");
