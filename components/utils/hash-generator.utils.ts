@@ -31,9 +31,9 @@ export const generateHash = (
 
     return hash.update(data).digest(encoding);
   } catch (error) {
-    const message =
+    const innerMessage =
       error instanceof Error ? error.message : "An unknown error occurred";
-    throw new Error(message, {
+    throw new Error(`Failed to generate hash: ${innerMessage}`, {
       cause: error,
     });
   }
