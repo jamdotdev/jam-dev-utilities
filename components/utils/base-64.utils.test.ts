@@ -16,6 +16,26 @@ describe("base-64.utils", () => {
       expect(fromBase64("aGVsbG8=")).toBe("hello");
     });
 
+    test("should decode base64 with line breaks and surrounding whitespace", () => {
+      expect(fromBase64("aGVs\nbG8=")).toBe("hello");
+      expect(fromBase64("aGVs\r\nbG8=")).toBe("hello");
+      expect(fromBase64("  aGVsbG8=  ")).toBe("hello");
+    });
+
+    test("should decode multiple base64 strings, one per line", () => {
+      expect(fromBase64("aGVsbG8=\nd29ybGQ=")).toBe("hello\nworld");
+    });
+
+    test("should decode PEM-style wrapped base64 as a single message", () => {
+      const message =
+        "hello world this is a longer message for testing pem wrap";
+      const wrapped = Buffer.from(message)
+        .toString("base64")
+        .match(/.{1,20}/g)!
+        .join("\n");
+      expect(fromBase64(wrapped)).toBe(message);
+    });
+
     test("should throw an error for an invalid Base64 string", () => {
       expect(() => fromBase64("invalid_base64")).toThrow(
         "Invalid Base64 input"
