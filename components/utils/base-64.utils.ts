@@ -46,8 +46,9 @@ export function fromBase64(value: string): string {
 
 /**
  * Checks if the given string consists entirely of printable ASCII characters.
- * Printable ASCII characters are those in the range from space (0x20) to tilde (0x7E).
+ * Printable ASCII characters are those in the range from space (0x20) to tilde (0x7E),
+ * plus common whitespace characters (tab, carriage return, line feed).
  */
 export function isPrintableASCII(str: string): boolean {
-  return /^[\x20-\x7E]*$/.test(str);
+  return /^[\x20-\x7E\t\r\n]*$/.test(str);
 }
