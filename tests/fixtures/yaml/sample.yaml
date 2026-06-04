@@ -1,0 +1,6 @@
+name: Jam
+enabled: true
+count: 3
+tags:
+  - a
+  - b

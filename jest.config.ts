@@ -13,6 +13,10 @@ const customJestConfig = {
     "^.+\\.module\\.(css|sass|scss)$",
   ],
   modulePathIgnorePatterns: ["<rootDir>/build"],
+  testPathIgnorePatterns: ["<rootDir>/tests/e2e/"],
+  moduleNameMapper: {
+    "^curlconverter$": "<rootDir>/tests/__mocks__/curlconverter.ts",
+  },
   testMatch: [
     "**/__tests__/**/*.+(ts|tsx|js)",
     "**/?(*.)+(spec|test).+(ts|tsx|js)",
