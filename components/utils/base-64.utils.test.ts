@@ -36,6 +36,11 @@ describe("base-64.utils", () => {
       expect(fromBase64(wrapped)).toBe(message);
     });
 
+    test("should decode base64 of multiline text", () => {
+      const multiline = "This is the first line\n\nthis is another one";
+      expect(fromBase64(toBase64(multiline))).toBe(multiline);
+    });
+
     test("should throw an error for an invalid Base64 string", () => {
       expect(() => fromBase64("invalid_base64")).toThrow(
         "Invalid Base64 input"
