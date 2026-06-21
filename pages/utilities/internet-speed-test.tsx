@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useRef, useState } from "react";
 import PageHeader from "@/components/PageHeader";
 import Header from "@/components/Header";
@@ -21,6 +23,7 @@ type SpeedResult = ReturnType<
 const createSpeedTestEngine = () => {
   return new SpeedTestEngine({
     autoStart: false,
+
     measurements: [
       // Quick latency check (1-2 seconds)
       { type: "latency", numPackets: 5 },
@@ -79,11 +82,14 @@ export default function InternetSpeedTest() {
       engineRef.current = null;
     };
 
-    speedTest.onError = () => {
+    // the library sometimes triggers network errors from internal logging
+    // calls that aren't caught; ensure we handle any error and surface it
+    speedTest.onError = (err?: unknown) => {
       if (engineRef.current !== speedTest) {
         return;
       }
 
+      console.error("SpeedTestEngine error:", err);
       engineRef.current = null;
       setTestState({ status: "idle", result: {} });
     };

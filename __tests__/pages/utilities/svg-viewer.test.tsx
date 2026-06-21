@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import SVGViewer from "../../../pages/utilities/svg-viewer";
 
@@ -77,11 +77,12 @@ describe("SVGViewer", () => {
   });
 
   test("paste tab should work with manual input", async () => {
-    const user = userEvent.setup();
     render(<SVGViewer />);
 
     const textarea = screen.getByLabelText("SVG code input");
-    await user.type(textarea, mockSVGContent);
+    fireEvent.change(textarea, {
+      target: { value: mockSVGContent },
+    });
 
     expect(textarea).toHaveValue(mockSVGContent);
   });

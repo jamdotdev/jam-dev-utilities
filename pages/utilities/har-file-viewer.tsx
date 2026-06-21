@@ -128,7 +128,7 @@ export default function HARFileViewer() {
       if (savedViewMode === "table" || savedViewMode === "waterfall") {
         setViewMode(savedViewMode);
       }
-    } catch (error) {
+    } catch {
       // localStorage not available or error occurred, use default
     }
     setIsInitialized(true);
@@ -140,7 +140,7 @@ export default function HARFileViewer() {
 
     try {
       localStorage.setItem("har-viewer-view-mode", viewMode);
-    } catch (error) {
+    } catch {
       // localStorage not available or error occurred
     }
   }, [viewMode, isInitialized]);
@@ -260,7 +260,7 @@ export default function HARFileViewer() {
           if (isBase64(contentToSearch)) {
             try {
               contentToSearch = atob(contentToSearch);
-            } catch (e) {
+            } catch {
               // If decode fails, search in original
             }
           }
@@ -552,7 +552,7 @@ const HarTable = ({
           if (isBase64(contentToSearch)) {
             try {
               contentToSearch = atob(contentToSearch);
-            } catch (e) {
+            } catch {
               // If decode fails, search in original
             }
           }
@@ -592,14 +592,14 @@ const HarTable = ({
 
   const tableHeaderStyles = "border p-2 px-3 text-left text-[14px]";
   const tableHeaderSortableStyles = `${tableHeaderStyles} cursor-pointer hover:bg-muted-foreground/10`;
-  const tableCellStyles = "border p-2 px-3 truncate"; //prettier-ignore
+  const tableCellStyles = "border p-2 px-3"; //prettier-ignore
   const tableRowStyles = "text-[13px] leading-[1] hover:bg-muted-foreground/10";
   const tableRowOddStyles = "bg-muted";
   const tableRowErrorStyles = "bg-red-500/10";
 
   return (
-    <div className="w-full mb-6">
-      <table className="w-full border-collapse table-fixed">
+    <div className="w-full mb-6 overflow-x-auto">
+      <table className="min-w-full border-collapse table-auto">
         <thead>
           <tr>
             {searchQuery && (
@@ -611,7 +611,7 @@ const HarTable = ({
               </th>
             )}
             <th
-              className={`${tableHeaderStyles} ${searchQuery ? "w-[35%]" : "w-[40%]"}`}
+              className={`${tableHeaderStyles} ${searchQuery ? "min-w-[35%]" : "min-w-[40%]"}`}
             >
               Name
             </th>
@@ -684,7 +684,7 @@ const HarTable = ({
                   <td
                     className={cn(
                       tableCellStyles,
-                      "max-w-xs cursor-pointer truncate"
+                      "cursor-pointer whitespace-nowrap"
                     )}
                   >
                     {searchQuery ? (

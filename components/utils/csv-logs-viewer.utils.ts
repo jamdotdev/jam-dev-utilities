@@ -403,8 +403,7 @@ export function buildSmartFacets(
     const cardinalityRatio = totalRows > 0 ? uniqueCount / totalRows : 1;
 
     // Determine if this column should be a facet
-    let shouldInclude = false;
-
+    let shouldInclude: boolean;
     // Always include facet-friendly columns if they have reasonable cardinality
     if (isFacetFriendlyColumn(header)) {
       shouldInclude = uniqueCount <= 100 && uniqueCount > 1;

@@ -30,7 +30,7 @@ export default function QueryParamsToJSON() {
       try {
         const output = convertQueryParamsToJSON(value.trim());
         setOutput(output);
-      } catch (error) {
+      } catch {
         setOutput("Invalid input, please provide valid query parameters");
       }
     },

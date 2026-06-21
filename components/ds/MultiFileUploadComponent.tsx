@@ -1,4 +1,5 @@
 "use client";
+import type { ReactElement } from "react";
 import { DragEvent, useCallback, useMemo, useRef, useState } from "react";
 import UploadIcon from "@/components/icons/UploadIcon";
 
@@ -174,7 +175,7 @@ const StatusComponent = ({
 
 const statusComponents: Record<
   Status,
-  (maxSize: string, fileType: string, multiple: boolean) => JSX.Element
+  (maxSize: string, fileType: string, multiple: boolean) => ReactElement
 > = {
   idle: (maxSize, fileType, multiple) => (
     <StatusComponent

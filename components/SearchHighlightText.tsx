@@ -1,3 +1,5 @@
+import type { ReactElement } from "react";
+
 interface SearchHighlightTextProps {
   text: string;
   searchQuery: string;
@@ -17,14 +19,14 @@ export default function SearchHighlightText({
     return <span className={className}>{text}</span>;
   }
 
-  const parts: JSX.Element[] = [];
+  const parts: ReactElement[] = [];
   const lowerText = text.toLowerCase();
   const lowerQuery = searchQuery.toLowerCase();
 
   let lastIndex = 0;
-  let currentIndex = 0;
+  let currentIndex = lowerText.indexOf(lowerQuery, lastIndex);
 
-  while ((currentIndex = lowerText.indexOf(lowerQuery, lastIndex)) !== -1) {
+  while (currentIndex !== -1) {
     // Add text before match
     if (currentIndex > lastIndex) {
       parts.push(
@@ -45,6 +47,7 @@ export default function SearchHighlightText({
     );
 
     lastIndex = currentIndex + lowerQuery.length;
+    currentIndex = lowerText.indexOf(lowerQuery, lastIndex);
   }
 
   // Add remaining text

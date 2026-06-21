@@ -27,9 +27,11 @@ export function convertJSONtoCSV(input: string | object): string {
     return csv;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw new Error(error.message, { cause: error });
     } else {
-      throw new Error("Failed to convert JSON to CSV: Unknown error");
+      throw new Error("Failed to convert JSON to CSV: Unknown error", {
+        cause: error,
+      });
     }
   }
 }

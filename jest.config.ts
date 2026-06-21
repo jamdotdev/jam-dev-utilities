@@ -1,4 +1,4 @@
-import nextJest from "next/jest";
+import nextJest from "next/jest.js";
 
 const createJestConfig = nextJest({
   dir: "./",
@@ -9,7 +9,7 @@ const customJestConfig = {
   testEnvironment: "jest-environment-jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   transformIgnorePatterns: [
-    "/node_modules/",
+    "/node_modules/(?!(lucide-react|cmdk|@radix-ui)/)",
     "^.+\\.module\\.(css|sass|scss)$",
   ],
   modulePathIgnorePatterns: ["<rootDir>/build"],
@@ -19,4 +19,10 @@ const customJestConfig = {
   ],
 };
 
-export default createJestConfig(customJestConfig);
+const createJestConfigWithDefaults = createJestConfig(customJestConfig);
+
+export default async () => {
+  const config = await createJestConfigWithDefaults();
+  config.transformIgnorePatterns = customJestConfig.transformIgnorePatterns;
+  return config;
+};

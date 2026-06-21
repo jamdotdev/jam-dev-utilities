@@ -203,7 +203,7 @@ Bob\t35\tUK`;
               <Textarea
                 rows={6}
                 placeholder="Paste or drag and drop a TSV file"
-                onInput={handleChange}
+                onChange={handleChange}
                 onPaste={handlePaste}
                 className={cn("mb-6", {
                   "border-dashed": isDragging,

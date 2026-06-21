@@ -178,7 +178,7 @@ export const HarWaterfall: React.FC<HarWaterfallProps> = ({
           if (isBase64(contentToSearch)) {
             try {
               contentToSearch = atob(contentToSearch);
-            } catch (e) {
+            } catch {
               // If decode fails, search in original
             }
           }
