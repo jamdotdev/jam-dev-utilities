@@ -75,7 +75,7 @@ Here is the list of all utilities:
 
 Follow these steps to set up your local development environment:
 
-1. Ensure you have Node.js 20.9.0 installed.
+1. Ensure you have Node.js 24.15.0 installed.
 2. That's it, you're ready to go!
 
 ## Running the Development Server
