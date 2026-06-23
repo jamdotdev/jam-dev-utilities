@@ -76,21 +76,21 @@ export function getFilterType(entry: HarEntry): FilterType {
   if (
     entry.request.url.includes("xhr") ||
     entry.request.url.includes("fetch") ||
-    mimeType.includes("json") ||
-    mimeType.includes("xml")
+    mimeType?.includes("json") ||
+    mimeType?.includes("xml")
   ) {
     return "XHR";
   }
-  if (mimeType.includes("javascript")) {
+  if (mimeType?.includes("javascript")) {
     return "JS";
   }
-  if (mimeType.includes("css")) {
+  if (mimeType?.includes("css")) {
     return "CSS";
   }
-  if (mimeType.includes("image")) {
+  if (mimeType?.includes("image")) {
     return "Img";
   }
-  if (mimeType.includes("audio") || mimeType.includes("video")) {
+  if (mimeType?.includes("audio") || mimeType?.includes("video")) {
     return "Media";
   }
 
