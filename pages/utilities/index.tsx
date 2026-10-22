@@ -4,6 +4,7 @@ import { CMDK } from "@/components/CMDK";
 import { tools } from "@/components/utils/tools-list";
 import { JamLogo64x64 } from "@/components/JamLogo64x64";
 import Meta from "@/components/Meta";
+import SkillsBanner from "@/components/SkillsBanner";
 
 export default function Home() {
   return (
@@ -39,6 +40,10 @@ export default function Home() {
           />
         ))}
       </div>
+
+      <section className="container max-w-2xl mt-16">
+        <SkillsBanner />
+      </section>
     </main>
   );
 }

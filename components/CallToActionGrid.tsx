@@ -1,4 +1,5 @@
 import SquareCard from "./SquareCard";
+import SkillsBanner from "./SkillsBanner";
 
 export default function CallToActionGrid() {
   return (
@@ -15,6 +16,7 @@ export default function CallToActionGrid() {
         buttonText="Try Jam"
         href="https://jam.dev?ref=utils"
       />
+      <SkillsBanner className="col-span-2" />
     </section>
   );
 }
