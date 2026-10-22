@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ds/InputComponent";
 import CodeSnippetRow from "@/components/CodeSnippetRow";
 import HexToRgbSEO from "@/components/seo/HexToRgbSEO";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import { cn } from "@/lib/utils";
 import RgbToHexSEO from "@/components/seo/RgbToHexSEO";
@@ -181,7 +181,7 @@ export default function HEXtoRGB(props: HEXtoRGBProps) {
         </Card>
       </section>
 
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         {props.invertOrder ? <RgbToHexSEO /> : <HexToRgbSEO />}

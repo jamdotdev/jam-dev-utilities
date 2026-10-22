@@ -9,8 +9,7 @@ export const SKILLS_URL =
 
 export const defaultBannerCopy: JamBannerCopy = {
   title: "Fix your next bug faster",
-  description:
-    "Jam captures logs, network requests, and repro steps in one click.",
+  description: "Jam captures logs, network, and repro steps in one click.",
 };
 
 const imageBannerCopy: JamBannerCopy = {

@@ -15,7 +15,7 @@ import {
   getPatternBody,
   RegexFlags,
 } from "@/components/utils/regex-tester.utils";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import GitHubContribution from "@/components/GitHubContribution";
 import RegexFlagToggle from "@/components/regex/RegexFlagToggle";
 import RegexPresetPatterns from "@/components/regex/RegexPresetPatterns";
@@ -296,7 +296,7 @@ export default function RegexTester() {
       </section>
 
       <GitHubContribution username="shashankshet" />
-      <CallToActionGrid />
+      <JamCallToAction />
     </main>
   );
 }

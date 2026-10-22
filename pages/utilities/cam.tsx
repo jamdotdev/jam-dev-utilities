@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import PageHeader from "@/components/PageHeader";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import { Card } from "@/components/ds/CardComponent";
 import { Button } from "@/components/ds/ButtonComponent";
@@ -473,7 +473,7 @@ export default function CameraUtility() {
         </Card>
       </section>
 
-      <CallToActionGrid />
+      <JamCallToAction />
     </main>
   );
 }

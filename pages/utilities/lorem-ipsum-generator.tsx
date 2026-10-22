@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { generateLoremIpsum } from "@/components/utils/lorem-ipsum-generator";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import { CMDK } from "@/components/CMDK";
 import { Button } from "@/components/ds/ButtonComponent";
 import { Card } from "@/components/ds/CardComponent";
@@ -138,7 +138,7 @@ export default function LoremIpsumGenerator() {
       </section>
 
       <GitHubContribution username="sprechblase" />
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl mb-6">
         <LoremIpsumGeneratorSEO />

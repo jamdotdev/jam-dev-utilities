@@ -7,7 +7,7 @@ import { CMDK } from "@/components/CMDK";
 import { Input } from "@/components/ds/InputComponent";
 import { ColorPicker } from "@/components/ds/ColorPickerComponent";
 import WcagColorContrastCheckerSEO from "@/components/seo/WcagColorContrastCheckerSEO";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import GitHubContribution from "@/components/GitHubContribution";
 import Meta from "@/components/Meta";
 import {
@@ -236,7 +236,7 @@ export default function WcagColorContrastChecker() {
       </section>
 
       <GitHubContribution username="EduardoDePatta" />
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <WcagColorContrastCheckerSEO />

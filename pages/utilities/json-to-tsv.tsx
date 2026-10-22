@@ -7,7 +7,7 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import { convertJSONtoTSV } from "@/components/utils/json-to-tsv.utils";
 import JsonToTsvSEO from "@/components/seo/JsonToTsvSEO";
@@ -77,7 +77,7 @@ export default function JSONtoTSV() {
         </Card>
       </section>
 
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <JsonToTsvSEO />

@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import PageHeader from "@/components/PageHeader";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import SpeedTestEngine from "@cloudflare/speedtest";
 import { Card } from "@/components/ds/CardComponent";
@@ -210,7 +210,7 @@ export default function InternetSpeedTest() {
         </div>
       </section>
 
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <InternetSpeedTestSEO />

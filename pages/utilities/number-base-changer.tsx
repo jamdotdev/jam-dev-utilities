@@ -7,7 +7,7 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import { Combobox } from "@/components/ds/ComboboxComponent";
 import NumberBaseChangerSEO from "@/components/seo/NumberBaseChangerSEO";
@@ -105,7 +105,7 @@ export default function NumberBaseChanger() {
         </Card>
       </section>
 
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl mb-6">
         <NumberBaseChangerSEO />

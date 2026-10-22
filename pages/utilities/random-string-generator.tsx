@@ -8,7 +8,7 @@ import Header from "@/components/Header";
 import { Checkbox } from "@/components/ds/CheckboxComponent";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import { Input } from "@/components/ds/InputComponent";
 import { PasswordBuilder } from "@/components/utils/password-generator.utils";
@@ -203,7 +203,7 @@ export default function PasswordGenerator() {
       </section>
 
       <GitHubContribution username="sousadiego11" />
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <RandomStringGeneratorSEO />

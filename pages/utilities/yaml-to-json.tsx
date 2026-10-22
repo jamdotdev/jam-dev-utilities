@@ -8,7 +8,7 @@ import Header from "@/components/Header";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import yaml from "js-yaml";
 import { CMDK } from "@/components/CMDK";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import YamlToJsonSEO from "@/components/seo/YamlToJsonSEO";
 import Meta from "../../components/Meta";
 
@@ -69,7 +69,7 @@ export default function YAMLtoJSON() {
         </Card>
       </section>
 
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <YamlToJsonSEO />

@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ds/TextareaComponent";
 import Header from "@/components/Header";
 import UploadIcon from "@/components/icons/UploadIcon";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import { CMDK } from "@/components/CMDK";
 import crypto from "crypto";
@@ -346,7 +346,7 @@ export default function FileIntegrityChecker() {
       </section>
 
       <GitHubContribution username="hariharjeevan" />
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <FileIntegrityCheckerSEO />

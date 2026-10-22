@@ -8,7 +8,7 @@ import Header from "@/components/Header";
 import { Checkbox } from "@/components/ds/CheckboxComponent";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import TsvToJsonSEO from "@/components/seo/TsvToJsonSEO";
 import Meta from "@/components/Meta";
 import { convertTSVtoJSON } from "@/components/utils/tsv-to-json.utils";
@@ -258,7 +258,7 @@ Bob\t35\tUK`;
         </Card>
       </section>
 
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <TsvToJsonSEO />

@@ -6,7 +6,7 @@ import { Button } from "@/components/ds/ButtonComponent";
 import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import { convertCSSToInline } from "@/components/utils/css-to-inline.utils";
 import { CMDK } from "@/components/CMDK";
@@ -123,7 +123,7 @@ export default function CSSInlinerForEmail() {
       </section>
 
       <GitHubContribution username="EduardoDePatta" />
-      <CallToActionGrid />
+      <JamCallToAction />
     </main>
   );
 }

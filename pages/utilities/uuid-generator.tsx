@@ -4,7 +4,7 @@ import { Card } from "@/components/ds/CardComponent";
 import { Button } from "@/components/ds/ButtonComponent";
 import Header from "@/components/Header";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import { CMDK } from "@/components/CMDK";
 import { Input } from "@/components/ds/InputComponent";
@@ -55,7 +55,7 @@ export default function UuidGenerator() {
       </section>
 
       <GitHubContribution username="ChrBu92" />
-      <CallToActionGrid />
+      <JamCallToAction />
     </main>
   );
 }
