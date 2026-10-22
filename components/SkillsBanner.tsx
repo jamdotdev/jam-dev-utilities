@@ -19,7 +19,7 @@ export default function SkillsBanner({ className }: SkillsBannerProps) {
       href={SKILLS_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex shrink-0 items-center gap-1.5 text-sm text-primary-foreground/70 transition-colors hover:text-primary-foreground"
+      className="inline-flex shrink-0 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
     >
       <GitHubLogoIcon aria-hidden="true" />
       View on GitHub
@@ -27,36 +27,33 @@ export default function SkillsBanner({ className }: SkillsBannerProps) {
   );
 
   return (
-    <div
-      className={cn(
-        "rounded-xl bg-primary p-4 text-left text-primary-foreground sm:p-5",
-        className
-      )}
-    >
+    <div className={cn("rounded-xl border p-4 text-left sm:p-5", className)}>
       <div className="flex items-center gap-3">
         <span className="shrink-0 rounded-lg bg-[#A7F374] p-2 text-black">
           <Terminal className="h-4 w-4" aria-hidden="true" />
         </span>
         <p className="min-w-0 flex-1 font-medium leading-5">
-          Make your coding agent show its work
+          Teach your coding agent to show its work
         </p>
         <span className="hidden sm:inline-flex">{githubLink}</span>
       </div>
 
-      <p className="mt-2 text-sm leading-5 text-primary-foreground/70 sm:mt-1 sm:pl-11">
-        Open-source agent skills for demo videos, proof on every PR, marked-up
-        screenshots and fixes from a bug recording. Four skills today, more on
-        the way.
+      <p className="mt-2 text-sm leading-5 text-muted-foreground sm:mt-1 sm:pl-11">
+        Open-source Jam skills: record a demo, attach proof to the PR, mark up a
+        screenshot, fix a bug from a recording. More on the way.
       </p>
 
       <button
         type="button"
         onClick={() => handleCopy(INSTALL_COMMAND)}
         aria-label={copied ? "Copied" : "Copy install command"}
-        className="mt-4 flex w-full items-start gap-2 sm:items-center rounded-lg bg-primary-foreground/10 px-3 py-2 font-mono text-sm transition-[background-color,transform] duration-150 ease-out hover:bg-primary-foreground/15 active:scale-[0.98] sm:py-1.5 sm:pr-1.5"
+        className="mt-4 flex w-full items-start gap-2 sm:items-center rounded-lg bg-muted px-3 py-2 font-mono text-sm transition-[background-color,transform] duration-150 ease-out hover:bg-border/60 active:scale-[0.98] sm:py-1.5 sm:pr-1.5"
       >
-        <span className="shrink-0 leading-5 text-[#A7F374]" aria-hidden="true">
-          {copied ? <Check className="h-4 w-4" /> : "$"}
+        <span
+          className="shrink-0 leading-5 text-muted-foreground"
+          aria-hidden="true"
+        >
+          {copied ? <Check className="h-4 w-4 text-[#5BA832]" /> : "$"}
         </span>
         <code className="min-w-0 flex-1 break-words text-left leading-5 sm:truncate">
           {INSTALL_COMMAND}
