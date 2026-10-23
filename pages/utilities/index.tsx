@@ -4,8 +4,6 @@ import { CMDK } from "@/components/CMDK";
 import { tools } from "@/components/utils/tools-list";
 import { JamLogo64x64 } from "@/components/JamLogo64x64";
 import Meta from "@/components/Meta";
-import SkillsCard from "@/components/SkillsCard";
-import { Fragment } from "react";
 
 export default function Home() {
   return (
@@ -32,15 +30,13 @@ export default function Home() {
       </div>
 
       <div className="container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tools.map((card, i) => (
-          <Fragment key={card.title}>
-            {i === 2 && <SkillsCard />}
-            <HomeCard
-              title={card.title}
-              description={card.description}
-              link={card.link}
-            />
-          </Fragment>
+        {tools.map((card) => (
+          <HomeCard
+            key={card.title}
+            title={card.title}
+            description={card.description}
+            link={card.link}
+          />
         ))}
       </div>
     </main>
