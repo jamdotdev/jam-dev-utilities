@@ -29,7 +29,7 @@ export default function SkillsBanner({ className }: SkillsBannerProps) {
   return (
     <div className={cn("rounded-xl border p-4 text-left sm:p-5", className)}>
       <div className="flex items-center gap-2">
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#A7F374] text-black">
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-foreground">
           <Terminal className="h-5 w-5" aria-hidden="true" />
         </span>
         <p className="min-w-0 flex-1 font-medium leading-5">
@@ -40,7 +40,7 @@ export default function SkillsBanner({ className }: SkillsBannerProps) {
 
       <p className="mt-2 text-sm leading-5 text-muted-foreground sm:mt-1 sm:pl-12">
         Open-source Jam skills: record a demo, attach proof to the PR, mark up a
-        screenshot, fix a bug from a recording. More on the way.
+        screenshot, fix a bug from a recording.
       </p>
 
       <button
