@@ -7,7 +7,7 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import { envToToml } from "@/components/utils/env-to-toml.utils";
 import EnvToTomlSEO from "@/components/seo/EnvToTomlSEO";
@@ -67,7 +67,7 @@ export default function EnvToToml() {
         </Card>
       </section>
 
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <EnvToTomlSEO />

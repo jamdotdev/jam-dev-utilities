@@ -7,7 +7,7 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import { CMDK } from "@/components/CMDK";
-import CallToActionGrid from "../../components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import SQLMinifierSEO from "@/components/seo/SQLMinifierSEO";
 import {
@@ -99,7 +99,7 @@ export default function SQLMinifier() {
       </section>
 
       <GitHubContribution username="prasang-s" />
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <SQLMinifierSEO />

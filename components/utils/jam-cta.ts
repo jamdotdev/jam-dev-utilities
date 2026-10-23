@@ -4,11 +4,12 @@ export interface JamBannerCopy {
 }
 
 export const JAM_URL = "https://jam.dev?ref=utils-banner";
+export const SKILLS_URL =
+  "https://github.com/jamdotdev/skills?ref=utils-banner";
 
 export const defaultBannerCopy: JamBannerCopy = {
   title: "Fix your next bug faster",
-  description:
-    "Jam captures logs, network requests, and repro steps in one click.",
+  description: "Jam captures logs, network, and repro steps in one click.",
 };
 
 const imageBannerCopy: JamBannerCopy = {

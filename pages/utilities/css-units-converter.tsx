@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import { CMDK } from "@/components/CMDK";
 import { Card } from "@/components/ds/CardComponent";
 import Header from "@/components/Header";
@@ -203,7 +203,7 @@ export default function CSSUnitsConverter() {
       </section>
 
       <GitHubContribution username="franciscoaiolfi" />
-      <CallToActionGrid />
+      <JamCallToAction />
     </main>
   );
 }

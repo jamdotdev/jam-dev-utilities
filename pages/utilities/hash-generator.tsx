@@ -6,7 +6,7 @@ import { Button } from "@/components/ds/ButtonComponent";
 import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import { CMDK } from "@/components/CMDK";
 import { Combobox } from "@/components/ds/ComboboxComponent";
@@ -262,7 +262,7 @@ export default function HashGenerator() {
       </section>
 
       <GitHubContribution username="EduardoDePatta" />
-      <CallToActionGrid />
+      <JamCallToAction />
     </main>
   );
 }

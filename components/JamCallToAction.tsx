@@ -1,5 +1,6 @@
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { getBannerCopy, JAM_URL } from "./utils/jam-cta";
+import SkillsBanner from "./SkillsBanner";
 
 interface JamCallToActionProps {
   // Page slug under /utilities, used to pick the banner copy.
@@ -36,6 +37,8 @@ export default function JamCallToAction({ tool }: JamCallToActionProps) {
           Try Jam
         </a>
       </div>
+
+      <SkillsBanner className="mt-4" />
 
       <p className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
         <GitHubLogoIcon />

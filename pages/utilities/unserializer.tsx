@@ -7,7 +7,7 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import { CMDK } from "@/components/CMDK";
-import CallToActionGrid from "../../components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import GitHubContribution from "@/components/GitHubContribution";
 import UnserializerSEO from "@/components/seo/UnserializerSEO";
 import Meta from "@/components/Meta";
@@ -154,7 +154,7 @@ export default function Unserializer() {
       </section>
 
       <GitHubContribution username="aminurislamarnob" />
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <UnserializerSEO />

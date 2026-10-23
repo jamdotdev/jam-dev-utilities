@@ -8,7 +8,7 @@ import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
 import QueryParamsToJsonSEO from "@/components/seo/QueryParamsToJsonSEO";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "../../components/Meta";
 import { convertQueryParamsToJSON } from "../../components/utils/query-params-to-json.utils";
 
@@ -73,7 +73,7 @@ export default function QueryParamsToJSON() {
         </Card>
       </section>
 
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <QueryParamsToJsonSEO />

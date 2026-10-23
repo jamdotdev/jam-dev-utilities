@@ -5,7 +5,7 @@ import { Card } from "@/components/ds/CardComponent";
 import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import GitHubContribution from "@/components/GitHubContribution";
 import Base64ToImageSEO from "@/components/seo/Base64ToImageSEO";
@@ -159,7 +159,7 @@ export default function Base64ToImage() {
         username="devin-ai-integration"
         customUrl="https://app.devin.ai"
       />
-      <CallToActionGrid />
+      <JamCallToAction />
 
       <section className="container max-w-2xl">
         <Base64ToImageSEO />

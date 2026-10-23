@@ -7,7 +7,7 @@ import { Label } from "@/components/ds/LabelComponent";
 import Header from "@/components/Header";
 import { CMDK } from "@/components/CMDK";
 import { useCopyToClipboard } from "@/components/hooks/useCopyToClipboard";
-import CallToActionGrid from "@/components/CallToActionGrid";
+import JamCallToAction from "@/components/JamCallToAction";
 import Meta from "@/components/Meta";
 import { decodeJWT } from "@/components/utils/jwt-parser.utils";
 import GitHubContribution from "@/components/GitHubContribution";
@@ -123,7 +123,7 @@ export default function JWTParser() {
       </section>
 
       <GitHubContribution username="EduardoDePatta" />
-      <CallToActionGrid />
+      <JamCallToAction />
     </main>
   );
 }
