@@ -31,4 +31,3 @@ const sitemap = [
 
 mkdirSync(path.dirname(outputFile), { recursive: true });
 writeFileSync(outputFile, sitemap);
-console.log(`Wrote ${urls.length} URLs to ${path.relative(root, outputFile)}`);
